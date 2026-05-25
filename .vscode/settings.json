@@ -1,0 +1,5 @@
+{
+  "geminicodeassist.chat.changeView": "Default diff view",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
+}
