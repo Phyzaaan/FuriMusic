@@ -9,7 +9,10 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "fs": "^0.0.1-security",
+    "get-audio-duration": "^4.0.1",
     "next": "16.2.4",
+    "path": "^0.12.7",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
@@ -26,6 +29,8 @@
     "typescript": "^5"
   },
   "prettier": {
-    "plugins": ["prettier-plugin-tailwindcss"]
+    "plugins": [
+      "prettier-plugin-tailwindcss"
+    ]
   }
 }

@@ -4,24 +4,24 @@
         "id": "0",
         "name": "Sunroof",
         "artist": "Ben Plum, Stayer & Dream Chaos",
-        "banner": "Music.png",
+        "banner": "Sunroof.jpg",
         "url": "Ben Plum, Stayer & Dream Chaos - Sunroof.mp3",
         "duration": "2:27"
     },
     {
         "id": "1",
-        "name": "I Aint",
+        "name": "I Aint Worried",
         "artist": "Besomage, Lookin, PACANI",
-        "banner": "Music.png",
-        "url": "Besomage, Lookin, PACANI - I Aint .mp3",
+        "banner": "I Aint Worried.jpeg",
+        "url": "Besomage, Lookin, PACANI - I Aint Worried.mp3",
         "duration": "2:36"
     },
     {
         "id": "2",
         "name": "BIRDS OF A FEATHER",
         "artist": "Billie Eilish",
-        "banner": "Music.png",
-        "url": "Billie Eilish\n- BIRDS OF A FEATHER.mp3",
+        "banner": "Birds of A Feather.jpg",
+        "url": "Billie Eilish - BIRDS OF A FEATHER.mp3",
         "duration": "3:30"
     },
     {
@@ -36,7 +36,7 @@
         "id": "4",
         "name": "1985",
         "artist": "Bo Burnham",
-        "banner": "Music.png",
+        "banner": "1985.jpg",
         "url": "Bo Burnham - 1985.mp3",
         "duration": "2:26"
     },
@@ -44,7 +44,7 @@
         "id": "5",
         "name": "Living Life, In The Night",
         "artist": "Cheriimoya ft. Sierra Kidd",
-        "banner": "Music.png",
+        "banner": "Living Life, In The Night.jpg",
         "url": "Cheriimoya ft. Sierra Kidd - Living Life, In The Night.mp3",
         "duration": "2:02"
     },
@@ -60,7 +60,7 @@
         "id": "7",
         "name": "Mask",
         "artist": "Dream",
-        "banner": "Music.png",
+        "banner": "Mask.jpg",
         "url": "Dream - Mask.mp3",
         "duration": "2:53"
     },
@@ -68,7 +68,7 @@
         "id": "8",
         "name": "Slow Down",
         "artist": "Dream",
-        "banner": "Music.png",
+        "banner": "Slow Down.jpeg",
         "url": "Dream - Slow Down.mp3",
         "duration": "2:34"
     },
@@ -76,7 +76,7 @@
         "id": "9",
         "name": "Where Are You Now",
         "artist": "Dream Chaos, Ben Plum",
-        "banner": "Music.png",
+        "banner": "Where are you Now.jpg",
         "url": "Dream Chaos, Ben Plum - Where Are You Now.mp3",
         "duration": "2:17"
     },
@@ -92,7 +92,7 @@
         "id": "11",
         "name": "Heat Waves",
         "artist": "Glass Animals",
-        "banner": "Music.png",
+        "banner": "Heat Waves.png",
         "url": "Glass Animals - Heat Waves.mp3",
         "duration": "3:58"
     },
@@ -100,7 +100,7 @@
         "id": "12",
         "name": "somewhere only we know",
         "artist": "Gustixa & Rhianne",
-        "banner": "Music.png",
+        "banner": "Somewhere Only We Know.jpg",
         "url": "Gustixa & Rhianne - somewhere only we know.mp3",
         "duration": "3:04"
     },
@@ -130,10 +130,10 @@
     },
     {
         "id": "16",
-        "name": "Columbina s Lullaby",
+        "name": "Columbina's Lullaby",
         "artist": "HOYO-MiX ft. Shania Yan",
-        "banner": "Music.png",
-        "url": "HOYO-MiX ft. Shania Yan - Columbina s Lullaby.mp3",
+        "banner": "Columbina's Lullaby.png",
+        "url": "HOYO-MiX ft. Shania Yan - Columbina's Lullaby.mp3",
         "duration": "2:11"
     },
     {
@@ -148,7 +148,7 @@
         "id": "18",
         "name": "Right Now",
         "artist": "Harddope, Rovack, J R",
-        "banner": "Music.png",
+        "banner": "Right Now.jpg",
         "url": "Harddope, Rovack, J R - Right Now.mp3",
         "duration": "2:53"
     },
@@ -156,15 +156,15 @@
         "id": "19",
         "name": "Demons",
         "artist": "Imagine Dragons",
-        "banner": "Music.png",
-        "url": "Imagine Dragons\n- Demons.mp3",
+        "banner": "Demons.jpg",
+        "url": "Imagine Dragons- Demons.mp3",
         "duration": "2:57"
     },
     {
         "id": "20",
         "name": "LOVE STORY",
         "artist": "Indila",
-        "banner": "Music.png",
+        "banner": "Love Story.jpg",
         "url": "Indila - LOVE STORY.mp3",
         "duration": "4:33"
     },
@@ -180,7 +180,7 @@
         "id": "22",
         "name": "Infinity",
         "artist": "Jaymes Young",
-        "banner": "Music.png",
+        "banner": "Infinity.jpg",
         "url": "Jaymes Young-Infinity.mp3",
         "duration": "3:57"
     },
@@ -204,7 +204,7 @@
         "id": "25",
         "name": "Dreams pt. II",
         "artist": "Lost Sky ft. Sara Skinner",
-        "banner": "Music.png",
+        "banner": "Dreams pt. II.jpeg",
         "url": "Lost Sky ft. Sara Skinner - Dreams pt. II.mp3",
         "duration": "3:35"
     },
@@ -220,7 +220,7 @@
         "id": "27",
         "name": "Summertime",
         "artist": "Maggie ft. Nyan",
-        "banner": "Music.png",
+        "banner": "Summertime.jpg",
         "url": "Maggie ft. Nyan - Summertime.mp3",
         "duration": "2:33"
     },
@@ -228,7 +228,7 @@
         "id": "28",
         "name": "All In",
         "artist": "Marino",
-        "banner": "Music.png",
+        "banner": "All in.jpeg",
         "url": "Marino - All In.mp3",
         "duration": "2:03"
     },
@@ -236,23 +236,23 @@
         "id": "29",
         "name": "The Lost Soul Down",
         "artist": "NBSPL",
-        "banner": "Music.png",
+        "banner": "The Lost Soul Down.jpeg",
         "url": "NBSPL - The Lost Soul Down.mp3",
         "duration": "4:01"
     },
     {
         "id": "30",
-        "name": "Grateful [Copyright Free] No.54 128k",
+        "name": "Grateful",
         "artist": "NEFFEX",
-        "banner": "Music.png",
-        "url": "NEFFEX - Grateful [Copyright Free] No.54_128k.mp3",
+        "banner": "Grateful.png",
+        "url": "NEFFEX - Grateful.mp3",
         "duration": "3:02"
     },
     {
         "id": "31",
         "name": "GODS",
         "artist": "Newjeans",
-        "banner": "Music.png",
+        "banner": "Gods.jpeg",
         "url": "Newjeans - GODS.mp3",
         "duration": "3:36"
     },
@@ -282,17 +282,17 @@
     },
     {
         "id": "35",
-        "name": "You re Not Alone",
+        "name": "You are Not Alone",
         "artist": "Saosin",
-        "banner": "Music.png",
-        "url": "Saosin - You re Not Alone.mp3",
+        "banner": "You are Not alone.jpg",
+        "url": "Saosin - You are Not Alone.mp3",
         "duration": "3:58"
     },
     {
         "id": "36",
         "name": "Freaks",
         "artist": "Surf Curse",
-        "banner": "Music.png",
+        "banner": "Freaks.jpg",
         "url": "Surf Curse - Freaks.mp3",
         "duration": "2:27"
     },
@@ -300,7 +300,7 @@
         "id": "37",
         "name": "Cruel Summer",
         "artist": "Taylor Swift",
-        "banner": "Music.png",
+        "banner": "Cruel Summer.jpeg",
         "url": "Taylor Swift - Cruel Summer.mp3",
         "duration": "2:59"
     },
@@ -308,7 +308,7 @@
         "id": "38",
         "name": "Keep It To Yourself",
         "artist": "ThxSoMch",
-        "banner": "Music.png",
+        "banner": "Keep it to yourself.jpeg",
         "url": "ThxSoMch - Keep It To Yourself.mp3",
         "duration": "2:40"
     },

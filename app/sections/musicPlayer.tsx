@@ -39,8 +39,8 @@ export default function MusicPlayer() {
 
   useEffect(() => {
     if (!audioInstance) return;
-    LoadLocalStorage(setCurrSongId, audioInstance);
-  }, [setCurrSongId, audioInstance]);
+    LoadLocalStorage(setCurrSongId, audioInstance, setRepeat);
+  }, [setCurrSongId, audioInstance, setRepeat]);
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -51,7 +51,7 @@ export default function MusicPlayer() {
     const handleSave = () => {
       const now = Date.now();
       if (now - lastTimeSave.current >= 900) {
-        saveToLocalStorage(currTime, currSongId);
+        saveToLocalStorage(currTime, currSongId, repeat);
         lastTimeSave.current = now;
       }
     };
