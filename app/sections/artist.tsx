@@ -5,10 +5,9 @@ import { useRef } from "react";
 
 type artistProps = {
   artists: {
-    id: string;
+    id: number;
     name: string;
-    image: string;
-    songs: string[];
+    banner: string;
   }[];
 };
 
@@ -33,9 +32,8 @@ function ArtistsSection({ artists }: artistProps) {
           return (
             <ArtistCard
               key={artist.id}
-              banner={artist.image}
+              banner={artist.banner}
               name={artist.name}
-              tracks={artist.songs.length}
             />
           );
         })}

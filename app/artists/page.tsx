@@ -1,7 +1,10 @@
-import Artists from "../data/artists";
 import ArtistCard from "../components/artistCard";
+import { fetchAllArtists } from "../data/data";
+import type { Artist } from "../data/type";
 
-export default function Artist() {
+
+export default async function Artist() {
+  const Artists = await fetchAllArtists();
   return (
     <main className="no-scrollbar flex h-full w-full flex-col overflow-y-auto pt-22 pb-20">
       {/* Title Section  */}
@@ -11,13 +14,12 @@ export default function Artist() {
 
       {/* Artists Section  */}
       <div className="no-scrollbar grid grid-cols-2 md:grid-cols-3 justify-items-center w-full gap-2 flex-wrap px-2 py-1">
-        {Artists.map((artist) => {
+        {Artists.map(({id, banner, name}: Artist) => {
           return (
             <ArtistCard
-              key={artist.id}
-              banner={artist.image}
-              name={artist.name}
-              tracks={artist.songs.length}
+              key={id}
+              banner={banner}
+              name={name}
             />
           );
         })}

@@ -1,7 +1,9 @@
-import Playlists from "../data/playlists";
 import PlaylistCard from "../components/playlistCard";
+import { fetchAllPlaylists } from "../data/data";
 
-export default function Playlist() {
+export default async function Playlist() {
+  const Playlists = await fetchAllPlaylists();
+
   return (
     <main className="no-scrollbar flex h-full w-full flex-col overflow-y-auto pt-22 pb-20">
       {/* Title Section  */}

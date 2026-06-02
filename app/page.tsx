@@ -1,27 +1,32 @@
 import ArtistsSection from "./sections/artist";
-import SongsSection from "./sections/songs";
+import SongsSection from "./sections/songsSection";
 import { PlaylistsSection } from "./sections/playlistsSection";
-import Playlists from "./data/playlists"
-import Artists from "./data/artists"
+import { fetchTopPlaylists, fetchTopSongs, fetchTopArtists } from "./data/data";
 
-export default function Home() {
-  const MyFav = Playlists.find((playlist) => playlist.id === "1")?.songs;
+export default async function Home() {
+  const data = await Promise.all([
+    fetchTopPlaylists(),
+    fetchTopArtists(),
+    fetchTopSongs(),
+  ]);
+  const [Playlists, Artists, Songs] = data;
+
   return (
     <main className="flex w-full h-full flex-col overflow-y-auto no-scrollbar pt-22 pb-20">
       {/* Playlists Section  */}
-      <PlaylistsSection 
-        playlists={Playlists}
-      />
+      {Playlists && <PlaylistsSection 
+        Playlists={Playlists}
+      />}
 
       {/* Songs Section  */}
-      <SongsSection
-      songs={MyFav ? MyFav : []}
-      />
+      {Songs && <SongsSection
+      songs={Songs}
+      />}
 
       {/* Artists Section  */}
-      <ArtistsSection 
+      {Artists && <ArtistsSection 
       artists={Artists}
-      />
+      />}
     </main>
   );
 }

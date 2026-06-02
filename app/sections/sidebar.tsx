@@ -2,10 +2,8 @@
 import Image from "next/image";
 import SongsCard from "../components/songcard";
 import { SecondaryBtn } from "../components/buttons";
-import Songs from "../data/songs";
 import useMusic from "../musicProvider";
 import NavMenu from "../components/navMenu";
-
 
 function Sidebar() {
   const { showSidebar } = useMusic();
@@ -20,27 +18,27 @@ function Sidebar() {
           {
             name: "Home",
             href: "/",
-            icon: "home"
+            icon: "home",
           },
           {
             name: "Playlists",
             href: "/playlists",
-            icon: "playlist_play"
+            icon: "playlist_play",
           },
           {
             name: "Artists",
             href: "/artists",
-            icon: "artist"
+            icon: "artist",
           },
           {
             name: "Library",
             href: "/library",
-            icon: "bookmark"
+            icon: "bookmark",
           },
           {
             name: "Suggest Me",
             href: "/suggest",
-            icon: "lightbulb"
+            icon: "lightbulb",
           },
         ]}
       />
@@ -63,16 +61,16 @@ function Sidebar() {
 
         {/* Favorites List */}
         <ul className="my-3 flex min-h-0 w-full flex-1 list-none flex-col items-center justify-start gap-1.5 overflow-y-auto rounded-md px-2 pt-3 pb-[env(safe-area-inset-bottom)]">
-          {Songs.map((song) => (
+          {/* {Songs.map((song) => (
             <SongsCard
               key={song.id}
               songId={song.id}
               songName={song.name}
-              artistName={song.artist}
+              artists={song.artists}
               duration={song.duration}
               songImage={`/SongsBanner/${song.banner}`}
             />
-          ))}
+          ))} */}
         </ul>
       </div>
     </section>

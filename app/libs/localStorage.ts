@@ -1,9 +1,10 @@
 import { loadSong } from "./playSong";
+import { Song } from "../data/type";
 
-export function saveToLocalStorage(currTime: number | undefined, currSongId: string, repeat: boolean) {
-  if (!currTime || !currSongId) return;
+export function saveToLocalStorage(currTime: number | undefined, currSong: Song | null, repeat: boolean) {
+  if (!currTime || !currSong) return;
   const data = {
-    songId: currSongId,
+    song: currSong,
     time: currTime,
     repeat: repeat
   };
@@ -12,7 +13,7 @@ export function saveToLocalStorage(currTime: number | undefined, currSongId: str
 }
 
 export function LoadLocalStorage(
-  setCurrSongId: (value: string) => void,
+  setCurrTrack: (track: Song | null) => void,
   audioInstance: HTMLMediaElement,
   setRepeat: (value: boolean) => void,
 ) {
@@ -20,11 +21,11 @@ export function LoadLocalStorage(
   if (!rawData) return;
   try {
     const data = JSON.parse(rawData);
-    if (!data.songId || !data.time || !data.repeat) return;
+    if (!data) return;
     audioInstance.currentTime = data.time;
-    setCurrSongId(data.songId);
+    setCurrTrack(data.song);
     setRepeat(data.repeat);
-    loadSong(data.songId, setCurrSongId);
+    loadSong(data.song);
   } catch (e) {
     console.error("Opse somthin not good!", e);
   }

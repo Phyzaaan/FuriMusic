@@ -1,36 +1,39 @@
-import Songs from "../data/songs";
 import { loadSong } from "./playSong";
-
-export function getNextSongIndex(currSongId: string) {
-  const currentIndex = Songs.findIndex((song) => song.id === currSongId);
-  return (currentIndex + 1) % Songs.length;
-}
-
-export function getPrevSongIndex(currSongId: string) {
-  const currentIndex = Songs.findIndex((song) => song.id === currSongId);
-  return currentIndex === 0 ? Songs.length - 1 : currentIndex - 1;
-}
+import { Song } from "../data/type";
 
 export function handleNextSong(
-  currSongId: string,
-  setCurrSongId: (song: string) => void,
+  currTrack: Song | null,
+  setCurrTrack: (track: Song | null) => void,
+  queue: Song[],
 ) {
-  const nextIndex = getNextSongIndex(currSongId);
-  loadSong(Songs[nextIndex].id, setCurrSongId, true);
-  setCurrSongId(Songs[nextIndex].id);
+  if (queue.length === 0) return;
+  const currIndex = queue.findIndex((song) => song.id === currTrack?.id);
+  const nextIndex = (currIndex + 1) % queue.length;
+  setCurrTrack(queue[nextIndex]);
+
+  loadSong(queue[nextIndex], true);
 }
 
 export function handlePrevSong(
-  currSongId: string,
-  setCurrSongId: (song: string) => void,
+  currTrack: Song | null,
+  setCurrTrack: (track: Song | null) => void,
+  queue: Song[],
 ) {
-  const prevIndex = getPrevSongIndex(currSongId);
-  loadSong(Songs[prevIndex].id, setCurrSongId, true);
-  setCurrSongId(Songs[prevIndex].id);
+  if (queue.length === 0) return;
+  const currIndex = queue.findIndex((song) => song.id === currTrack?.id);
+  const prevIndex = currIndex === 0 ? queue.length - 1 : currIndex - 1;
+  setCurrTrack(queue[prevIndex]);
+
+  loadSong(queue[prevIndex], true);
 }
 
-export function handleShuffle(setCurrSongId: (song: string) => void) {
-  const currIndex = Math.floor(Math.random() * Songs.length);
-  loadSong(Songs[currIndex].id, setCurrSongId, true);
-  setCurrSongId(Songs[currIndex].id);
+export function handleShuffle(
+  setCurrTrack: (track: Song | null) => void,
+  queue: Song[],
+) {
+  if (queue.length === 0) return;
+  const randomIndex = Math.floor(Math.random() * queue.length);
+
+  loadSong(queue[randomIndex], true);
+  setCurrTrack(queue[randomIndex]);
 }

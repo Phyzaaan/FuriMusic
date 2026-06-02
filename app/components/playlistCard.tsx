@@ -10,7 +10,7 @@ function PlaylistCard({ name, banner, tracks }: props) {
     <div className="group hover:border-card-border w-48 flex flex-col shrink-0 snap-start items-center justify-center gap-2 rounded-lg border border-transparent p-2">
       <div className="relative w-full h-40 overflow-hidden rounded-lg flex justify-end items-end">
         <Image
-          src={`/SongsBanner/${banner}`}
+          src={banner}
           alt="Banner"
           fill
           sizes="180"

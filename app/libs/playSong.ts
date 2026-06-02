@@ -1,7 +1,8 @@
 let audioInstance: HTMLAudioElement | null = null;
 
-import Songs from "../data/songs";
-import { handleNextSong, handlePrevSong } from "./changeSong";
+import formatArtists from "./formatArtists";
+
+import { Song } from "../data/type";
 
 if (typeof window !== "undefined") {
   audioInstance = new Audio();
@@ -9,53 +10,32 @@ if (typeof window !== "undefined") {
 
 export const getAudioInstance = () => audioInstance;
 
-export function loadSong(
-  currSongId: string,
-  setCurrSongId: (value: string) => void,
-  play: boolean = false,
-) {
+export function loadSong(currTrack: Song, play: boolean = false) {
   if (!audioInstance) {
     console.error("Audio instance is not available.");
     return;
   }
 
-  const song = Songs.find((song) => song.id === currSongId);
-  const songUrl = `/Songs/${song?.url}`;
-  console.log(songUrl);
+  const songUrl = currTrack.url;
 
-  const url = songUrl ? new URL(songUrl, window.location.origin).href : "";
-
-  console.log(url);
-
-  if (audioInstance.src !== url) {
-    audioInstance.src = url;
+  if (audioInstance.src !== songUrl) {
+    audioInstance.src = songUrl;
     audioInstance.load();
+
     if (play) playSong();
+
     if ("mediaSession" in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: song?.name,
-        artist: song?.artist,
+        title: currTrack.name,
+        artist: formatArtists(currTrack.artists),
         album: "Furi Album",
         artwork: [
           {
-            src: song ? `/SongsBanner/${song.banner}` : "",
+            src: currTrack.banner,
             sizes: "512x512",
             type: "image/png",
           },
         ],
-      });
-
-      navigator.mediaSession.setActionHandler("play", () => {
-        playSong();
-      });
-      navigator.mediaSession.setActionHandler("pause", () => {
-        pauseSong();
-      });
-      navigator.mediaSession.setActionHandler("previoustrack", () => {
-        handlePrevSong(currSongId, setCurrSongId);
-      });
-      navigator.mediaSession.setActionHandler("nexttrack", () => {
-        handleNextSong(currSongId, setCurrSongId);
       });
     }
   }

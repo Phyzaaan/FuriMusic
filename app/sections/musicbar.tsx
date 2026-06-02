@@ -1,7 +1,11 @@
-import Songs from "../data/songs";
 import { pauseSong, playSong } from "../libs/playSong";
-import { handleNextSong, handlePrevSong, handleShuffle } from "../libs/changeSong";
+import {
+  handleNextSong,
+  handlePrevSong,
+  handleShuffle,
+} from "../libs/changeSong";
 import formatTime from "../libs/formatTime";
+import formatArtists from "../libs/formatArtists";
 import { dragStart, dragEnd, dragging, handleMouseMove } from "../libs/seek";
 import { PrimaryBtn } from "../components/buttons";
 import useMusic from "../musicProvider";
@@ -22,8 +26,7 @@ export default function MusicBar({
   repeat,
   setShowFullPlayer,
 }: Props) {
-  const { currSongId, isPlaying, setCurrSongId } = useMusic();
-  const currSong = Songs.find((song) => song.id === currSongId);
+  const { currTrack, isPlaying, setCurrTrack, queue } = useMusic();
 
   const [hoverPos, setHoverPos] = useState(0);
   const [hoverTime, setHoverTime] = useState(0);
@@ -32,7 +35,7 @@ export default function MusicBar({
   return (
     /* Mini Player Sticky Bar */
     <section
-      className={`bg-card-bg border-card-border fixed ${currSongId && !showFullPlayer ? "bottom-0" : "bottom-[-110]"} items-between z-10 flex w-full max-w-150 flex-row justify-center rounded-t-xl border-t border-r border-l px-4 py-1 pt-4 pb-[env(safe-area-inset-bottom)] shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300`}
+      className={`bg-card-bg border-card-border fixed ${!showFullPlayer && currTrack ? "bottom-0" : "bottom-[-110]"} items-between z-10 flex w-full max-w-150 flex-row justify-center rounded-t-xl border-t border-r border-l px-4 py-1 pt-4 pb-[env(safe-area-inset-bottom)] shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300`}
     >
       {/* Seekbar */}
       <div
@@ -81,10 +84,10 @@ export default function MusicBar({
         className="flex w-full max-w-[60%] cursor-pointer flex-col items-center justify-center transition-opacity hover:opacity-90 sm:max-w-[70%]"
       >
         <h2 className="w-full truncate text-xl font-semibold">
-          {currSong?.name}
+          {currTrack?.name}
         </h2>
         <p className="text-secondary w-full truncate text-sm">
-          {currSong?.artist}
+          {currTrack ? formatArtists(currTrack.artists) : "Unknown Artist"}
         </p>
       </div>
 
@@ -93,8 +96,8 @@ export default function MusicBar({
         <PrimaryBtn
           onClick={() =>
             repeat
-              ? handlePrevSong(currSongId, setCurrSongId)
-              : handleShuffle(setCurrSongId)
+              ? handlePrevSong(currTrack, setCurrTrack, queue)
+              : handleShuffle(setCurrTrack, queue)
           }
           icon="/icons/skip_previous.svg"
         />
@@ -113,8 +116,8 @@ export default function MusicBar({
         <PrimaryBtn
           onClick={() =>
             repeat
-              ? handleNextSong(currSongId, setCurrSongId)
-              : handleShuffle(setCurrSongId)
+              ? handleNextSong(currTrack, setCurrTrack, queue)
+              : handleShuffle(setCurrTrack, queue)
           }
           icon="/icons/skip_next.svg"
         />

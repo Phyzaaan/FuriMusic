@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
-import Songs from "../data/songs";
 import Image from "next/image";
 import { getAudioInstance, pauseSong, playSong } from "../libs/playSong";
 import PopUp from "../components/popup";
@@ -16,11 +15,11 @@ import { PrimaryBtn } from "../components/buttons";
 import Playlist from "./playlist";
 import useMusic from "../musicProvider";
 import { LoadLocalStorage, saveToLocalStorage } from "../libs/localStorage";
+import formatArtists from "../libs/formatArtists";
 
 export default function MusicPlayer() {
-  const { currSongId, setCurrSongId, isPlaying } = useMusic();
+  const { currTrack, setCurrTrack, queue, isPlaying } = useMusic();
 
-  const currSong = Songs.find((song) => song.id === currSongId);
   const audioInstance = getAudioInstance();
   const lastTimeSave = useRef(0);
 
@@ -39,8 +38,8 @@ export default function MusicPlayer() {
 
   useEffect(() => {
     if (!audioInstance) return;
-    LoadLocalStorage(setCurrSongId, audioInstance, setRepeat);
-  }, [setCurrSongId, audioInstance, setRepeat]);
+    LoadLocalStorage(setCurrTrack, audioInstance, setRepeat);
+  }, [setCurrTrack, audioInstance, setRepeat]);
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -51,7 +50,7 @@ export default function MusicPlayer() {
     const handleSave = () => {
       const now = Date.now();
       if (now - lastTimeSave.current >= 900) {
-        saveToLocalStorage(currTime, currSongId, repeat);
+        saveToLocalStorage(currTime, currTrack, repeat);
         lastTimeSave.current = now;
       }
     };
@@ -62,9 +61,9 @@ export default function MusicPlayer() {
 
     const handleEnded = () => {
       if (repeat) {
-        handleNextSong(currSongId, setCurrSongId);
+        handleNextSong(currTrack, setCurrTrack, queue);
       } else {
-        handleShuffle(setCurrSongId);
+        handleShuffle(setCurrTrack, queue);
       }
     };
 
@@ -79,7 +78,7 @@ export default function MusicPlayer() {
       audioInstance?.removeEventListener("loadedmetadata", handleLoad);
       audioInstance?.removeEventListener("ended", handleEnded);
     };
-  }, [currTime, audioInstance, currSongId, setCurrSongId, repeat]);
+  }, [currTime, audioInstance,currTrack, setCurrTrack, queue, repeat]);
 
   return (
     <>
@@ -104,33 +103,13 @@ export default function MusicPlayer() {
           />
         </div>
 
-        {/* Drop Down Menu */}
-        {/* <div
-          className={`absolute top-14 right-4 z-20 flex w-xs items-center justify-center rounded-lg px-1.5 py-2 backdrop-blur-md transition-all duration-300 ease-in-out ${showDropDown ? "translate-x-0 scale-100" : "pointer-events-none translate-x-100 scale-95"} `}
-        >
-          <div className="absolute inset-0 -z-10 h-full w-full rounded-md bg-black opacity-30" />
-          <ul className="flex w-full list-none flex-col items-center justify-center gap-1 px-2">
-            <li
-              className={`group text-primary flex w-full cursor-pointer items-center rounded-md py-2 pl-2 transition-all duration-200 hover:bg-(--accent)`}
-            >
-              <Image
-                src={"/icons/playlist_add.svg"}
-                alt="Svg"
-                width={24}
-                height={24}
-                className="mr-2"
-              />
-              Save to Playlist
-            </li>
-          </ul>
-        </div> */}
 
         {/* Album Art */}
         <div className="relative mb-4 aspect-square w-full overflow-hidden rounded-lg">
-          {currSong && (
+          {currTrack && (
             <Image
-              src={`/SongsBanner/${currSong.banner}`}
-              alt={currSong.name}
+              src={currTrack.banner}
+              alt={currTrack.name}
               fill
               sizes="576"
               className="object-cover"
@@ -139,10 +118,10 @@ export default function MusicPlayer() {
         </div>
         {/* Bg Blur */}
         <div className="absolute top-12 -z-10 h-[65%] w-full overflow-hidden rounded-lg blur-2xl">
-          {currSong && (
+          {currTrack && (
             <Image
-              src={`/SongsBanner/${currSong.banner}`}
-              alt={currSong.name}
+              src={currTrack.banner}
+              alt={currTrack.name}
               fill
               className="object-cover"
             />
@@ -153,10 +132,10 @@ export default function MusicPlayer() {
         <div className="mb-4 flex w-full flex-col items-center justify-between">
           <div className="mx-2 mb-4 w-full">
             <h1 className="mb-1 truncate text-3xl font-bold">
-              {currSong?.name || "No Song Selected"}
+              {currTrack?.name || "No Song Selected"}
             </h1>
             <p className="text-secondary truncate text-xl">
-              {currSong?.artist || "Unknown Artist"}
+              {currTrack ? formatArtists(currTrack.artists) : "Unknown Artist"}
             </p>
           </div>
           <div className="flex w-full items-center justify-between">
@@ -174,16 +153,13 @@ export default function MusicPlayer() {
 
             <PrimaryBtn
               onClick={() => setShowSavePlaylist(!showSavePlaylist)}
-              icon={`/icons/${showSavePlaylist ? 'close' : 'bookmark_add'}.svg`}
+              icon={`/icons/${showSavePlaylist ? "close" : "bookmark_add"}.svg`}
             />
           </div>
         </div>
 
-        <PopUp 
-          showPopUp={showSavePlaylist}
-          className="bottom-50 top-auto"
-        >
-         Hello
+        <PopUp showPopUp={showSavePlaylist} className="bottom-50 top-auto">
+          Hello
         </PopUp>
 
         {/* Seekbar Area */}
@@ -236,8 +212,8 @@ export default function MusicPlayer() {
           <PrimaryBtn
             onClick={() =>
               repeat
-                ? handlePrevSong(currSongId, setCurrSongId)
-                : handleShuffle(setCurrSongId)
+                ? handlePrevSong(currTrack, setCurrTrack, queue)
+                : handleShuffle(setCurrTrack, queue)
             }
             icon="/icons/skip_previous.svg"
             width={42}
@@ -262,8 +238,8 @@ export default function MusicPlayer() {
           <PrimaryBtn
             onClick={() =>
               repeat
-                ? handleNextSong(currSongId, setCurrSongId)
-                : handleShuffle(setCurrSongId)
+                ? handleNextSong(currTrack, setCurrTrack, queue)
+                : handleShuffle(setCurrTrack, queue)
             }
             icon="/icons/skip_next.svg"
             width={42}

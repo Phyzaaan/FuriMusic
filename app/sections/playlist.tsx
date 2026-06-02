@@ -1,6 +1,6 @@
 import SongsCard from "../components/songcard";
-import Songs from "../data/songs";
 import { PrimaryBtn } from "../components/buttons";
+import useMusic from "../musicProvider";
 
 type Props = {
   showPlaylist: boolean;
@@ -8,6 +8,8 @@ type Props = {
 };
 
 function Playlist({ showPlaylist, setShowPlaylist }: Props) {
+  const { queue } = useMusic();
+
   return (
     <>
       {/* Playlist Pop-up Container */}
@@ -26,14 +28,16 @@ function Playlist({ showPlaylist, setShowPlaylist }: Props) {
 
         {/* Playlist Body & Song List */}
         <ul className="my-3 flex min-h-0 w-full flex-1 list-none flex-col items-center justify-start gap-1.5 overflow-y-auto rounded-md px-2 pt-3 pb-[env(safe-area-inset-bottom)]">
-          {Songs.map((song) => (
+          {queue.map((song) => (
             <SongsCard
               key={song.name}
-              songId={song.id}
-              songName={song.name}
-              artistName={song.artist}
+              id={song.id}
+              name={song.name}
+              artists={song.artists}
               duration={song.duration}
-              songImage={`/SongsBanner/${song.banner}`}
+              banner={song.banner}
+              url={song.url}
+              lyrics={song.lyrics}
             />
           ))}
         </ul>
