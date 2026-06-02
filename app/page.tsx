@@ -1,32 +1,16 @@
-import ArtistsSection from "./sections/artist";
-import SongsSection from "./sections/songsSection";
-import { PlaylistsSection } from "./sections/playlistsSection";
-import { fetchTopPlaylists, fetchTopSongs, fetchTopArtists } from "./data/data";
+import dynamic from "next/dynamic";
+
+const PlaylistsStream = dynamic(() => import("./ui/stream/PlaylistsStream"));
+const ArtistsStream = dynamic(() => import("./ui/stream/ArtistsStream"));
+const SongsStream = dynamic(() => import("./ui/stream/SongsStream"));
 
 export default async function Home() {
-  const data = await Promise.all([
-    fetchTopPlaylists(),
-    fetchTopArtists(),
-    fetchTopSongs(),
-  ]);
-  const [Playlists, Artists, Songs] = data;
-
   return (
     <main className="flex w-full h-full flex-col overflow-y-auto no-scrollbar pt-22 pb-20">
-      {/* Playlists Section  */}
-      {Playlists && <PlaylistsSection 
-        Playlists={Playlists}
-      />}
-
-      {/* Songs Section  */}
-      {Songs && <SongsSection
-      songs={Songs}
-      />}
-
-      {/* Artists Section  */}
-      {Artists && <ArtistsSection 
-      artists={Artists}
-      />}
+      <PlaylistsStream />
+      <SongsStream />
+      <ArtistsStream />
     </main>
   );
 }
+

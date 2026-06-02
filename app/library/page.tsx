@@ -1,5 +1,4 @@
-import PlaylistCard from "../components/playlistCard";
-import { SecondaryBtn } from "../components/buttons";
+import { SecondaryBtn } from "../ui/components/buttons";
 
 export default async function Library() {
 

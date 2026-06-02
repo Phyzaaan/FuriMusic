@@ -1,9 +1,8 @@
-import { SongsDiv } from "../sections/songsSection";
-import { fetchAllSongs } from "../data/data";
+import dynamic from "next/dynamic";
 
-export default async function SongsPage() {
-  const Songs = await fetchAllSongs();
+const SongsStream = dynamic(() => import("./stream/SongsStream"))
 
+export default function SongsPage() {
   return (
     <main className="no-scrollbar flex h-full w-full flex-col overflow-y-auto pt-22 pb-20">
       {/* Title Section  */}
@@ -12,9 +11,7 @@ export default async function SongsPage() {
       </div>
 
       {/* Songs Section  */}
-      <SongsDiv
-        songs={Songs}
-      />
+      <SongsStream />
     </main>
   );
 }

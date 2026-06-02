@@ -4,9 +4,9 @@ import "./globals.css";
 import { Roboto } from "next/font/google";
 
 import { MusicProvider } from "./musicProvider";
-import Header from "./sections/header";
-import Sidebar from "./sections/sidebar";
-import MusicPlayer from "./sections/musicPlayer";
+import Header from "./ui/sections/Header";
+import Sidebar from "./ui/sections/sidebar";
+import MusicPlayer from "./ui/sections/MusicPlayer";
 
 const roboto = Roboto({
   weight: "400",

@@ -6,11 +6,11 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import { getAudioInstance, pauseSong, playSong } from "./libs/playSong";
-import { handleNextSong, handlePrevSong } from "./libs/changeSong";
+import { getAudioInstance, pauseSong, playSong } from "./utils/libs/playSong";
+import { handleNextSong, handlePrevSong } from "./utils/libs/changeSong";
 
-import { Song } from "./data/type";
-import { MusicContextType } from "./data/type";
+import { Song } from "./utils/data/type";
+import { MusicContextType } from "./utils/data/type";
 
 const MusicContext = createContext<MusicContextType | null>(null);
 
@@ -21,50 +21,54 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const [currIndex, setCurrIndex] = useState(0);
   const [isPlaying, setPlaying] = useState(false);
 
- useEffect(() => {
-  const audio = getAudioInstance();
-  if (!audio) return;
+  useEffect(() => {
+    const audio = getAudioInstance();
+    if (!audio) return;
 
-  // Sync playing state
-  const sync = () => setPlaying(!audio.paused);
-  audio.addEventListener("play", sync);
-  audio.addEventListener("pause", sync);
+    // Sync playing state
+    const sync = () => setPlaying(!audio.paused);
+    audio.addEventListener("play", sync);
+    audio.addEventListener("pause", sync);
 
-  // Spacebar listener function
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.code === "Space" && document.activeElement?.tagName !== "INPUT") {
-      e.preventDefault(); 
-      audio.paused ? playSong() : pauseSong();
-    }
-  };
-  window.addEventListener("keydown", handleKeyDown);
+    // Spacebar listener function
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "Space" && document.activeElement?.tagName !== "INPUT") {
+        e.preventDefault();
+        if (audio.paused) {
+          playSong()
+        } else {
+          pauseSong()
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
 
-  // Media Session handlers
-  if ("mediaSession" in navigator) {
-    navigator.mediaSession.setActionHandler("play", playSong);
-    navigator.mediaSession.setActionHandler("pause", playSong);
-    navigator.mediaSession.setActionHandler("previoustrack", () =>
-      handlePrevSong(currTrack, setCurrTrack, queue)
-    );
-    navigator.mediaSession.setActionHandler("nexttrack", () =>
-      handleNextSong(currTrack, setCurrTrack, queue)
-    );
-  }
-
-  // CLEANUP EVERYTHING
-  return () => {
-    audio.removeEventListener("play", sync);
-    audio.removeEventListener("pause", sync);
-    window.removeEventListener("keydown", handleKeyDown);
-    
+    // Media Session handlers
     if ("mediaSession" in navigator) {
-      navigator.mediaSession.setActionHandler("play", null);
-      navigator.mediaSession.setActionHandler("pause", null);
-      navigator.mediaSession.setActionHandler("previoustrack", null);
-      navigator.mediaSession.setActionHandler("nexttrack", null);
+      navigator.mediaSession.setActionHandler("play", playSong);
+      navigator.mediaSession.setActionHandler("pause", playSong);
+      navigator.mediaSession.setActionHandler("previoustrack", () =>
+        handlePrevSong(currTrack, setCurrTrack, queue)
+      );
+      navigator.mediaSession.setActionHandler("nexttrack", () =>
+        handleNextSong(currTrack, setCurrTrack, queue)
+      );
     }
-  };
-}, [currTrack, queue]); 
+
+    // CLEANUP EVERYTHING
+    return () => {
+      audio.removeEventListener("play", sync);
+      audio.removeEventListener("pause", sync);
+      window.removeEventListener("keydown", handleKeyDown);
+
+      if ("mediaSession" in navigator) {
+        navigator.mediaSession.setActionHandler("play", null);
+        navigator.mediaSession.setActionHandler("pause", null);
+        navigator.mediaSession.setActionHandler("previoustrack", null);
+        navigator.mediaSession.setActionHandler("nexttrack", null);
+      }
+    };
+  }, [currTrack, queue]);
 
   return (
     <MusicContext.Provider

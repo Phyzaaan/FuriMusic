@@ -1,8 +1,8 @@
-import PlaylistCard from "../components/playlistCard";
-import { fetchAllPlaylists } from "../data/data";
+import dynamic from "next/dynamic";
 
-export default async function Playlist() {
-  const Playlists = await fetchAllPlaylists();
+const PlaylistsStream = dynamic(() => import("./stream/PlaylistsStream"))
+
+export default function Playlist() {
 
   return (
     <main className="no-scrollbar flex h-full w-full flex-col overflow-y-auto pt-22 pb-20">
@@ -12,18 +12,7 @@ export default async function Playlist() {
       </div>
 
       {/* Playlists Section  */}
-      <div className="no-scrollbar grid grid-cols-2 sm:grid-cols-3 justify-items-center w-full justify-around gap-2 px-2 py-1">
-        {Playlists.map((playlist) => {
-          return (
-            <PlaylistCard
-              key={playlist.id}
-              banner={playlist.banner}
-              name={playlist.name}
-              tracks={playlist.songs.length}
-            />
-          );
-        })}
-      </div>
+      <PlaylistsStream />
     </main>
   );
 }
