@@ -1,0 +1,82 @@
+"use client";
+import Image from "next/image";
+import { playSong, pauseSong, loadSong } from "../libs/playSong";
+import useMusic from "../musicProvider";
+import formatArtists from "../libs/formatArtists";
+import { Song } from "../data/type";
+
+interface SongsCardProps extends Song {
+  handleQueue?: () => void;
+}
+
+export default function SongsCard({
+  id,
+  name,
+  artists,
+  duration,
+  banner,
+  url,
+  lyrics,
+  handleQueue = () => {},
+}: SongsCardProps) {
+  const { currTrack, setCurrTrack, isPlaying } = useMusic();
+  const currSong = {
+    id: id,
+    name: name,
+    artists: artists,
+    duration: duration,
+    banner: banner,
+    url: url,
+    lyrics: lyrics
+  }
+  return (
+    <li
+      key={id}
+      onClick={() => {
+        if (currTrack?.id === id) {
+          if (isPlaying) {
+            pauseSong();
+          } else {
+            playSong();
+          }
+        } else {
+          setCurrTrack(currSong);
+          handleQueue();
+          loadSong(currSong, true);
+        }
+      }}
+      className={`group w-full max-h-15 min-w-0 flex-1 cursor-pointer border ${isPlaying && currTrack?.id == id ? "border-card-border bg-card-bg border shadow-lg" : "border-transparent"} hover:border-card-border flex items-center justify-between gap-3 rounded-md px-2 py-1.5`}
+    >
+      <div className="relative flex h-12 w-14 items-center justify-center rounded-md">
+        <Image
+          src={banner}
+          alt="Favorite"
+          fill
+          sizes="60"
+          className="object-cover"
+        />
+        <div className="bg-card-bg absolute h-full w-full opacity-0 transition-all duration-200 group-hover:opacity-50"></div>
+        <Image
+          src={`/icons/${isPlaying && currTrack?.id == id ? "pause" : "play_arrow"}.svg`}
+          alt="Play button"
+          width="42"
+          height="42"
+          className="invisible scale-70 transform transition-all duration-200 group-hover:visible group-hover:scale-100"
+        />
+      </div>
+      <div className="flex min-w-0 flex-1 flex-col items-start justify-start">
+        <h3 className="text-primary w-full truncate text-[16px] font-medium">
+          {name}
+        </h3>
+        <p className="text-secondary w-full truncate text-[14px]">
+          {formatArtists(artists)}
+        </p>
+      </div>
+      <div>
+        <span className="text-secondary text-[16px]">
+          {isPlaying && currTrack?.id == id ? "Playing" : duration}
+        </span>
+      </div>
+    </li>
+  );
+}
