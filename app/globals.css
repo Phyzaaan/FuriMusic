@@ -8,6 +8,7 @@
 
   --dark-bg: #0f0f23;
   --card-bg: rgba(0, 0, 0, 0.3);
+  --skeleton-bg: rgba(255, 255, 255, 0.11);
 
   --card-border: rgba(255, 255, 255, 0.18);
 
@@ -25,6 +26,7 @@
 @theme {
   --color-dark-bg: var(--dark-bg);
   --color-card-bg: var(--card-bg);
+  --color-card-skelet: var(--skeleton-bg);
   --color-card-border: var(--card-border);
   --color-primary: var(--text-primary);
   --color-secondary: var(--text-secondary);
@@ -55,8 +57,8 @@ body {
 
 * {
   box-sizing: border-box;
-  /* margin: 0;
-  margin: 0; */
+  margin: 0;
+  margin: 0;
 }
 
 /* Custom scrollbar */

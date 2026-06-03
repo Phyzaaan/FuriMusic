@@ -28,7 +28,7 @@ export function PlaylistsSection({ Playlists }: playlistProps) {
       </TitleBar>
       <div
         ref={scrollContainerRef}
-        className="no-scrollbar flex shrink-0 max-w-[calc(100%-16px)] mx-auto snap-x snap-mandatory gap-2 overflow-x-auto px-2 py-1"
+        className="no-scrollbar flex min-h-52 shrink-0 max-w-[calc(100%-16px)] mx-auto snap-x snap-mandatory gap-2 overflow-x-auto px-2 py-1"
       >
         {Playlists.map((playlist) => {
           return (

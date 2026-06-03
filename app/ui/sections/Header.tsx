@@ -3,6 +3,7 @@ import { useState } from "react";
 import useMusic from "../../musicProvider";
 import { PrimaryBtn } from "../components/buttons";
 import Searchbar from "../components/searchbar";
+import { Suspense } from "react";
 
 function Header() {
   const [showSearchbar, setShowSearchbar] = useState(false);
@@ -24,7 +25,9 @@ function Header() {
           className="relative z-10"
         ></PrimaryBtn>
 
-        <Searchbar showSearchbar={showSearchbar} />
+        <Suspense fallback={<div className={`bg-card-bg absolute ${showSearchbar ? "top-0" : "-top-full"} flex h-full w-full items-center justify-center transition-all duration-150`}>Loading...</div>}>
+          <Searchbar showSearchbar={showSearchbar} />
+        </Suspense>
       </div>
     </header>
   );

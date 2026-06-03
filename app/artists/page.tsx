@@ -1,5 +1,6 @@
 import dynamic from "next/dynamic";
-
+import { Suspense } from "react";
+import ArtistsSectionSkeleton from "./skeleton/ArtistsSkeleton";
 const ArtistsStream = dynamic(() => import("./stream/ArtistsStream"))
 
 export default function Artist() {
@@ -11,7 +12,9 @@ export default function Artist() {
       </div>
 
       {/* Artists Section  */}
-      <ArtistsStream />
+      <Suspense fallback={<ArtistsSectionSkeleton />}>
+        <ArtistsStream />
+      </Suspense>
     </main>
   );
 }
