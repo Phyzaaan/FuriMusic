@@ -8,7 +8,7 @@ type playlistProps = {
     id: number;
     name: string;
     banner: string;
-    songs: number[];
+    totalSongs: number;
   }[];
 };
 
@@ -36,7 +36,7 @@ export function PlaylistsSection({ Playlists }: playlistProps) {
               key={playlist.id}
               banner={playlist.banner}
               name={playlist.name}
-              tracks={playlist.songs.length}
+              tracks={playlist.totalSongs}
             />
           );
         })}

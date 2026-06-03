@@ -11,7 +11,8 @@ export type Song = {
 export type Playlist = {
   id: number;
   name: string;
-  songs: Song[];
+  banner: string;
+  totalSongs: number;
 };
 
 export type Artist = {

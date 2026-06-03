@@ -1,8 +1,8 @@
-import { fetchTopArtists } from "../../utils/data/data";
+import { fetchArtistsRange } from "../../utils/data/data";
 import ArtistsSection from "../sections/ArtistSection";
 
 export default async function ArtistsStream() {
-    const artists = await fetchTopArtists();
+    const artists = await fetchArtistsRange();
 
     return (
         <>

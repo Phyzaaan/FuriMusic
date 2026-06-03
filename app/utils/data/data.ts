@@ -1,163 +1,110 @@
 import { createClient } from "../supabase/server";
 import { cookies } from "next/headers";
 
-export async function fetchAllSongs() {
+export async function fetchSongsRange(limit = 12, offset = 0) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
-  // Fetch all songs
-  const { error: songError, data: songs } = await supabase
+  // Calculate the range bounds for Postgres (.range() is inclusive)
+  const from = offset;
+  const to = offset + limit - 1;
+
+  const { data: songs, error } = await supabase
     .from("Songs")
-    .select("id, name, url, banner, duration, artists, lyrics");
+    .select(`
+      id, 
+      name, 
+      url, 
+      banner, 
+      duration,
+      song_artists(Artists(name))
+    `)
+    .order("id", { ascending: true }) // Fast index sorting
+    .range(from, to);
 
-  if (songError || !songs) {
-    console.error("Error fetching songs:", songError);
+  if (error || !songs) {
+    console.error("Error fetching songs range:", error);
     return [];
   }
 
-  // Fetch all artists
-  const { error: artistError, data: artists } = await supabase
-    .from("Artists")
-    .select("id, name");
+  // Clean up the deeply nested relational data into a flat array of strings
+  return songs.map((song) => ({
+    id: song.id,
+    name: song.name,
+    url: song.url,
+    banner: song.banner,
+    duration: song.duration,
+    artists: (song.song_artists as { Artists: unknown }[] || []).flatMap((sa) => {
+      const data = sa.Artists;
+      // 1. If it's a real array, map it normally
+      if (Array.isArray(data)) {
+        return data.map((a) => a.name || "Unknown Artist");
+      }
+      // 2. If it's just a single object, wrap it in an array so flatMap can handle it
+      if (data && typeof data === "object" && "name" in data) {
+        return [(data as { name: string }).name || "Unknown Artist"];
+      }
+      return ["Unknown Artist"];
+    })
+  }));
+}
 
-  if (artistError || !artists) {
-    console.error("Error fetching artists:", artistError);
-    return [];
-  }
+export async function fetchPlaylistsRange(limit = 8, offset = 0) {
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
 
-  // Quick Lookup Function
-  const artistLookup = Object.fromEntries(
-    artists.map((artist) => [artist.id, artist.name]),
-  );
+  // Calculate the range bounds for Postgres (.range() is inclusive)
+  const from = offset;
+  const to = offset + limit - 1;
 
-  // Replace artists ids with artists names
-  const songsWithArtistNames = songs.map((song) => {
-    const artistNamesArray = song.artists
-      ? song.artists.map((id: number) => artistLookup[id] || "Unknown Artist")
-      : [];
+  const { data, error } = await supabase
+    .from("Playlists")
+    .select(`
+    id, 
+    name, 
+    banner, 
+    playlist_songs(count)
+  `)
+    .range(from, to);
+
+  if (error || !data) return [];
+
+  return data.map((playlist) => {
+    // Extract the count from the nested array object
+    const totalSongs = playlist.playlist_songs?.[0]?.count || 0;
 
     return {
-      ...song,
-      artists: artistNamesArray,
+      id: playlist.id,
+      name: playlist.name,
+      banner: playlist.banner,
+      totalSongs,
     };
   });
-
-  return songsWithArtistNames;
 }
 
-export async function fetchTopSongs() {
+export async function fetchArtistsRange(limit = 8, offset = 0) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
-  // Fetch Top songs
-  const { error: songError, data: songs } = await supabase
-    .from("Songs")
-    .select("id, name, url, banner, duration, artists, lyrics")
-    .limit(16);
-
-  if (songError || !songs) {
-    console.error("Error fetching songs:", songError);
-    return [];
-  }
-
-  // Extract and flatten all artist IDs from the songs array
-  const masterArtistIds = Array.from(
-    new Set(songs.flatMap((song) => song.artists || [])),
-  );
-
-  // Fetch ONLY the artists that are in masterArtistIds
-  const { error: artistError, data: artists } = await supabase
-    .from("Artists")
-    .select("id, name")
-    .in("id", masterArtistIds);
-
-  if (artistError || !artists) {
-    console.error("Error fetching artists:", artistError);
-    return [];
-  }
-
-  // Quick Lookup Function
-  const artistLookup = Object.fromEntries(
-    artists.map((artist) => [artist.id, artist.name]),
-  );
-
-  // Replace artists ids with artists names
-  const songsWithArtistNames = songs.map((song) => {
-    const artistNamesArray = song.artists
-      ? song.artists.map((id: number) => artistLookup[id] || "Unknown Artist")
-      : [];
-
-    return {
-      ...song,
-      artists: artistNamesArray,
-    };
-  });
-
-  return songsWithArtistNames;
-}
-
-export async function fetchAllPlaylists() {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-
-  const { error, data } = await supabase
-    .from("Playlists")
-    .select("id, name, banner, songs");
-
-  if (error || !data) {
-    console.error(error);
-    return [];
-  }
-
-  return data;
-}
-
-
-export async function fetchTopPlaylists() {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-
-  const { error, data } = await supabase
-    .from("Playlists")
-    .select("id, name, banner, songs").limit(10);
-
-  if (error || !data) {
-    console.error(error);
-    return [];
-  }
-  return data;
-}
-
-
-export async function fetchAllArtists() {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
+  // Calculate the range bounds for Postgres (.range() is inclusive)
+  const from = offset;
+  const to = offset + limit - 1;
 
   const { error: artistErr, data: artists } = await supabase
     .from("Artists")
-    .select("name, banner, id");
+    .select("id, name, banner")
+    .range(from, to);
 
   if (artistErr || !artists) {
     console.error("Error fetching artists:", artistErr);
     return [];
   }
 
-  return artists;
-}
-
-export async function fetchTopArtists() {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
-
-  const { error: artistErr, data: artists } = await supabase
-    .from("Artists")
-    .select("name, banner, id")
-    .limit(10);
-
-  if (artistErr || !artists) {
-    console.error("Error fetching artists:", artistErr);
-    return [];
-  }
-
-  return artists;
+  return artists.map((artist) => {
+    return {
+      id: artist.id,
+      name: artist.name,
+      banner: artist.banner,
+    };
+  });
 }

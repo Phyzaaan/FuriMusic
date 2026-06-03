@@ -1,8 +1,8 @@
-import { fetchAllPlaylists } from "../../utils/data/data";
+import { fetchPlaylistsRange } from "../../utils/data/data";
 import PlaylistsSection from "../sections/Playlists";
 
 export default async function PlaylistsStream() {
-    const playlists = await fetchAllPlaylists();
+    const playlists = await fetchPlaylistsRange();
 
     return (
         <>

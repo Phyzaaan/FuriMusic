@@ -117,7 +117,7 @@ export default function MusicPlayer() {
           )}
         </div>
         {/* Bg Blur */}
-        <div className="absolute top-22 -z-10 w-full h-1/2 overflow-hidden rounded-lg blur-2xl">
+        <div className="absolute top-14 -z-10 w-full h-2/3 overflow-hidden rounded-lg blur-2xl">
           {currTrack && (
             <Image
               src={currTrack.banner}
