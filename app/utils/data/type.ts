@@ -4,7 +4,8 @@ export type Song = {
   url: string;
   banner: string;
   duration: string;
-  artists: { id: number, name: string }[];
+  artists: { id: number; name: string }[];
+  lyrics?: string | null;
 };
 
 export type Playlist = {

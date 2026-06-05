@@ -15,6 +15,8 @@ import { PrimaryBtn } from "../components/Buttons";
 import QueueList from "./QueueList";
 import useMusic from "../../musicProvider";
 import { LoadLocalStorage, saveToLocalStorage } from "../../utils/libs/localStorage";
+import Lyrics from "./Lyrics";
+
 
 export default function MusicPlayer() {
   const { currTrack, setCurrTrack, queue, isPlaying } = useMusic();
@@ -31,6 +33,7 @@ export default function MusicPlayer() {
   const [showPlaylist, setShowPlaylist] = useState(false);
   const [showSavePlaylist, setShowSavePlaylist] = useState(false);
   const [showLyrics, setShowLyrics] = useState(false);
+  const lyricsSongId = currTrack?.id ?? null;
   const [showFullPlayer, setShowFullPlayer] = useState(false);
   const [repeat, setRepeat] = useState(false);
 
@@ -85,7 +88,7 @@ export default function MusicPlayer() {
     <>
       {/* Full Screen Player Pop-up */}
       <div
-        className={`bg-card-bg border-card-border fixed top-20 bottom-0 z-10 flex max-h-[calc(100vh-80px)] w-full max-w-150 min-w-xs flex-col items-center overflow-hidden rounded-lg border px-4 py-4 shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300 ease-in-out ${showFullPlayer ? "top-18" : "top-[110%]"
+        className={`bg-card-bg border-card-border fixed bottom-0 z-10 flex max-h-[calc(100vh-80px)] w-full max-w-150 min-w-xs flex-col items-center overflow-hidden rounded-lg border px-2 py-2 shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300 ease-in-out ${showFullPlayer ? "bottom-0" : "bottom-[-110%]"
           }`}
       >
         {/* Top Header */}
@@ -105,8 +108,8 @@ export default function MusicPlayer() {
 
 
         {/* Album Art */}
-        <div className="relative mb-4 aspect-square w-full overflow-hidden rounded-lg">
-          {currTrack && (
+        {(currTrack && !showLyrics) && (
+          < div className="relative mb-4 aspect-square w-full overflow-hidden rounded-lg">
             <Image
               src={currTrack.banner}
               alt={currTrack.name}
@@ -114,10 +117,10 @@ export default function MusicPlayer() {
               sizes="576"
               className="object-cover"
             />
-          )}
-        </div>
+          </div>
+        )}
         {/* Bg Blur */}
-        <div className="absolute top-14 -z-10 w-full h-2/3 overflow-hidden rounded-lg blur-2xl">
+        <div className="absolute top-12 -z-10 w-full aspect-square overflow-hidden rounded-lg blur-2xl">
           {currTrack && (
             <Image
               src={currTrack.banner}
@@ -128,6 +131,13 @@ export default function MusicPlayer() {
             />
           )}
         </div>
+        {/* Lyrics Pop-up */}
+        {showLyrics && (
+          <div className="mb-4 flex w-full h-full flex-col overflow-hidden rounded-md border border-card-border bg-card-bg/70 backdrop-blur-md transition-all duration-200">
+            <Lyrics songId={lyricsSongId} currTime={currTime} />
+          </div>
+        )}
+
 
         {/* Song Details */}
         <div className="mb-4 flex w-full flex-col items-center justify-between">
@@ -201,6 +211,7 @@ export default function MusicPlayer() {
 
         {/* Controls */}
         <div className="my-2 flex w-full items-center justify-between px-2">
+
           {/* Play / Repeat Button */}
           <PrimaryBtn
             onClick={() => setRepeat(!repeat)}
@@ -251,10 +262,10 @@ export default function MusicPlayer() {
             className="lg:pointer-events-none lg:opacity-0"
           />
         </div>
-      </div>
+      </div >
 
       {/* Mini Music Bar */}
-      <MusicBar
+      < MusicBar
         currTime={currTime}
         repeat={repeat}
         duration={duration}
@@ -262,7 +273,7 @@ export default function MusicPlayer() {
         setShowFullPlayer={setShowFullPlayer}
       />
       {/* Play list Pop-up */}
-      <QueueList showPlaylist={showPlaylist} setShowPlaylist={setShowPlaylist} />
+      < QueueList showPlaylist={showPlaylist} setShowPlaylist={setShowPlaylist} />
     </>
   );
 }

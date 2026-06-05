@@ -5,6 +5,7 @@ export async function fetchSongsRange(limit = 12, offset = 0) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
+
   // Calculate the range bounds for Postgres (.range() is inclusive)
   const from = offset;
   const to = offset + limit - 1;
