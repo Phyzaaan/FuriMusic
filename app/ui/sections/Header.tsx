@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 import useMusic from "../../musicProvider";
-import { PrimaryBtn } from "../components/buttons";
-import Searchbar from "../components/searchbar";
+import { PrimaryBtn } from "../components/Buttons";
+import Searchbar from "../components/Searchbar";
 import { Suspense } from "react";
 
 function Header() {

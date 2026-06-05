@@ -1,6 +1,6 @@
 "use client";
-import { useState, useRef, useEffect} from "react";
-import SongsCard from "@/app/ui/components/songcard";
+import { useState, useRef, useEffect } from "react";
+import SongsCard from "@/app/ui/components/Songcard";
 import useMusic from "@/app/musicProvider";
 import { Song } from "@/app/utils/data/type";
 import { loadMoreSongs } from "@/app/utils/data/clientData";

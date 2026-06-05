@@ -1,5 +1,5 @@
 'use client';
-import ArtistCard from "../components/artistCard";
+import ArtistCard from "../components/ArtistCard";
 import TitleBar from "../components/title";
 import { useRef } from "react";
 

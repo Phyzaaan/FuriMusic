@@ -1,4 +1,4 @@
-import { SecondaryBtn } from "../ui/components/buttons";
+import { SecondaryBtn } from "../ui/components/Buttons";
 
 export default async function Library() {
 

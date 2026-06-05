@@ -11,7 +11,7 @@ import ArtistLink from "../components/ArtistLink";
 import formatTime from "../../utils/libs/formatTime";
 import { dragStart, dragEnd, dragging, handleMouseMove } from "../../utils/libs/seek";
 import MusicBar from "./MusicBar";
-import { PrimaryBtn } from "../components/buttons";
+import { PrimaryBtn } from "../components/Buttons";
 import QueueList from "./QueueList";
 import useMusic from "../../musicProvider";
 import { LoadLocalStorage, saveToLocalStorage } from "../../utils/libs/localStorage";
@@ -135,7 +135,7 @@ export default function MusicPlayer() {
             <h1 className="mb-1 truncate text-3xl font-bold">
               {currTrack?.name || "No Song Selected"}
             </h1>
-              {currTrack ? <ArtistLink artists={currTrack.artists} /> : "Unknown Artist"}
+            {currTrack ? <ArtistLink artists={currTrack.artists} /> : "Unknown Artist"}
           </div>
           <div className="flex w-full items-center justify-between">
             {/* Lyrics Button */}

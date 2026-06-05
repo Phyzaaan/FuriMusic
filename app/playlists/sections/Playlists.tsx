@@ -1,5 +1,5 @@
 "use client";
-import PlaylistCard from "@/app/ui/components/playlistCard";
+import PlaylistCard from "@/app/ui/components/PlaylistCard";
 import { useEffect, useRef, useState } from "react";
 import { Playlist } from "@/app/utils/data/type";
 import { loadMorePlaylists } from "@/app/utils/data/clientData";

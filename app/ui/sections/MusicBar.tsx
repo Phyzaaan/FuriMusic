@@ -7,7 +7,7 @@ import {
 import formatTime from "../../utils/libs/formatTime";
 import ArtistLink from "../components/ArtistLink";
 import { dragStart, dragEnd, dragging, handleMouseMove } from "../../utils/libs/seek";
-import { PrimaryBtn } from "../components/buttons";
+import { PrimaryBtn } from "../components/Buttons";
 import useMusic from "../../musicProvider";
 import { useState } from "react";
 
@@ -86,7 +86,7 @@ export default function MusicBar({
         <h2 className="w-full truncate text-xl font-semibold">
           {currTrack?.name}
         </h2>
-          {currTrack ?  <ArtistLink artists={currTrack.artists} /> : "Unknown Artist"}
+        {currTrack ? <ArtistLink artists={currTrack.artists} /> : "Unknown Artist"}
       </div>
 
       {/* Controls */}

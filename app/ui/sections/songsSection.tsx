@@ -1,6 +1,6 @@
 "use client";
 import TitleBar from "../components/title";
-import SongsCard from "../components/songcard";
+import SongsCard from "../components/Songcard";
 import { useRef } from "react";
 import type { Song } from "../../utils/data/type";
 import useMusic from "../../musicProvider";

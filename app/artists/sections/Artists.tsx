@@ -1,5 +1,5 @@
 "use client";
-import ArtistCard from "@/app/ui/components/artistCard";
+import ArtistCard from "@/app/ui/components/ArtistCard";
 import { useEffect, useRef, useState } from "react";
 import { loadMoreArtists } from "@/app/utils/data/clientData";
 import { Artist } from "@/app/utils/data/type";

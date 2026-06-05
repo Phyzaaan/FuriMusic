@@ -206,6 +206,3 @@ export async function loadMoreArtists({
 
   setLoading(false);
 }
-
-
-

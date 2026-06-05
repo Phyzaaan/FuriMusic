@@ -1,6 +1,6 @@
 'use client';
 import { useRef } from "react";
-import PlaylistCard from "../components/playlistCard";
+import PlaylistCard from "../components/PlaylistCard";
 import TitleBar from "../components/title";
 
 type playlistProps = {

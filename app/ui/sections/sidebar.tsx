@@ -1,9 +1,9 @@
 "use client";
 import Image from "next/image";
 // import SongsCard from "../components/songcard";
-import { SecondaryBtn } from "../components/buttons";
+import { SecondaryBtn } from "../components/Buttons";
 import useMusic from "../../musicProvider";
-import NavMenu from "../components/navMenu";
+import NavMenu from "../components/NavMenu";
 
 function Sidebar() {
   const { showSidebar } = useMusic();

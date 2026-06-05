@@ -1,5 +1,5 @@
 'use client';
-import { PrimaryBtn } from "./buttons";
+import { PrimaryBtn } from "./Buttons";
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 
 type props = {

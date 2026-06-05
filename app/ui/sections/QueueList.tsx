@@ -1,5 +1,5 @@
-import SongsCard from "../components/songcard";
-import { PrimaryBtn } from "../components/buttons";
+import SongsCard from "../components/Songcard";
+import { PrimaryBtn } from "../components/Buttons";
 import useMusic from "../../musicProvider";
 
 type Props = {
@@ -18,7 +18,7 @@ function QueueList({ showPlaylist, setShowPlaylist }: Props) {
       >
         {/* Playlist Header */}
         <div className="my-2 flex h-8 w-full items-center justify-between">
-          <h1 className="text-2xl font-semibold">Queue List</h1>
+          <h1 className="text-3xl font-semibold">Queue List</h1>
           <PrimaryBtn
             onClick={() => setShowPlaylist(!showPlaylist)}
             icon="/icons/close.svg"
