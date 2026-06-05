@@ -5,7 +5,7 @@ import {
   handleShuffle,
 } from "../../utils/libs/changeSong";
 import formatTime from "../../utils/libs/formatTime";
-import formatArtists from "../../utils/libs/formatArtists";
+import ArtistLink from "../components/ArtistLink";
 import { dragStart, dragEnd, dragging, handleMouseMove } from "../../utils/libs/seek";
 import { PrimaryBtn } from "../components/buttons";
 import useMusic from "../../musicProvider";
@@ -86,9 +86,7 @@ export default function MusicBar({
         <h2 className="w-full truncate text-xl font-semibold">
           {currTrack?.name}
         </h2>
-        <p className="text-secondary w-full truncate text-sm">
-          {currTrack ? formatArtists(currTrack.artists) : "Unknown Artist"}
-        </p>
+          {currTrack ?  <ArtistLink artists={currTrack.artists} /> : "Unknown Artist"}
       </div>
 
       {/* Controls */}

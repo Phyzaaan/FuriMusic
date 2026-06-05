@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { playSong, pauseSong, loadSong } from "../../utils/libs/playSong";
 import useMusic from "../../musicProvider";
-import formatArtists from "../../utils/libs/formatArtists";
+import ArtistLink from "./ArtistLink";
 import { Song } from "../../utils/data/type";
 
 interface SongsCardProps extends Song {
@@ -16,7 +16,6 @@ export default function SongsCard({
   duration,
   banner,
   url,
-  lyrics,
   handleQueue = () => { },
 }: SongsCardProps) {
   const { currTrack, setCurrTrack, isPlaying } = useMusic();
@@ -26,8 +25,7 @@ export default function SongsCard({
     artists: artists,
     duration: duration,
     banner: banner,
-    url: url,
-    lyrics: lyrics
+    url: url
   }
   return (
     <li
@@ -68,9 +66,7 @@ export default function SongsCard({
         <h3 className="text-primary w-full truncate text-[16px] font-medium">
           {name}
         </h3>
-        <p className="text-secondary w-full truncate text-[14px]">
-          {formatArtists(artists)}
-        </p>
+        <ArtistLink artists={artists} />
       </div>
       <div>
         <span className="text-secondary text-[16px]">

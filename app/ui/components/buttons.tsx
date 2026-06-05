@@ -19,7 +19,7 @@ export function SecondaryBtn({
   return (
     <button
       onClick={onClick}
-      className="bg-bg-card-bg text-primary border-card-border flex cursor-pointer items-center justify-center rounded-md border py-1 pr-2 pl-1 transition-all duration-150 hover:bg-(--primary-from) active:scale-100"
+      className="bg-bg-card-bg text-primary border-card-border flex cursor-pointer items-center justify-center rounded-md border py-1 pr-2 pl-1 transition-all duration-150 hover:bg-(--primary-from) active:scale-110"
     >
       {icon && <Image src={icon} alt="Play" width={width} height={height} />}
       {children}

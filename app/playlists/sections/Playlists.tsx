@@ -52,9 +52,10 @@ function PlaylistsSection({ Playlists }: Playlists) {
         return (
           <PlaylistCard
             key={id}
+            id={id}
             banner={banner}
             name={name}
-            tracks={totalSongs}
+            totalSongs={totalSongs}
           />
         );
       })}

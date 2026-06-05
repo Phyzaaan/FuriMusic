@@ -36,7 +36,7 @@ export async function loadMoreSongs({
         url, 
         banner, 
         duration,
-        song_artists (Artists(name))
+        song_artists (Artists(name, id))
       `)
     .order("id", { ascending: true })
     .range(from, to);
@@ -56,17 +56,15 @@ export async function loadMoreSongs({
         banner: song.banner,
         duration: song.duration,
         // I dont really understand this peice of code!!! I do know it uses flatMap and checks if the Artists is an array or a object. if its and array it maps over it if its not array it just gram the name. if its neither is just returns "Uknow Artist"
-        artists: (song.song_artists as { Artists: unknown }[] || []).flatMap((sa) => {
-          const data = sa.Artists;
-          // 1. If it's a real array, map it normally
-          if (Array.isArray(data)) {
-            return data.map((a) => a.name || "Unknown Artist");
+        artists: song.song_artists.flatMap((sa) => {
+          const artistData = sa.Artists;
+          if (Array.isArray(artistData)) {
+            return artistData.map((a) => ({ id: a.id, name: a.name }));
           }
-          // 2. If it's just a single object, wrap it in an array so flatMap can handle it
-          if (data && typeof data === "object" && "name" in data) {
-            return [(data as { name: string }).name || "Unknown Artist"];
+          if (artistData && typeof artistData === "object") {
+            return [{ id: (artistData as { id: number }).id, name: (artistData as { name: string }).name }];
           }
-          return ["Unknown Artist"];
+          return [{ id: 0, name: "Unknown Artist" }];
         })
       };
     });

@@ -34,9 +34,10 @@ export function PlaylistsSection({ Playlists }: playlistProps) {
           return (
             <PlaylistCard
               key={playlist.id}
+              id={playlist.id}
               banner={playlist.banner}
               name={playlist.name}
-              tracks={playlist.totalSongs}
+              totalSongs={playlist.totalSongs}
             />
           );
         })}

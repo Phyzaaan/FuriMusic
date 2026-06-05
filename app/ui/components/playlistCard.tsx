@@ -1,11 +1,8 @@
 import Image from "next/image";
-type props = {
-  name: string;
-  banner: string;
-  tracks: number;
-};
+import Link from "next/link";
+import { Playlist } from "@/app/utils/data/type";
 
-function PlaylistCard({ name, banner, tracks }: props) {
+function PlaylistCard({ name, banner, totalSongs, id }: Playlist) {
   return (
     <div className="group hover:border-card-border w-48 flex flex-col shrink-0 snap-start items-center justify-center gap-2 rounded-lg border border-transparent p-2">
       <div className="relative w-full h-40 overflow-hidden rounded-lg flex justify-end items-end">
@@ -25,10 +22,10 @@ function PlaylistCard({ name, banner, tracks }: props) {
           className="invisible bg-card-bg rounded-2xl m-1 scale-70 transform transition-all duration-200 group-hover:visible group-hover:scale-100"
         />
       </div>
-      <div className="w-full px-1">
+      <Link href={`/playlists/${id}`} className="w-full px-1">
         <h3 className="truncate text-xl font-medium">{name}</h3>
-        <p className="text-secondary text-[15px]">{tracks} Songs</p>
-      </div>
+        <p className="text-secondary text-[15px]">{totalSongs} Songs</p>
+      </Link>
     </div>
   );
 }

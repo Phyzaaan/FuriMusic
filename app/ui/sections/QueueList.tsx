@@ -37,7 +37,6 @@ function QueueList({ showPlaylist, setShowPlaylist }: Props) {
               duration={song.duration}
               banner={song.banner}
               url={song.url}
-              lyrics={song.lyrics}
             />
           ))}
         </ul>

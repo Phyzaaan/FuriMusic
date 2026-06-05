@@ -52,6 +52,7 @@ function ArtistsSection({ Artists }: artistProps) {
         return (
           <ArtistCard
             key={id}
+            id={id}
             banner={banner}
             name={name}
           />

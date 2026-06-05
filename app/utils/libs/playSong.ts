@@ -27,7 +27,7 @@ export function loadSong(currTrack: Song, play: boolean = false) {
     if ("mediaSession" in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: currTrack.name,
-        artist: formatArtists(currTrack.artists),
+        artist: formatArtists(currTrack.artists.map(artist => artist.name)),
         album: "Furi Album",
         artwork: [
           {

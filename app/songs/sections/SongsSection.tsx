@@ -72,7 +72,6 @@ export default function SongsSection({ songs }: SongsSectionProps) {
             duration={song.duration}
             banner={song.banner}
             url={song.url}
-            lyrics={song.lyrics}
             handleQueue={handleQueue}
           />
         );
