@@ -88,7 +88,7 @@ export default function MusicPlayer() {
     <>
       {/* Full Screen Player Pop-up */}
       <div
-        className={`bg-card-bg border-card-border fixed bottom-0 z-10 flex max-h-[calc(100vh-80px)] w-full max-w-150 min-w-xs flex-col items-center overflow-hidden rounded-lg border px-2 py-2 shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300 ease-in-out ${showFullPlayer ? "bottom-0" : "bottom-[-110%]"
+        className={`bg-card-bg border-card-border fixed bottom-0 z-10 gap-1 flex max-h-[calc(100vh-81px)] w-full max-w-130 min-w-xs flex-col items-center overflow-hidden rounded-lg border px-2 py-2 shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300 ease-in-out ${showFullPlayer ? "bottom-0" : "bottom-[-110%]"
           }`}
       >
         {/* Top Header */}
@@ -120,7 +120,7 @@ export default function MusicPlayer() {
           </div>
         )}
         {/* Bg Blur */}
-        <div className="absolute top-12 -z-10 w-full aspect-square overflow-hidden rounded-lg blur-2xl">
+        <div className="absolute top-8 -z-10 w-full aspect-square overflow-hidden rounded-lg blur-2xl">
           {currTrack && (
             <Image
               src={currTrack.banner}
@@ -140,7 +140,7 @@ export default function MusicPlayer() {
 
 
         {/* Song Details */}
-        <div className="mb-4 flex w-full flex-col items-center justify-between">
+        <div className="mb-4 flex w-full flex-col items-center justify-between gap-2">
           <div className="mx-2 mb-4 w-full">
             <h1 className="mb-1 truncate text-3xl font-bold">
               {currTrack?.name || "No Song Selected"}
@@ -161,17 +161,11 @@ export default function MusicPlayer() {
               onClick={() => setFav(!isFav)}
               icon={`/icons/favorite.svg`}
             />
-
-            {/* Save To Playlist Button  */}
-            {/* <PrimaryBtn
-              onClick={() => setShowSavePlaylist(!showSavePlaylist)}
-              icon={`/icons/${showSavePlaylist ? "close" : "bookmark_add"}.svg`}
-            /> */}
           </div>
         </div>
 
         {/* Seekbar Area */}
-        <div className="group relative mb-4 flex min-h-10 w-full flex-col items-center justify-center select-none">
+        <div className="group relative mb-4 flex w-full min-h-2 flex-col items-center justify-center select-none">
           <div
             onMouseDown={dragStart}
             onMouseEnter={() => setShowHover(true)}
@@ -195,22 +189,21 @@ export default function MusicPlayer() {
             />
             <div
               style={{
-                left: `${hoverPos}%`,
-                opacity: `${showHover ? 1 : 0}`,
+                left: `${hoverPos}%`
               }}
-              className="bg-card-bg text-primary absolute bottom-4 -translate-x-4 rounded-md px-1 text-center transition-opacity duration-50"
+              className={`bg-card-bg text-primary absolute bottom-4 -translate-x-4 ${showHover ? "opacity-100 translate-y-0": "opacity-0 translate-y-4"} rounded-md px-1 text-center transition-transform duration-50`}
             >
               {formatTime(hoverTime)}
             </div>
           </div>
-          <div className="absolute bottom-0 flex w-full justify-between px-1 text-sm opacity-60">
-            <span>{formatTime(currTime)}</span>
-            <span>{formatTime(duration)}</span>
-          </div>
+        </div>
+        <div className="flex w-full justify-between px-1 text-sm opacity-60">
+          <span>{formatTime(currTime)}</span>
+          <span>{formatTime(duration)}</span>
         </div>
 
         {/* Controls */}
-        <div className="my-2 flex w-full items-center justify-between px-2">
+        <div className="mb-2 flex w-full items-center justify-between px-2">
 
           {/* Play / Repeat Button */}
           <PrimaryBtn

@@ -1,7 +1,7 @@
 'use client';
 import { useRef } from "react";
 import PlaylistCard from "../components/PlaylistCard";
-import TitleBar from "../components/title";
+import TitleBar from "../components/Title";
 
 type playlistProps = {
   Playlists: {
@@ -28,19 +28,20 @@ export function PlaylistsSection({ Playlists }: playlistProps) {
       </TitleBar>
       <div
         ref={scrollContainerRef}
-        className="no-scrollbar flex min-h-52 shrink-0 max-w-[calc(100%-16px)] mx-auto snap-x snap-mandatory gap-2 overflow-x-auto px-2 py-1"
-      >
-        {Playlists.map((playlist) => {
-          return (
-            <PlaylistCard
-              key={playlist.id}
-              id={playlist.id}
-              banner={playlist.banner}
-              name={playlist.name}
-              totalSongs={playlist.totalSongs}
-            />
-          );
-        })}
+        className="no-scrollbar flex shrink-0 max-w-[calc(100%-16px)] mx-auto snap-x snap-mandatory gap-2 overflow-x-auto px-2 py-1"
+      >{Playlists.length > 0 ? (Playlists.map((playlist) => (
+        <PlaylistCard
+          key={playlist.id}
+          id={playlist.id}
+          banner={playlist.banner}
+          name={playlist.name}
+          totalSongs={playlist.totalSongs}
+        />
+      ))
+      ) : (
+        <h1 className="w-full text-center mx-auto my-auto">There is Nothing</h1>
+      )
+        }
       </div>
     </>
   );

@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { playSong, pauseSong, loadSong } from "../../utils/libs/playSong";
 import useMusic from "../../musicProvider";
-import ArtistLink from "./ArtistLink";
+import formatArtists from "@/app/utils/libs/formatArtists";
 import { Song } from "../../utils/data/type";
 
 interface SongsCardProps extends Song {
@@ -66,7 +66,9 @@ export default function SongsCard({
         <h3 className="text-primary w-full truncate text-[16px] font-medium">
           {name}
         </h3>
-        <ArtistLink artists={artists} />
+        <p className="text-secondary w-full truncate text-[14px]">
+          {formatArtists(artists.map(artist => artist.name))}
+        </p>
       </div>
       <div>
         <span className="text-secondary text-[16px]">

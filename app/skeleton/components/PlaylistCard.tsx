@@ -6,8 +6,8 @@ const PlaylistCardSkeleton = () => {
         {/* <div className="absolute left-1/2 top-1/2 h-11 w-11 -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-card-skelet/60" /> */}
       </div>
 
-      <div className="w-full px-1">
-        <div className="h-6 w-4/5 rounded bg-card-skelet mb-2" />
+      <div className="w-full px-1 flex flex-col items-start justify-center gap-2">
+        <div className="h-6 w-4/5 rounded bg-card-skelet" />
         <div className="h-4 w-2/5 rounded bg-card-skelet/70" />
       </div>
     </div>

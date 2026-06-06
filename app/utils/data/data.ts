@@ -1,7 +1,7 @@
 import { createClient } from "../supabase/server";
 import { cookies } from "next/headers";
 
-export async function fetchSongsRange(limit = 12, offset = 0) {
+export async function fetchSongsRange(limit = 12, offset = 0, filter?: string) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
@@ -10,7 +10,7 @@ export async function fetchSongsRange(limit = 12, offset = 0) {
   const from = offset;
   const to = offset + limit - 1;
 
-  const { data: songs, error } = await supabase
+  let query = supabase
     .from("Songs")
     .select(`
       id, 
@@ -19,9 +19,14 @@ export async function fetchSongsRange(limit = 12, offset = 0) {
       banner, 
       duration,
       song_artists(Artists(name, id))
-    `)
-    .order("id", { ascending: true }) // Fast index sorting
+    `).order("name", { ascending: true })
     .range(from, to);
+
+  if (filter && filter.length > 0) {
+    query = query.ilike("name", `%${filter}%`);
+  }
+
+  const { data: songs, error } = await query;
 
   if (error || !songs) {
     console.error("Error fetching songs range:", error);
@@ -48,7 +53,7 @@ export async function fetchSongsRange(limit = 12, offset = 0) {
   }));
 }
 
-export async function fetchPlaylistsRange(limit = 8, offset = 0) {
+export async function fetchPlaylistsRange(limit = 8, offset = 0, filter?: string) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
@@ -56,16 +61,21 @@ export async function fetchPlaylistsRange(limit = 8, offset = 0) {
   const from = offset;
   const to = offset + limit - 1;
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("Playlists")
     .select(`
     id, 
     name, 
     banner, 
     playlist_songs(count)
-  `)
+  `).order("name", { ascending: true })
     .range(from, to);
 
+  if (filter && filter.length > 0) {
+    query = query.ilike("name", `%${filter}%`);
+  }
+
+  const { data, error } = await query;
   if (error || !data) return [];
 
   return data.map((playlist) => {
@@ -81,7 +91,7 @@ export async function fetchPlaylistsRange(limit = 8, offset = 0) {
   });
 }
 
-export async function fetchArtistsRange(limit = 8, offset = 0) {
+export async function fetchArtistsRange(limit = 8, offset = 0, filter?: string) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
@@ -89,10 +99,18 @@ export async function fetchArtistsRange(limit = 8, offset = 0) {
   const from = offset;
   const to = offset + limit - 1;
 
-  const { error: artistErr, data: artists } = await supabase
+  let query = supabase
     .from("Artists")
     .select("id, name, banner")
+    .order("name", { ascending: true })
     .range(from, to);
+
+  if (filter && filter.length > 0) {
+    console.log(filter);
+    query = query.ilike("name", `%${filter}%`);
+  }
+
+  const { error: artistErr, data: artists } = await query;
 
   if (artistErr || !artists) {
     console.error("Error fetching artists:", artistErr);

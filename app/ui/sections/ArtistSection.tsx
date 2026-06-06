@@ -1,17 +1,17 @@
 'use client';
 import ArtistCard from "../components/ArtistCard";
-import TitleBar from "../components/title";
+import TitleBar from "../components/Title";
 import { useRef } from "react";
 
 type artistProps = {
-  artists: {
+  Artists: {
     id: number;
     name: string;
     banner: string;
   }[];
 };
 
-function ArtistsSection({ artists }: artistProps) {
+function ArtistsSection({ Artists }: artistProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   function handleScroll(left: boolean) {
@@ -28,16 +28,18 @@ function ArtistsSection({ artists }: artistProps) {
       >Artists</TitleBar>
       <div ref={scrollContainerRef}
         className="no-scrollbar flex shrink-0 max-w-[calc(100%-16px)] mx-auto snap-x snap-mandatory gap-2 overflow-x-auto px-2 py-1">
-        {artists.map((artist) => {
-          return (
+        {Artists.length > 0 ?(Artists.map((artist) => (
             <ArtistCard
               key={artist.id}
               id={artist.id}
               banner={artist.banner}
               name={artist.name}
             />
-          );
-        })}
+          )
+          )) : (
+        <h1 className="w-full text-center mx-auto my-auto">There is Nothing</h1>
+      )
+        }
       </div>
     </>
   );

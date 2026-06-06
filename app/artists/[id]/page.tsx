@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { ArtistInfoSkeleton, ArtistBodySkeleton } from "./skeleton/ArtistSkeleton";
+import { ArtistInfoSkeleton } from "@/app/skeleton/sections/Artists";
+import SongsSectionSkeleton from "@/app/skeleton/sections/Songs";
 import { ArtistBody, ArtistInfo } from "./sections/Artist";
 import { fetchArtistInfo, fetchArtistBody } from "@/app/utils/data/data";
 
@@ -24,7 +25,7 @@ export default async function ArtistByIdPage({ params }: Props) {
             <Suspense fallback={<ArtistInfoSkeleton />}>
                 {artist && <ArtistInfo Artist={artist} Songs={songs?.flat() ?? []} />}
             </Suspense>
-            <Suspense fallback={<ArtistBodySkeleton />}>
+            <Suspense fallback={<SongsSectionSkeleton carousel={false} />}>
                 {songs && <ArtistBody Songs={songs.flat()} />}
             </Suspense>
         </main>

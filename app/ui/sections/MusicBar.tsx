@@ -4,8 +4,8 @@ import {
   handlePrevSong,
   handleShuffle,
 } from "../../utils/libs/changeSong";
+import formatArtists from "@/app/utils/libs/formatArtists";
 import formatTime from "../../utils/libs/formatTime";
-import ArtistLink from "../components/ArtistLink";
 import { dragStart, dragEnd, dragging, handleMouseMove } from "../../utils/libs/seek";
 import { PrimaryBtn } from "../components/Buttons";
 import useMusic from "../../musicProvider";
@@ -81,12 +81,13 @@ export default function MusicBar({
       {/* Song Info */}
       <div
         onClick={() => setShowFullPlayer(true)}
-        className="flex w-full max-w-[60%] cursor-pointer flex-col items-center justify-center transition-opacity hover:opacity-90 sm:max-w-[70%]"
-      >
+        className="flex w-full max-w-[60%] cursor-pointer flex-col items-center justify-center transition-opacity hover:opacity-90 sm:max-w-[70%]">
         <h2 className="w-full truncate text-xl font-semibold">
           {currTrack?.name}
         </h2>
-        {currTrack ? <ArtistLink artists={currTrack.artists} /> : "Unknown Artist"}
+        <p className="text-secondary w-full truncate text-[14px]">
+          {currTrack ? formatArtists(currTrack.artists.map(artist => artist.name)) : "Unknown Artist"}
+        </p>
       </div>
 
       {/* Controls */}

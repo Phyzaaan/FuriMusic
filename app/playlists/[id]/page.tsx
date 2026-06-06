@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { PlaylistBody, PlaylistInfo } from "./sections/Playlist";
 import { fetchPlaylistBody, fetchPlaylistInfo } from "@/app/utils/data/data";
-import { PlaylistBodySkeleton, PlaylistInfoSkeleton } from "./skeleton/PlaylistSkeleton";
+import { PlaylistInfoSkeleton } from "@/app/skeleton/sections/Playlists";
+import SongsSectionSkeleton from "@/app/skeleton/sections/Songs";
 
 type Props = {
     params: {
@@ -30,7 +31,7 @@ export default async function PlaylistByIdPage({ params }: Props) {
                     />
                 )}
             </Suspense>
-            <Suspense fallback={<PlaylistBodySkeleton />}>
+            <Suspense fallback={<SongsSectionSkeleton carousel={false} />}>
                 {songs && <PlaylistBody Songs={songs.flat()} />}
             </Suspense>
         </main>

@@ -6,7 +6,7 @@ export default async function ArtistsStream() {
 
     return (
         <>
-            {artists && <ArtistsSection artists={artists} />}
+            {artists && <ArtistsSection Artists={artists} />}
         </>
     );
 }

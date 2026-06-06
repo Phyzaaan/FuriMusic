@@ -42,17 +42,17 @@ function findActiveLineIndex(lines: LyricLine[], t: number): number {
   // If none, return 0.
   if (!lines.length) return -1;
 
-  let lo = 0;
-  let hi = lines.length - 1;
+  let min = 0;
+  let max = lines.length - 1;
   let ans = 0;
 
-  while (lo <= hi) {
-    const mid = Math.floor((lo + hi) / 2);
+  while (min <= max) {
+    const mid = Math.floor((min + max) / 2);
     if (lines[mid].time <= t) {
       ans = mid;
-      lo = mid + 1;
+      min = mid + 1;
     } else {
-      hi = mid - 1;
+      max = mid - 1;
     }
   }
 

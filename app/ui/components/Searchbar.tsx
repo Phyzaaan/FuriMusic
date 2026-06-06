@@ -1,5 +1,6 @@
 'use client';
 import { PrimaryBtn } from "./Buttons";
+import Link from "next/link";
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 
 type props = {
@@ -33,12 +34,14 @@ function Searchbar({ showSearchbar }: props) {
             handleSearch(e.target.value)}
           defaultValue={searchParams.get('query')?.toString()}
         />
-        <PrimaryBtn
-          icon={`/icons/search.svg`}
-          width={24}
-          height={24}
-          className="pr-2"
-        />
+        <Link href={`/search?${searchParams.toString()}`}>
+          <PrimaryBtn
+            icon={`/icons/search.svg`}
+            width={24}
+            height={24}
+            className="pr-2"
+          />
+        </Link>
       </div>
     </div>
   )

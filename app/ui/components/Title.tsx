@@ -1,4 +1,3 @@
-'use client';
 import { PrimaryBtn, SecondaryBtn } from "./Buttons";
 import Link from "next/link";
 
@@ -18,9 +17,7 @@ function TitleBar({ children, link, handleScroll }: titleProps) {
         <PrimaryBtn onClick={() => handleScroll ? handleScroll(false) : ''}
           icon="/icons/arrow_forward.svg" />
         <Link href={link}>
-          <SecondaryBtn
-
-          >View All</SecondaryBtn>
+          <SecondaryBtn>View All</SecondaryBtn>
         </Link>
       </div>
     </div>
