@@ -3,19 +3,17 @@ import TitleBar from "../components/Title";
 import SongsCard from "../components/Songcard";
 import { useRef } from "react";
 import type { Song } from "../../utils/data/type";
-import useMusic from "../../musicProvider";
+import { loadSong } from "@/app/utils/libs/playSong";
+import useMusic from "@/app/musicProvider";
 
 type SongsSectionProps = {
-  songs: Song[];
+  Songs: Song[];
 };
 
-function SongsSection({ songs }: SongsSectionProps) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const { setQueue } = useMusic();
+function SongsSection({ Songs }: SongsSectionProps) {
+  const { setQueue, setCurrTrack } = useMusic();
 
-  function handleQueue() {
-    setQueue(songs);
-  }
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   function handleScroll(left: boolean) {
     scrollContainerRef.current?.scrollBy({
@@ -23,15 +21,22 @@ function SongsSection({ songs }: SongsSectionProps) {
       behavior: "smooth",
     });
   }
+  const handlePlayAll = () => {
+    if (!Songs?.length) return;
+    setQueue(Songs);
+    const first = Songs[0];
+    setCurrTrack(first);
+    loadSong(first, true);
+  };
   return (
     <>
-      <TitleBar link="/songs" handleScroll={handleScroll}>
+      <TitleBar link="/songs" handleScroll={handleScroll} handleQueue={handlePlayAll}>
         Songs
       </TitleBar>
       <div
         ref={scrollContainerRef}
         className="no-scrollbar mx-auto flex shrink-0 w-full max-w-[calc(100%-16px)] snap-x snap-mandatory gap-4 overflow-x-auto px-2 py-2"
-      >{songs.length > 0 ? (songs.reduce<Song[][]>((chunks, song, index) => {
+      >{Songs.length > 0 ? (Songs.reduce<Song[][]>((chunks, song, index) => {
         const chunkIndex = Math.floor(index / 4);
         if (!chunks[chunkIndex]) chunks[chunkIndex] = [];
         chunks[chunkIndex].push(song);
@@ -51,7 +56,6 @@ function SongsSection({ songs }: SongsSectionProps) {
                 duration={song.duration}
                 banner={song.banner}
                 url={song.url}
-                handleQueue={handleQueue}
               />
             ))}
           </div>

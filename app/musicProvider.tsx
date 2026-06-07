@@ -18,6 +18,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const [showSidebar, setShowSidebar] = useState(false);
   const [currTrack, setCurrTrack] = useState<Song | null>(null);
   const [queue, setQueue] = useState<Song[]>([]);
+  const [fav, setFav] = useState<Song[]>([]);
   const [currIndex, setCurrIndex] = useState(0);
   const [isPlaying, setPlaying] = useState(false);
 
@@ -79,6 +80,8 @@ export function MusicProvider({ children }: { children: ReactNode }) {
         setCurrTrack,
         queue,
         setQueue,
+        fav,
+        setFav,
         currIndex,
         setCurrIndex,
         isPlaying,

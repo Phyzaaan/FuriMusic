@@ -2,13 +2,13 @@ import SongsCard from "@/app/ui/components/Songcard";
 import { Song } from "@/app/utils/data/type";
 
 type SongsSectionProps = {
-  songs: Song[];
+  Songs: Song[];
 };
 
-export default function AllSongsSection({ songs }: SongsSectionProps) {
+export default function AllSongsSection({ Songs }: SongsSectionProps) {
   return (
     <div className="no-scrollbar flex w-full flex-col gap-2 px-2 py-1">
-      {songs.length > 0 ? (songs.map((song) => {
+      {Songs.length > 0 ? (Songs.map((song) => {
         return (
           <SongsCard
             key={song.id}

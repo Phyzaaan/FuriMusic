@@ -51,11 +51,6 @@ export function PlaylistInfo({
 }
 
 export function PlaylistBody({ Songs }: { Songs: Song[] }) {
-  const { setQueue } = useMusic();
-
-  const handleQueue = () => {
-    setQueue(Songs);
-  };
   return (
     <div className="no-scrollbar flex w-full flex-col gap-2 px-6 py-4 overflow-y-auto">
       {Songs.map((song) => {
@@ -68,7 +63,6 @@ export function PlaylistBody({ Songs }: { Songs: Song[] }) {
             duration={song.duration}
             banner={song.banner}
             url={song.url}
-            handleQueue={handleQueue}
           />
         );
       })}

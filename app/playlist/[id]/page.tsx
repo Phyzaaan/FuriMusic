@@ -6,9 +6,9 @@ import { PlaylistInfoSkeleton } from "@/app/skeleton/sections/Playlists";
 import SongsSectionSkeleton from "@/app/skeleton/sections/Songs";
 
 type Props = {
-    params: {
+    params: Promise<{
         id: string;
-    };
+    }>;
 };
 
 export default async function PlaylistByIdPage({ params }: Props) {

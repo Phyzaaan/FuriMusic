@@ -11,7 +11,7 @@ export default function ArtistLink({ artists }: ArtistLinkProps) {
                 const isLast = index === artists.length - 1;
                 const isSecondLast = index === artists.length - 2;
                 return (
-                    <Link href={`/artists/${artist.id}`} key={artist.id} onClick={(e) => e.stopPropagation()} className="hover:underline cursor-pointer">
+                    <Link href={`/artist/${artist.id}`} key={artist.id} onClick={(e) => e.stopPropagation()} className="underline cursor-pointer hover:text-blue-500">
                         {isLast ? artist.name : `${artist.name}${isSecondLast ? " & " : ", "}`}
                     </Link>
                 )

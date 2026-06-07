@@ -1,14 +1,27 @@
 import { createClient } from "../supabase/server";
 import { cookies } from "next/headers";
 
-export async function fetchSongsRange(limit = 12, offset = 0, filter?: string) {
+export async function fetchSongsRange(limit = 12, offset = 0, filter?: string, random?: boolean) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
-
   // Calculate the range bounds for Postgres (.range() is inclusive)
-  const from = offset;
-  const to = offset + limit - 1;
+  let from = offset;
+  let to = offset + limit - 1;
+
+  if (random) {
+    const { count, error: countError } = await supabase
+      .from('Songs')
+      .select('id', { count: 'exact', head: true });
+
+    if (countError || !count) return [];
+
+    const maxOffset = Math.max(0, count - limit);
+    const randomOffset = Math.floor(Math.random() * maxOffset);
+
+    from = randomOffset;
+    to = randomOffset + limit - 1;
+  }
 
   let query = supabase
     .from("Songs")
@@ -21,6 +34,7 @@ export async function fetchSongsRange(limit = 12, offset = 0, filter?: string) {
       song_artists(Artists(name, id))
     `).order("name", { ascending: true })
     .range(from, to);
+
 
   if (filter && filter.length > 0) {
     query = query.ilike("name", `%${filter}%`);
@@ -53,13 +67,27 @@ export async function fetchSongsRange(limit = 12, offset = 0, filter?: string) {
   }));
 }
 
-export async function fetchPlaylistsRange(limit = 8, offset = 0, filter?: string) {
+export async function fetchPlaylistsRange(limit = 8, offset = 0, filter?: string, random?: boolean) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
   // Calculate the range bounds for Postgres (.range() is inclusive)
-  const from = offset;
-  const to = offset + limit - 1;
+  let from = offset;
+  let to = offset + limit - 1;
+
+  if (random) {
+    const { count, error: countError } = await supabase
+      .from('Playlists')
+      .select('id', { count: 'exact', head: true });
+
+    if (countError || !count) return [];
+
+    const maxOffset = Math.max(0, count - limit);
+    const randomOffset = Math.floor(Math.random() * maxOffset);
+
+    from = randomOffset;
+    to = randomOffset + limit - 1;
+  }
 
   let query = supabase
     .from("Playlists")

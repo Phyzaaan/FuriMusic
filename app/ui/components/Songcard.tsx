@@ -5,9 +5,6 @@ import useMusic from "../../musicProvider";
 import formatArtists from "@/app/utils/libs/formatArtists";
 import { Song } from "../../utils/data/type";
 
-interface SongsCardProps extends Song {
-  handleQueue?: () => void;
-}
 
 export default function SongsCard({
   id,
@@ -16,9 +13,8 @@ export default function SongsCard({
   duration,
   banner,
   url,
-  handleQueue = () => { },
-}: SongsCardProps) {
-  const { currTrack, setCurrTrack, isPlaying } = useMusic();
+}: Song) {
+  const { currTrack, setCurrTrack, isPlaying, setQueue, queue } = useMusic();
   const currSong = {
     id: id,
     name: name,
@@ -38,8 +34,10 @@ export default function SongsCard({
             playSong();
           }
         } else {
+          if(!queue.find(song => song.id === id)) {
+            setQueue([...queue, currSong])
+          }
           setCurrTrack(currSong);
-          handleQueue();
           loadSong(currSong, true);
         }
       }}

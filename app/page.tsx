@@ -2,10 +2,8 @@ import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import TitleSkeleton from "./skeleton/components/Title";
 import SongsSectionSkeleton from "./skeleton/sections/Songs";
-import ArtistsSectionSkeleton from "./skeleton/sections/Artists";
 import PlaylistsSectionSkeleton from "./skeleton/sections/Playlists";
 const PlaylistsStream = dynamic(() => import("./ui/stream/PlaylistsStream"));
-const ArtistsStream = dynamic(() => import("./ui/stream/ArtistsStream"));
 const SongsStream = dynamic(() => import("./ui/stream/SongsStream"));
 
 export default function Home() {
@@ -26,14 +24,6 @@ export default function Home() {
         </>
       }>
         <SongsStream />
-      </Suspense>
-      <Suspense fallback={
-        <>
-          <TitleSkeleton />
-          <ArtistsSectionSkeleton />
-        </>
-      }>
-        <ArtistsStream />
       </Suspense>
     </main>
   );

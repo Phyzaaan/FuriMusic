@@ -6,9 +6,9 @@ import { ArtistBody, ArtistInfo } from "./sections/Artist";
 import { fetchArtistInfo, fetchArtistBody } from "@/app/utils/data/data";
 
 type Props = {
-    params: {
+    params: Promise<{
         id: number;
-    };
+    }>;
 }
 
 export default async function ArtistByIdPage({ params }: Props) {

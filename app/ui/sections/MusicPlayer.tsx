@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import Image from "next/image";
 import { getAudioInstance, pauseSong, playSong } from "../../utils/libs/playSong";
 import {
@@ -14,13 +14,14 @@ import MusicBar from "./MusicBar";
 import { PrimaryBtn } from "../components/Buttons";
 import QueueList from "./QueueList";
 import useMusic from "../../musicProvider";
-import { LoadLocalStorage, saveToLocalStorage } from "../../utils/libs/localStorage";
+import { LoadLocalStorage, saveToLocalStorage, saveFavToLocalStorage } from "../../utils/libs/localStorage";
 import Lyrics from "./Lyrics";
 
 
 export default function MusicPlayer() {
-  const { currTrack, setCurrTrack, queue, isPlaying } = useMusic();
+  const { currTrack, setCurrTrack, queue, setQueue, isPlaying, setFav, fav } = useMusic();
 
+  const isFav = useMemo(() => currTrack && fav.includes(currTrack), [currTrack, fav])
   const audioInstance = getAudioInstance();
   const lastTimeSave = useRef(0);
 
@@ -29,9 +30,7 @@ export default function MusicPlayer() {
   const [hoverPos, setHoverPos] = useState(0);
   const [hoverTime, setHoverTime] = useState(0);
   const [showHover, setShowHover] = useState(false);
-  const [isFav, setFav] = useState(false);
   const [showPlaylist, setShowPlaylist] = useState(false);
-  const [showSavePlaylist, setShowSavePlaylist] = useState(false);
   const [showLyrics, setShowLyrics] = useState(false);
   const lyricsSongId = currTrack?.id ?? null;
   const [showFullPlayer, setShowFullPlayer] = useState(false);
@@ -39,24 +38,33 @@ export default function MusicPlayer() {
 
   useEffect(() => {
     if (!audioInstance) return;
-    LoadLocalStorage(setCurrTrack, audioInstance, setRepeat);
-  }, [setCurrTrack, audioInstance, setRepeat]);
+    LoadLocalStorage(setCurrTrack, audioInstance, setRepeat, setQueue, setFav);
+  }, [setCurrTrack, audioInstance, setRepeat, setQueue, setFav]);
+  
+  useEffect(() => {
+    if (!fav) return;
+    saveFavToLocalStorage(fav);
+  }, [fav]);
 
   useEffect(() => {
-
-
-    const handleUpdate = () => {
-      if (!audioInstance) return 0;
-      setCurrTime(audioInstance.currentTime);
-    };
-
-
     const handleSave = () => {
       const now = Date.now();
       if (now - lastTimeSave.current >= 900) {
-        saveToLocalStorage(currTime, currTrack, repeat);
+        saveToLocalStorage(currTime, currTrack, repeat, queue);
         lastTimeSave.current = now;
       }
+    };
+
+    audioInstance?.addEventListener("timeupdate", handleSave);
+    return () => {
+      audioInstance?.removeEventListener("timeupdate", handleSave);
+    }
+  }, [currTime, currTrack, repeat, audioInstance, queue]);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      if (!audioInstance) return 0;
+      setCurrTime(audioInstance.currentTime);
     };
 
     const handleLoad = () => {
@@ -72,17 +80,16 @@ export default function MusicPlayer() {
     };
 
     audioInstance?.addEventListener("timeupdate", handleUpdate);
-    audioInstance?.addEventListener("timeupdate", handleSave);
     audioInstance?.addEventListener("loadedmetadata", handleLoad);
     audioInstance?.addEventListener("ended", handleEnded);
 
     return () => {
       audioInstance?.removeEventListener("timeupdate", handleUpdate);
-      audioInstance?.removeEventListener("timeupdate", handleSave);
       audioInstance?.removeEventListener("loadedmetadata", handleLoad);
       audioInstance?.removeEventListener("ended", handleEnded);
     };
-  }, [currTime, audioInstance, currTrack, setCurrTrack, queue, repeat]);
+  }, [audioInstance, currTrack, setCurrTime, setCurrTrack, queue, repeat]);
+
 
   return (
     <>
@@ -97,12 +104,6 @@ export default function MusicPlayer() {
             onClick={() => setShowFullPlayer(false)}
             icon="/icons/arrow_forward.svg"
             className="rotate-90"
-          />
-          <PrimaryBtn
-            onClick={() => setShowSavePlaylist(!showSavePlaylist)}
-            icon={`/icons/${showSavePlaylist ? "close" : "more_vert"}.svg`}
-            width={30}
-            height={28}
           />
         </div>
 
@@ -158,8 +159,15 @@ export default function MusicPlayer() {
 
             {/* Favorite Button  */}
             <PrimaryBtn
-              onClick={() => setFav(!isFav)}
-              icon={`/icons/favorite.svg`}
+              onClick={() => {
+                if (isFav) {
+                  setFav(fav.filter(song => song !== currTrack));
+                  return;
+                }
+                if (currTrack)
+                  setFav([...fav, currTrack])
+              }}
+              icon={`/icons/${isFav ? 'favorite' : 'close'}.svg`}
             />
           </div>
         </div>
@@ -191,7 +199,7 @@ export default function MusicPlayer() {
               style={{
                 left: `${hoverPos}%`
               }}
-              className={`bg-card-bg text-primary absolute bottom-4 -translate-x-4 ${showHover ? "opacity-100 translate-y-0": "opacity-0 translate-y-4"} rounded-md px-1 text-center transition-transform duration-50`}
+              className={`bg-card-bg text-primary absolute bottom-4 -translate-x-4 ${showHover ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"} rounded-md px-1 text-center transition-transform duration-50`}
             >
               {formatTime(hoverTime)}
             </div>
