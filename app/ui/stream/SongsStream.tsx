@@ -6,7 +6,7 @@ export default async function SongsStream() {
 
     return (
         <>
-            {songs && <SongsSection Songs={songs} />}
+            {<SongsSection Songs={songs} />}
         </>
     );
 }

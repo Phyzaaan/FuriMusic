@@ -3,7 +3,7 @@ import Link from "next/link";
 
 type titleProps = {
   children: React.ReactNode;
-  link: string;
+  link?: string;
   handleScroll: (value: boolean) => void;
   handleQueue?: () => void;
 };
@@ -19,7 +19,7 @@ function TitleBar({ children, link, handleScroll, handleQueue }: titleProps) {
           icon="/icons/arrow_forward.svg" />
         {handleQueue ?
           <SecondaryBtn onClick={handleQueue}>Play All</SecondaryBtn>
-          :
+          : link &&
           <Link href={link}>
             <SecondaryBtn>View All</SecondaryBtn>
           </Link>

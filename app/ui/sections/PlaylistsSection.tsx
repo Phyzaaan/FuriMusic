@@ -2,6 +2,7 @@
 import { useRef } from "react";
 import PlaylistCard from "../components/PlaylistCard";
 import TitleBar from "../components/Title";
+import ErrorMsg from "../components/Error";
 
 type playlistProps = {
   Playlists: {
@@ -9,10 +10,11 @@ type playlistProps = {
     name: string;
     banner: string;
     totalSongs: number;
-  }[];
+  }[] | undefined;
+  link?: string;
 };
 
-export function PlaylistsSection({ Playlists }: playlistProps) {
+export function PlaylistsSection({ Playlists, link }: playlistProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   function handleScroll(left: boolean) {
@@ -23,13 +25,13 @@ export function PlaylistsSection({ Playlists }: playlistProps) {
   }
   return (
     <>
-      <TitleBar link="/playlists" handleScroll={handleScroll}>
+      <TitleBar link={link} handleScroll={handleScroll}>
         Playlists
       </TitleBar>
       <div
         ref={scrollContainerRef}
         className="no-scrollbar flex shrink-0 max-w-[calc(100%-16px)] mx-auto snap-x snap-mandatory gap-2 overflow-x-auto px-2 py-1"
-      >{Playlists.length > 0 ? (Playlists.map((playlist) => (
+      >{Playlists && Playlists.length > 0  ? (Playlists.map((playlist) => (
         <PlaylistCard
           key={playlist.id}
           id={playlist.id}
@@ -39,7 +41,7 @@ export function PlaylistsSection({ Playlists }: playlistProps) {
         />
       ))
       ) : (
-        <h1 className="w-full text-center mx-auto my-auto">There is Nothing</h1>
+       <ErrorMsg>There is NOTING!</ErrorMsg>
       )
         }
       </div>

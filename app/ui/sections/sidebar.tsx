@@ -3,10 +3,20 @@ import Image from "next/image";
 import SongsCard from "../components/Songcard";
 import { SecondaryBtn } from "../components/Buttons";
 import useMusic from "../../musicProvider";
+import { loadSong } from "@/app/utils/libs/playSong";
 import NavMenu from "../components/NavMenu";
+import ErrorMsg from "../components/Error";
 
 function Sidebar() {
-  const { showSidebar, fav } = useMusic();
+  const { showSidebar, fav, setQueue, setCurrTrack } = useMusic();
+
+  const handlePlayAll = () => {
+    if (!fav?.length) return;
+    setQueue(fav);
+    const first = fav[0];
+    setCurrTrack(first);
+    loadSong(first, true);
+  };
 
   return (
     <section
@@ -46,12 +56,14 @@ function Sidebar() {
             />
             Favorites
           </h1>
-          <SecondaryBtn>Play All</SecondaryBtn>
+          <SecondaryBtn
+            onClick={handlePlayAll}
+          >Play All</SecondaryBtn>
         </div>
 
         {/* Favorites List */}
         <ul className="my-3 flex min-h-0 w-full flex-1 list-none flex-col items-center justify-start gap-1.5 overflow-y-auto rounded-md px-2 pt-3 pb-[env(safe-area-inset-bottom)]">
-          {fav.map((song) => (
+          {fav.length > 0 ? fav.map((song) => (
             <SongsCard
               key={song.id}
               id={song.id}
@@ -61,7 +73,9 @@ function Sidebar() {
               banner={song.banner}
               url={song.url}
             />
-          ))}
+          )) : (
+            <ErrorMsg>You dont have an Favorites!</ErrorMsg>
+          )}
         </ul>
       </div>
     </section>

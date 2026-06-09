@@ -47,7 +47,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     // Media Session handlers
     if ("mediaSession" in navigator) {
       navigator.mediaSession.setActionHandler("play", playSong);
-      navigator.mediaSession.setActionHandler("pause", playSong);
+      navigator.mediaSession.setActionHandler("pause", pauseSong);
       navigator.mediaSession.setActionHandler("previoustrack", () =>
         handlePrevSong(currTrack, setCurrTrack, queue)
       );

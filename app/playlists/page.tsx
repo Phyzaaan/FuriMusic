@@ -1,7 +1,4 @@
-import dynamic from "next/dynamic";
-import { Suspense } from "react";
-import PlaylistsSectionSkeleton from "../skeleton/sections/Playlists";
-const PlaylistsStream = dynamic(() => import("./stream/PlaylistsStream"))
+import PlaylistsSection from "./sections/Playlists";
 
 export default function Playlist() {
 
@@ -13,9 +10,7 @@ export default function Playlist() {
       </div>
 
       {/* Playlists Section  */}
-      <Suspense fallback={<PlaylistsSectionSkeleton carousel={false} />}>
-      <PlaylistsStream />
-      </Suspense>
+      <PlaylistsSection />
     </main>
   );
 }

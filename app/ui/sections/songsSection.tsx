@@ -5,9 +5,9 @@ import { useRef } from "react";
 import type { Song } from "../../utils/data/type";
 import { loadSong } from "@/app/utils/libs/playSong";
 import useMusic from "@/app/musicProvider";
-
+import ErrorMsg from "../components/Error";
 type SongsSectionProps = {
-  Songs: Song[];
+  Songs: Song[] | undefined;
 };
 
 function SongsSection({ Songs }: SongsSectionProps) {
@@ -30,13 +30,13 @@ function SongsSection({ Songs }: SongsSectionProps) {
   };
   return (
     <>
-      <TitleBar link="/songs" handleScroll={handleScroll} handleQueue={handlePlayAll}>
+      <TitleBar handleScroll={handleScroll} handleQueue={handlePlayAll}>
         Songs
       </TitleBar>
       <div
         ref={scrollContainerRef}
         className="no-scrollbar mx-auto flex shrink-0 w-full max-w-[calc(100%-16px)] snap-x snap-mandatory gap-4 overflow-x-auto px-2 py-2"
-      >{Songs.length > 0 ? (Songs.reduce<Song[][]>((chunks, song, index) => {
+      >{Songs && Songs.length > 0  ? (Songs.reduce<Song[][]>((chunks, song, index) => {
         const chunkIndex = Math.floor(index / 4);
         if (!chunks[chunkIndex]) chunks[chunkIndex] = [];
         chunks[chunkIndex].push(song);
@@ -60,7 +60,7 @@ function SongsSection({ Songs }: SongsSectionProps) {
             ))}
           </div>
         ))) : (
-        <h1 className="w-full text-center mx-auto my-auto">There is Nothing</h1>
+        <ErrorMsg>There is NOTING!</ErrorMsg>
       )
         }
       </div>

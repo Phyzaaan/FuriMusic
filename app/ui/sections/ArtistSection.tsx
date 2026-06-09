@@ -2,16 +2,18 @@
 import ArtistCard from "../components/ArtistCard";
 import TitleBar from "../components/Title";
 import { useRef } from "react";
+import ErrorMsg from "../components/Error";
 
 type artistProps = {
   Artists: {
     id: number;
     name: string;
     banner: string;
-  }[];
+  }[] | undefined;
+  link?: string
 };
 
-function ArtistsSection({ Artists }: artistProps) {
+function ArtistsSection({ Artists, link }: artistProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   function handleScroll(left: boolean) {
@@ -24,11 +26,11 @@ function ArtistsSection({ Artists }: artistProps) {
     <>
       <TitleBar
         handleScroll={handleScroll}
-        link="/artists"
+        link={link}
       >Artists</TitleBar>
-      <div ref={scrollContainerRef}
+      {<div ref={scrollContainerRef}
         className="no-scrollbar flex shrink-0 max-w-[calc(100%-16px)] mx-auto snap-x snap-mandatory gap-2 overflow-x-auto px-2 py-1">
-        {Artists.length > 0 ?(Artists.map((artist) => (
+        {Artists && Artists.length > 0  ? (Artists.map((artist) => (
             <ArtistCard
               key={artist.id}
               id={artist.id}
@@ -37,10 +39,10 @@ function ArtistsSection({ Artists }: artistProps) {
             />
           )
           )) : (
-        <h1 className="w-full text-center mx-auto my-auto">There is Nothing</h1>
+        <ErrorMsg>There is NOTING!</ErrorMsg>
       )
         }
-      </div>
+      </div>}
     </>
   );
 }

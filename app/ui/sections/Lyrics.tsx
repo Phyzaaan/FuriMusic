@@ -1,6 +1,8 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { fetchSongLyrics } from "@/app/utils/data/clientData";
+import { useEffect, useMemo, useRef } from "react";
+import useSWR from "swr";
+import { fetchSongLyrics } from "@/app/utils/data/data";
+
 
 type LyricLine = {
   time: number; // seconds
@@ -65,10 +67,23 @@ type LyricsProps = {
 };
 
 export default function Lyrics({ songId, currTime }: LyricsProps) {
-  const [lyricsText, setLyricsText] = useState<string>("");
-  const [loading, setLoading] = useState(false);
+  const swrOptions = {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    revalidateIfStale: false,
+  };
 
-  const parsed = useMemo(() => parseTimestampedLyrics(lyricsText), [lyricsText]);
+  const { data: lyricsText, isLoading } = useSWR(
+    songId ? ["lyrics", songId] : null,
+    async (_key: readonly [string, number]) => {
+      const [, id] = _key;
+      const text = await fetchSongLyrics(id);
+      return text ?? "";
+    },
+    swrOptions
+  );
+
+  const parsed = useMemo(() => parseTimestampedLyrics(lyricsText ?? ""), [lyricsText]);
 
   const activeIndex = useMemo(() => {
     if (!parsed.length) return -1;
@@ -77,28 +92,6 @@ export default function Lyrics({ songId, currTime }: LyricsProps) {
 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const lineRefs = useRef<Array<HTMLDivElement | null>>([]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function run() {
-      if (!songId) {
-        setLyricsText("");
-        return;
-      }
-
-      setLoading(true);
-      const text = await fetchSongLyrics(songId);
-      if (cancelled) return;
-      setLyricsText(text ?? "");
-      setLoading(false);
-    }
-
-    run();
-    return () => {
-      cancelled = true;
-    };
-  }, [songId]);
 
   useEffect(() => {
     if (activeIndex < 0) return;
@@ -120,7 +113,7 @@ export default function Lyrics({ songId, currTime }: LyricsProps) {
     container.scrollTop += delta;
   }, [activeIndex]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="w-full flex-1 overflow-hidden">
         <div className="text-secondary  px-2 py-6 ">Loading lyrics...</div>
@@ -153,8 +146,8 @@ export default function Lyrics({ songId, currTime }: LyricsProps) {
                 lineRefs.current[idx] = r;
               }}
               className={`px-3 py-1 text-center transition-all duration-150 select-none ${isActive
-                  ? "text-primary font-semibold opacity-100"
-                  : "text-secondary/90 opacity-80"
+                ? "text-primary font-semibold opacity-100"
+                : "text-secondary/90 opacity-80"
                 } ${isActive ? "scale-[1.01]" : "scale-100"}`}
             >
               {line.text}

@@ -21,7 +21,9 @@ import Lyrics from "./Lyrics";
 export default function MusicPlayer() {
   const { currTrack, setCurrTrack, queue, setQueue, isPlaying, setFav, fav } = useMusic();
 
-  const isFav = useMemo(() => currTrack && fav.includes(currTrack), [currTrack, fav])
+  const isFav = useMemo(() => {
+    return currTrack && fav.some(track => track.id === currTrack.id);
+  }, [currTrack, fav]);
   const audioInstance = getAudioInstance();
   const lastTimeSave = useRef(0);
 
@@ -40,7 +42,7 @@ export default function MusicPlayer() {
     if (!audioInstance) return;
     LoadLocalStorage(setCurrTrack, audioInstance, setRepeat, setQueue, setFav);
   }, [setCurrTrack, audioInstance, setRepeat, setQueue, setFav]);
-  
+
   useEffect(() => {
     if (!fav) return;
     saveFavToLocalStorage(fav);
@@ -134,7 +136,7 @@ export default function MusicPlayer() {
         </div>
         {/* Lyrics Pop-up */}
         {showLyrics && (
-          <div className="mb-4 flex w-full h-full flex-col overflow-hidden rounded-md border border-card-border bg-card-bg/70 backdrop-blur-md transition-all duration-200">
+          <div className="mb-4 flex w-full aspect-square flex-col overflow-hidden rounded-md border border-card-border bg-card-bg/70 backdrop-blur-md transition-all duration-200">
             <Lyrics songId={lyricsSongId} currTime={currTime} />
           </div>
         )}
@@ -146,28 +148,29 @@ export default function MusicPlayer() {
             <h1 className="mb-1 truncate text-3xl font-bold">
               {currTrack?.name || "No Song Selected"}
             </h1>
-            {currTrack ? <ArtistLink artists={currTrack.artists} /> : "Unknown Artist"}
+            {currTrack ? <ArtistLink onClick={() => setShowFullPlayer(false)} artists={currTrack.artists} /> : "Unknown Artist"}
           </div>
           <div className="flex w-full items-center justify-between">
             {/* Lyrics Button */}
             <PrimaryBtn
               onClick={() => setShowLyrics(!showLyrics)}
-              icon={`/icons/lyrics.svg`}
+              icon={`/icons/music_note.svg`}
               width={30}
               height={30}
+              className={`border rounded-md p-0.5 ${showLyrics ? 'border-card-border bg-card-bg' : 'border-transparent '}`}
             />
 
             {/* Favorite Button  */}
             <PrimaryBtn
               onClick={() => {
+                if (!currTrack) return;
                 if (isFav) {
-                  setFav(fav.filter(song => song !== currTrack));
+                  setFav(fav.filter(song => (currTrack && song.id !== currTrack.id)));
                   return;
                 }
-                if (currTrack)
-                  setFav([...fav, currTrack])
+                setFav([...fav, currTrack])
               }}
-              icon={`/icons/${isFav ? 'favorite' : 'close'}.svg`}
+              icon={`/icons/${!isFav ? 'heart_plus' : 'heart_minus'}.svg`}
             />
           </div>
         </div>

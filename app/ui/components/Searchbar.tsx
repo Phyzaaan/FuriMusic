@@ -1,7 +1,7 @@
 'use client';
 import { PrimaryBtn } from "./Buttons";
-import Link from "next/link";
-import { useSearchParams, usePathname, useRouter } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useState } from "react";
 
 type props = {
   showSearchbar: boolean,
@@ -9,40 +9,34 @@ type props = {
 
 function Searchbar({ showSearchbar }: props) {
   const searchParams = useSearchParams();
-  const pathname = usePathname();
-  const { replace } = useRouter();
+  const router = useRouter();
+  const [query, setQuery] = useState(searchParams.get('query')?.toString() || "");
 
-  function handleSearch(term: string) {
-    const params = new URLSearchParams(searchParams);
-    if (term) {
-      params.set('query', term);
-    } else {
-      params.delete('query');
-    }
-    replace(`${pathname}?${params.toString()}`);
-  }
+  const handleSubmit = (e: React.SubmitEvent) => {
+    e.preventDefault();
+    if (!query.trim()) return;
+    router.push(`/search?query=${encodeURIComponent(query)}`);
+  };
+
   return (
-    <div
-      className={`bg-card-bg absolute ${showSearchbar ? "top-0" : "-top-full"} flex h-full w-full items-center justify-center transition-all duration-150`}
-    >
-      <div className="bg-dark-bg border-card-border flex w-3/4 items-center justify-between rounded-md border">
+    <div className={`bg-card-bg absolute ${showSearchbar ? "top-0" : "-top-full"} flex h-full w-full items-center justify-center transition-all duration-150`}>
+      <form onSubmit={handleSubmit}
+        className="bg-dark-bg border-card-border flex w-3/4 items-center justify-between rounded-md border">
+        <PrimaryBtn
+          type="submit"
+          icon={`/icons/search.svg`}
+          width={24}
+          height={24}
+          className="pl-2"
+        />
         <input
-          type="text"
+          type="search"
           placeholder="Search song, artist, playlist..."
           className="w-full px-2 py-1 text-lg outline-none"
-          onChange={(e) =>
-            handleSearch(e.target.value)}
-          defaultValue={searchParams.get('query')?.toString()}
+          onChange={(e) => setQuery(e.target.value)}
+          value={query}
         />
-        <Link href={`/search?${searchParams.toString()}`}>
-          <PrimaryBtn
-            icon={`/icons/search.svg`}
-            width={24}
-            height={24}
-            className="pr-2"
-          />
-        </Link>
-      </div>
+      </form>
     </div>
   )
 }

@@ -6,8 +6,8 @@ export default async function SongsStream({ currentType, query }: { currentType:
     const songs = await fetchSongsRange(100, 0, query);
     return (
         <>
-            {(songs && currentType === "all") && <SongsSection Songs={songs} />}
-            {(songs && currentType === "songs") && <AllSongsSection Songs={songs} />}
+            {(currentType === "all") && <SongsSection Songs={songs} />}
+            {(currentType === "songs") && <AllSongsSection Songs={songs} />}
         </>
     );
 }

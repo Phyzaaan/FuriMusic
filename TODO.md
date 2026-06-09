@@ -1,0 +1,4 @@
+- [ ] Convert client-side lyrics fetch in `app/ui/sections/Lyrics.tsx` to use `useSWR` (SWR options as requested).
+- [ ] Add SWR-based client fetching for other stream children where applicable, WITHOUT turning stream server files into client components.
+- [ ] Keep server components as-is for the initial fetch, pass data down to client components, and let `useSWR` handle caching.
+- [ ] Run `npm run lint` and `npm run build` to validate.

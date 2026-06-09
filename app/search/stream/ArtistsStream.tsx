@@ -6,8 +6,8 @@ export default async function ArtistsStream({ currentType, query }: { currentTyp
     const artists = await fetchArtistsRange(100, 0, query);
     return (
         <>
-            {(artists && currentType === "all") && <ArtistsSection Artists={artists} />}
-            {(artists && currentType === "artists") && <AllArtistsSection Artists={artists} />}
+            {(currentType === "all") && <ArtistsSection Artists={artists} />}
+            {(currentType === "artists") && <AllArtistsSection Artists={artists} />}
         </>
     );
 }

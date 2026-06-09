@@ -1,9 +1,7 @@
-import { createClient } from "../supabase/server";
-import { cookies } from "next/headers";
+import { createClient } from "../supabase/client";
 
 export async function fetchSongsRange(limit = 12, offset = 0, filter?: string, random?: boolean) {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   // Calculate the range bounds for Postgres (.range() is inclusive)
   let from = offset;
@@ -14,10 +12,14 @@ export async function fetchSongsRange(limit = 12, offset = 0, filter?: string, r
       .from('Songs')
       .select('id', { count: 'exact', head: true });
 
-    if (countError || !count) return [];
+    if (countError || !count) {
+    console.error("Error fetching songs range:", countError?.details);
+    return;
+  };
 
-    const maxOffset = Math.max(0, count - limit);
-    const randomOffset = Math.floor(Math.random() * maxOffset);
+    const totalChunks = Math.ceil(count / limit);
+    const randomChunk = Math.floor((Math.random() * totalChunks) + 1);
+    const randomOffset = Math.min(count - limit, randomChunk * limit - limit);
 
     from = randomOffset;
     to = randomOffset + limit - 1;
@@ -43,8 +45,8 @@ export async function fetchSongsRange(limit = 12, offset = 0, filter?: string, r
   const { data: songs, error } = await query;
 
   if (error || !songs) {
-    console.error("Error fetching songs range:", error);
-    return [];
+    console.error("Error fetching songs range:", error.details);
+    return;
   }
 
   // Clean up the deeply nested relational data into a flat array of strings
@@ -68,8 +70,7 @@ export async function fetchSongsRange(limit = 12, offset = 0, filter?: string, r
 }
 
 export async function fetchPlaylistsRange(limit = 8, offset = 0, filter?: string, random?: boolean) {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   // Calculate the range bounds for Postgres (.range() is inclusive)
   let from = offset;
@@ -80,10 +81,14 @@ export async function fetchPlaylistsRange(limit = 8, offset = 0, filter?: string
       .from('Playlists')
       .select('id', { count: 'exact', head: true });
 
-    if (countError || !count) return [];
+    if (countError || !count) {
+    console.error("Error fetching songs range:", countError?.details);
+    return;
+  };
 
-    const maxOffset = Math.max(0, count - limit);
-    const randomOffset = Math.floor(Math.random() * maxOffset);
+    const totalChunks = Math.ceil(count / limit);
+    const randomChunk = Math.floor((Math.random() * totalChunks) + 1);
+    const randomOffset = Math.min(count - limit, randomChunk * limit - limit);
 
     from = randomOffset;
     to = randomOffset + limit - 1;
@@ -104,7 +109,10 @@ export async function fetchPlaylistsRange(limit = 8, offset = 0, filter?: string
   }
 
   const { data, error } = await query;
-  if (error || !data) return [];
+  if (error || !data){
+    console.error("Error fetching songs range:", error.details);
+    return;
+  }
 
   return data.map((playlist) => {
     // Extract the count from the nested array object
@@ -119,13 +127,30 @@ export async function fetchPlaylistsRange(limit = 8, offset = 0, filter?: string
   });
 }
 
-export async function fetchArtistsRange(limit = 8, offset = 0, filter?: string) {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
+export async function fetchArtistsRange(limit = 8, offset = 0, filter?: string, random?: boolean) {
+  const supabase = createClient();
 
   // Calculate the range bounds for Postgres (.range() is inclusive)
-  const from = offset;
-  const to = offset + limit - 1;
+  let from = offset;
+  let to = offset + limit - 1;
+
+  if (random) {
+    const { count, error: countError } = await supabase
+      .from('Playlists')
+      .select('id', { count: 'exact', head: true });
+
+    if (countError || !count) {
+    console.error("Error fetching songs range:", countError?.details);
+    return;
+  };
+
+    const totalChunks = Math.ceil(count / limit);
+    const randomChunk = Math.floor((Math.random() * totalChunks) + 1);
+    const randomOffset = Math.min(count - limit, randomChunk * limit - limit);
+
+    from = randomOffset;
+    to = randomOffset + limit - 1;
+  }
 
   let query = supabase
     .from("Artists")
@@ -141,8 +166,8 @@ export async function fetchArtistsRange(limit = 8, offset = 0, filter?: string) 
   const { error: artistErr, data: artists } = await query;
 
   if (artistErr || !artists) {
-    console.error("Error fetching artists:", artistErr);
-    return [];
+    console.error("Error fetching artists:", artistErr.details);
+    return;
   }
 
   return artists.map((artist) => {
@@ -156,16 +181,15 @@ export async function fetchArtistsRange(limit = 8, offset = 0, filter?: string) 
 
 
 export async function fetchPlaylistInfo(id: number) {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const { error, data: playlist } = await supabase.from("Playlists")
-    .select(`id, name, banner, createdBy, playlist_songs(count)`)
+    .select(`id, name, banner, playlist_songs(count)`)
     .eq("id", id)
     .single();
 
   if (error || !playlist) {
-    console.error(error.message);
+    console.error(error.details);
     return;
   }
 
@@ -173,14 +197,12 @@ export async function fetchPlaylistInfo(id: number) {
     id: playlist.id,
     name: playlist.name,
     banner: playlist.banner,
-    createdBy: playlist.createdBy,
     totalSongs: playlist.playlist_songs.flatMap(playlist => playlist.count)[0],
   }
 }
 
 export async function fetchPlaylistBody(id: number) {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const { error, data: playlistSongs } = await supabase.from("playlist_songs")
     .select(`
@@ -196,8 +218,8 @@ export async function fetchPlaylistBody(id: number) {
     .eq("playlist_id", id);
 
   if (error || !playlistSongs) {
-    console.error(error.message);
-    return [];
+    console.error(error.details);
+    return;
   }
 
   return playlistSongs
@@ -225,8 +247,7 @@ export async function fetchPlaylistBody(id: number) {
 }
 
 export async function fetchArtistInfo(id: number) {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const { error, data: artist } = await supabase.from("Artists")
     .select(`id, name, banner, song_artists(count)`)
@@ -234,7 +255,7 @@ export async function fetchArtistInfo(id: number) {
     .single();
 
   if (error || !artist) {
-    console.error(error.message);
+    console.error(error.details);
     return;
   }
 
@@ -248,8 +269,7 @@ export async function fetchArtistInfo(id: number) {
 
 
 export async function fetchArtistBody(id: number) {
-  const cookieStore = await cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
 
   const { error, data: ArtistSongs } = await supabase.from("song_artists")
     .select(`
@@ -264,7 +284,7 @@ export async function fetchArtistBody(id: number) {
     .eq("artist_id", id);
 
   if (error || !ArtistSongs) {
-    console.error(error.message);
+    console.error(error.details);
     return;
   }
 
@@ -290,4 +310,21 @@ export async function fetchArtistBody(id: number) {
         })
       };
     });
+}
+
+export async function fetchSongLyrics(id: number) {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from("Songs")
+    .select("lyrics")
+    .eq("id", id)
+    .single();
+
+  if (error || !data) {
+    console.error("Error fetching song lyrics:", error);
+    return;
+  }
+
+  return typeof data.lyrics === "string" ? data.lyrics : "";
 }

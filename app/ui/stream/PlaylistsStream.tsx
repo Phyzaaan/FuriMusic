@@ -6,7 +6,7 @@ export default async function PlaylistsStream() {
 
     return (
         <>
-            {playlists && <PlaylistsSection Playlists={playlists} />}
+            { <PlaylistsSection Playlists={playlists} link="/playlists"/>}
         </>
     );
 }

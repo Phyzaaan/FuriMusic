@@ -1,9 +1,7 @@
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import { PlaylistBody, PlaylistInfo } from "./sections/Playlist";
+import PlaylistPage from "./sections/Playlist";
 import { fetchPlaylistBody, fetchPlaylistInfo } from "@/app/utils/data/data";
-import { PlaylistInfoSkeleton } from "@/app/skeleton/sections/Playlists";
-import SongsSectionSkeleton from "@/app/skeleton/sections/Songs";
+import ErrorMsg from "@/app/ui/components/Error";
 
 type Props = {
     params: Promise<{
@@ -20,20 +18,10 @@ export default async function PlaylistByIdPage({ params }: Props) {
         fetchPlaylistInfo(id),
         fetchPlaylistBody(id),
     ]);
-
+    if (!playlist || !songs) return <ErrorMsg>404 NOT FOUND</ErrorMsg>;
     return (
         <main className="no-scrollbar flex h-full w-full flex-col overflow-y-auto pt-22 pb-20">
-            <Suspense fallback={<PlaylistInfoSkeleton />}>
-                {playlist && (
-                    <PlaylistInfo
-                        Playlist={playlist}
-                        Songs={songs?.flat() ?? []}
-                    />
-                )}
-            </Suspense>
-            <Suspense fallback={<SongsSectionSkeleton carousel={false} />}>
-                {songs && <PlaylistBody Songs={songs.flat()} />}
-            </Suspense>
+            <PlaylistPage Playlist={playlist} Songs={songs} />
         </main>
     );
 }

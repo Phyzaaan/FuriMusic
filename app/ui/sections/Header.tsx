@@ -14,7 +14,7 @@ function Header() {
         <PrimaryBtn
           onClick={() => setShowSidebar(!showSidebar)}
           icon={`/icons/${showSidebar ? "close" : "menu"}.svg`}
-          className={"2xl:pointer-events-none 2xl:opacity-0"}
+          className={"2xl:pointer-events-none 2xl:opacity-0 relative z-10"}
         />
         <h1 className="bg-primary-gradient bg-clip-text text-4xl font-bold text-transparent">
           Furi Music
