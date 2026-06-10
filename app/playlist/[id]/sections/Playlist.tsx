@@ -26,9 +26,9 @@ export default function PlaylistPage({ Playlist, Songs, }: { Playlist: Playlist;
           height={180}
           className="object-cover rounded-md"
         />
-        <div className="py-4 h-full w-full flex flex-col gap-4 items-start">
+        <div className="py-4 h-full flex flex-col gap-4 items-start overflow-hidden">
           <div>
-            <h2 className="text-xl font-semibold truncate">{Playlist.name}</h2>
+            <h2 className="w-full text-xl font-semibold truncate">{Playlist.name}</h2>
             <p className="text-md text-secondary">
               {Playlist.totalSongs} {Playlist.totalSongs === 1 ? "song" : "songs"}
             </p>

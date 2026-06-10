@@ -328,3 +328,15 @@ export async function fetchSongLyrics(id: number) {
 
   return typeof data.lyrics === "string" ? data.lyrics : "";
 }
+
+export async function uploadSuggestion(url: string): Promise<number> {
+  const supabase = createClient();
+
+  const { error } = await supabase.from("Suggestions").insert({ url });
+  if (error) {
+    console.error(error.details)
+    return 404;
+  }
+
+  return 200;
+}

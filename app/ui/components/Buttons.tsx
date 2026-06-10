@@ -7,6 +7,7 @@ type SecondaryBtnProps = {
   children?: React.ReactNode;
   width?: number;
   height?: number;
+  className?: string;
 };
 
 export function SecondaryBtn({
@@ -15,11 +16,12 @@ export function SecondaryBtn({
   children = "",
   width = 24,
   height = 24,
+  className  = '',
 }: SecondaryBtnProps) {
   return (
     <button
       onClick={onClick}
-      className="bg-bg-card-bg text-primary border-card-border flex cursor-pointer items-center justify-center rounded-md border py-1 pr-2 pl-1 transition-all duration-150 hover:bg-(--primary-from) active:scale-110"
+      className={`bg-bg-card-bg text-primary border-card-border flex cursor-pointer items-center justify-center rounded-md border py-1 pr-2 pl-1 transition-all duration-150 hover:bg-(--primary-from) active:scale-110 ${className}`}
     >
       {icon && <Image src={icon} alt="Play" width={width} height={height} />}
       {children}

@@ -1,4 +1,4 @@
-import { PlaylistInfoSkeleton } from "../skeleton/sections/Playlists";
+import { PlaylistInfoSkeleton } from "../../skeleton/sections/Playlists";
 import SongsSectionSkeleton from "@/app/skeleton/sections/Songs";
 export default function Loading() {
     return (
