@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { uploadSuggestion } from "../utils/data/data";
 import { SecondaryBtn } from "../ui/components/Buttons";
+import { PopUpMsg } from "../ui/components/Error";
 
 export default function Home() {
   const [url, setUrl] = useState("");
@@ -31,11 +32,11 @@ export default function Home() {
         <SecondaryBtn onClick={handleUpload}>Submit</SecondaryBtn>
       </div>
 
-      <div className={`absolute w-110 bg-card-bg p-2 border border-card-border rounded-lg backdrop-blur-sm flex flex-col items-center gap-5 transition-all ${status === null && 'scale-50 opacity-0'}`}>
-        <h1 className="text-center text-xl font-semibold">{status == 200 ? "Thanks for Your Suggestion" : "Oopse! Somting Not Good!"}</h1>
-        <p className="text-center text-lg">{status == 200 ? "I will personally review your song and I will add if I like it..." : "Please try again in a jiffy!"}</p>
-        <SecondaryBtn onClick={() => setStatus(null)} className="w-1/2 text-2xl">OK</SecondaryBtn>
-      </div>
+      <PopUpMsg title={status == 200 ? "Thanks for Your Suggestion" : "Oopse! Somting Not Good!"} 
+        details={status == 200 ? "I will personally review your song and I will add if I like it..." : "Please try again in a jiffy!"}
+        onClick={() => setStatus(null)}
+        show={!!status}
+      />
     </main>
   );
 }

@@ -2,6 +2,8 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import Image from "next/image";
 import { getAudioInstance, pauseSong, playSong } from "../../utils/libs/playSong";
+import useSWR from "swr";
+import { fetchSongLyrics } from "@/app/utils/data/data";
 import {
   handleNextSong,
   handlePrevSong,
@@ -16,14 +18,17 @@ import QueueList from "./QueueList";
 import useMusic from "../../musicProvider";
 import { LoadLocalStorage, saveToLocalStorage, saveFavToLocalStorage } from "../../utils/libs/localStorage";
 import Lyrics from "./Lyrics";
+import SongEditor from "./SongEditor";
+import AddToPlaylistModal from "../components/AddToPlaylistModal";
 
 
 export default function MusicPlayer() {
-  const { currTrack, setCurrTrack, queue, setQueue, isPlaying, setFav, fav } = useMusic();
+  const { currTrack, setCurrTrack, queue, setQueue, isPlaying, setFav, fav, isAdmin } = useMusic();
 
   const isFav = useMemo(() => {
     return currTrack && fav.some(track => track.id === currTrack.id);
   }, [currTrack, fav]);
+
   const audioInstance = getAudioInstance();
   const lastTimeSave = useRef(0);
 
@@ -34,9 +39,25 @@ export default function MusicPlayer() {
   const [showHover, setShowHover] = useState(false);
   const [showPlaylist, setShowPlaylist] = useState(false);
   const [showLyrics, setShowLyrics] = useState(false);
-  const lyricsSongId = currTrack?.id ?? null;
   const [showFullPlayer, setShowFullPlayer] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
+  const [showAddToPlaylist, setShowAddToPlaylist] = useState(false);
   const [repeat, setRepeat] = useState(false);
+
+  const { data: lyricsText, isLoading } = useSWR<string | null>(
+    currTrack?.id ? ["lyrics", currTrack.id] : null,
+    async ([, id]: [string, number]) => {
+      const lyrics = await fetchSongLyrics(id);
+      return lyrics ?? null;
+    },
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      revalidateIfStale: false,
+    }
+  );
+
+  const activeLyrics = lyricsText ?? currTrack?.lyrics;
 
   useEffect(() => {
     if (!audioInstance) return;
@@ -92,7 +113,6 @@ export default function MusicPlayer() {
     };
   }, [audioInstance, currTrack, setCurrTime, setCurrTrack, queue, repeat]);
 
-
   return (
     <>
       {/* Full Screen Player Pop-up */}
@@ -107,37 +127,46 @@ export default function MusicPlayer() {
             icon="/icons/arrow_forward.svg"
             className="rotate-90"
           />
+          {isAdmin &&
+            <PrimaryBtn icon="/icons/edit.svg" onClick={() => setShowEditor(true)} width={24} height={24} />
+          }
         </div>
 
+        {currTrack && (
+          <div className="relative mb-4 flex w-full aspect-square min-h-0 items-center justify-center">
 
-        {/* Album Art */}
-        {(currTrack && !showLyrics) && (
-          < div className="relative mb-4 aspect-square w-full overflow-hidden rounded-lg">
-            <Image
-              src={currTrack.banner}
-              alt={currTrack.name}
-              fill
-              sizes="576"
-              className="object-cover"
-            />
-          </div>
-        )}
-        {/* Bg Blur */}
-        <div className="absolute top-8 -z-10 w-full aspect-square overflow-hidden rounded-lg blur-2xl">
-          {currTrack && (
-            <Image
-              src={currTrack.banner}
-              alt={currTrack.name}
-              fill
-              sizes="576"
-              className="object-cover"
-            />
-          )}
-        </div>
-        {/* Lyrics Pop-up */}
-        {showLyrics && (
-          <div className="mb-4 flex w-full aspect-square flex-col overflow-hidden rounded-md border border-card-border bg-card-bg/70 backdrop-blur-md transition-all duration-200">
-            <Lyrics songId={lyricsSongId} currTime={currTime} />
+            {/* Bg Glow */}
+            <div className="absolute inset-0 -z-10 scale-110 blur-xl saturate-150">
+              <Image
+                src={currTrack.banner}
+                alt={currTrack.name}
+                fill
+                sizes="576"
+                className="object-cover rounded-lg"
+              />
+            </div>
+
+            {/* Toggle: Album Art OR Lyrics */}
+            {!showLyrics ? (
+              <div className="relative z-10 h-full w-full overflow-hidden rounded-lg">
+                <Image
+                  src={currTrack.banner}
+                  alt={currTrack.name}
+                  fill
+                  sizes="576"
+                  className="object-cover"
+                />
+              </div>
+            ) : (
+              <div className="relative z-10 flex h-full w-full flex-col overflow-hidden rounded-md border border-card-border bg-card-bg/70 backdrop-blur-md transition-all duration-200">
+                {isLoading && (
+                  <div className="flex-1 w-full overflow-hidden">
+                    <div className="px-2 py-6 text-secondary">Loading lyrics...</div>
+                  </div>
+                )}
+                <Lyrics lyricsText={activeLyrics} currTime={currTime} />
+              </div>
+            )}
           </div>
         )}
 
@@ -160,6 +189,16 @@ export default function MusicPlayer() {
               className={`border rounded-md p-0.5 ${showLyrics ? 'border-card-border bg-card-bg' : 'border-transparent '}`}
             />
 
+            {/* Add To Playlist */}
+            <PrimaryBtn
+              onClick={() => setShowAddToPlaylist(true)}
+              icon={`/icons/playlist_add.svg`}
+              width={30}
+              height={30}
+              className={`border rounded-md p-0.5 ${showLyrics ? 'border-card-border bg-card-bg' : 'border-transparent '}`}
+            />
+
+
             {/* Favorite Button  */}
             <PrimaryBtn
               onClick={() => {
@@ -174,6 +213,15 @@ export default function MusicPlayer() {
             />
           </div>
         </div>
+
+        {/* Add to Playlist PopUp */}
+        {(isAdmin && currTrack) && (
+          <AddToPlaylistModal
+            show={showAddToPlaylist}
+            setShow={setShowAddToPlaylist}
+            songId={currTrack.id}
+          />
+        )}
 
         {/* Seekbar Area */}
         <div className="group relative mb-4 flex w-full min-h-2 flex-col items-center justify-center select-none">
@@ -268,6 +316,14 @@ export default function MusicPlayer() {
         </div>
       </div >
 
+      {currTrack && (
+        <SongEditor
+          key={currTrack.id}
+          Song={{ ...currTrack, lyrics: activeLyrics }}
+          showEditor={showEditor}
+          setShowEditor={setShowEditor}
+        />
+      )}
       {/* Mini Music Bar */}
       < MusicBar
         currTime={currTime}

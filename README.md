@@ -32,14 +32,17 @@ The home page includes several main sections:
 - **Artists:** A horizontal row showcasing featured artists.
 
 ## Songs
+
 - Users can suggest me songs.
 - Songs will be added if I approve.
 - Added Songs may apper on Home page.
 - Playlists support content filtering to help users find songs quickly.
 
 ### Songs Suggestion
+
 Songs suggestion will have a feild for importing it from the other music player apps.
 It will also have an edit option which will have following feilds.
+
 - Title
 - Image Banner
 - Artist Selector
@@ -47,6 +50,7 @@ It will also have an edit option which will have following feilds.
 - Lyrics
 
 ### Songs Page
+
 Songs page will be a page where current playing song will be displayed.
 
 ## Lyrics Support
@@ -64,8 +68,9 @@ Songs page will be a page where current playing song will be displayed.
 ### Playlist Creation
 
 Playlist creator will have following feilds:
+
 - Import playlist
-- Title 
+- Title
 - Image Banner
 
 ### Playlist Page
@@ -83,6 +88,7 @@ Playlist creator will have following feilds:
 ### Artist Creation
 
 Artist creator will have following feilds:
+
 - Artist Name
 - Artist Image
 
@@ -97,13 +103,26 @@ Artist creator will have following feilds:
 - Account creation is not required for playlist creation and song uploads.
 
 ## Library
+
 Here is where all the user's created playlists and favorite songs will be displayed
 It will contain:
+
 - **My Favoriets**: User's favorite songs.
 - **Playlists**: User created playlists.
 
 ## About Me
+
 This is is where all the information about me and the music player is shown. Like:
+
 - My perosnal info and socials
 - technologizes used for creating this music app.
 - Other stuff like copyrights etc.
+
+## Clean Up Funtion
+
+Run this commad for clean up!
+
+```
+curl -i --request POST 'https://omdzngdkqxzjgodfrjlf.supabase.co/functions/v1/clean-up' \
+  --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tZHpuZ2RrcXh6amdvZGZyamxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MDQxNTYsImV4cCI6MjA5NTI4MDE1Nn0.pWeeLGdCya__TCzq-XwhqovF749v9SroUNLh9s-JoCg'
+```

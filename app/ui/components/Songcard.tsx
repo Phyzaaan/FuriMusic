@@ -5,7 +5,6 @@ import useMusic from "../../musicProvider";
 import formatArtists from "@/app/utils/libs/formatArtists";
 import { Song } from "../../utils/data/type";
 
-
 export default function SongsCard({
   id,
   name,
@@ -34,7 +33,7 @@ export default function SongsCard({
             playSong();
           }
         } else {
-          if(!queue.find(song => song.id === id)) {
+          if (!queue.find(song => song.id === id)) {
             setQueue([...queue, currSong])
           }
           setCurrTrack(currSong);
@@ -68,11 +67,9 @@ export default function SongsCard({
           {formatArtists(artists.map(artist => artist.name))}
         </p>
       </div>
-      <div>
-        <span className="text-secondary text-[16px]">
-          {isPlaying && currTrack?.id == id ? "Playing" : duration}
-        </span>
-      </div>
+      <span className="text-secondary text-[16px]">
+        {isPlaying && currTrack?.id == id ? "Playing" : duration}
+      </span>
     </li>
   );
 }

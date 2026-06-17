@@ -1,12 +1,9 @@
 "use client";
 import { useEffect, useMemo, useRef } from "react";
-import useSWR from "swr";
-import { fetchSongLyrics } from "@/app/utils/data/data";
-
 
 type LyricLine = {
   time: number; // seconds
-  text: string;
+  text: string | null | undefined;
 };
 
 function parseTimestampedLyrics(lyricsText: string): LyricLine[] {
@@ -62,26 +59,11 @@ function findActiveLineIndex(lines: LyricLine[], t: number): number {
 }
 
 type LyricsProps = {
-  songId: number | null;
   currTime: number;
+  lyricsText: string | null | undefined;
 };
 
-export default function Lyrics({ songId, currTime }: LyricsProps) {
-  const swrOptions = {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-    revalidateIfStale: false,
-  };
-
-  const { data: lyricsText, isLoading } = useSWR(
-    songId ? ["lyrics", songId] : null,
-    async (_key: readonly [string, number]) => {
-      const [, id] = _key;
-      const text = await fetchSongLyrics(id);
-      return text ?? "";
-    },
-    swrOptions
-  );
+export default function Lyrics({ currTime, lyricsText }: LyricsProps) {
 
   const parsed = useMemo(() => parseTimestampedLyrics(lyricsText ?? ""), [lyricsText]);
 
@@ -113,14 +95,6 @@ export default function Lyrics({ songId, currTime }: LyricsProps) {
     container.scrollTop += delta;
   }, [activeIndex]);
 
-  if (isLoading) {
-    return (
-      <div className="w-full flex-1 overflow-hidden">
-        <div className="text-secondary  px-2 py-6 ">Loading lyrics...</div>
-      </div>
-    );
-  }
-
   if (!lyricsText || !parsed.length) {
     return (
       <div className="w-full flex-1 overflow-hidden ">
@@ -128,6 +102,7 @@ export default function Lyrics({ songId, currTime }: LyricsProps) {
       </div>
     );
   }
+
 
   return (
     <div

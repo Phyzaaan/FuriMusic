@@ -8,19 +8,19 @@ import {
 } from "react";
 import { getAudioInstance, pauseSong, playSong } from "./utils/libs/playSong";
 import { handleNextSong, handlePrevSong } from "./utils/libs/changeSong";
-
 import { Song } from "./utils/data/type";
 import { MusicContextType } from "./utils/data/type";
 
 const MusicContext = createContext<MusicContextType | null>(null);
 
-export function MusicProvider({ children }: { children: ReactNode }) {
+export function MusicProvider({ children, initialAdmin }: { children: ReactNode, initialAdmin: boolean }) {
   const [showSidebar, setShowSidebar] = useState(false);
   const [currTrack, setCurrTrack] = useState<Song | null>(null);
   const [queue, setQueue] = useState<Song[]>([]);
   const [fav, setFav] = useState<Song[]>([]);
   const [currIndex, setCurrIndex] = useState(0);
   const [isPlaying, setPlaying] = useState(false);
+  const [isAdmin] = useState(initialAdmin);
 
   useEffect(() => {
     const audio = getAudioInstance();
@@ -33,6 +33,17 @@ export function MusicProvider({ children }: { children: ReactNode }) {
 
     // Spacebar listener function
     const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+
+      // Guard against typing in inputs/textareas
+      if (
+        target?.tagName === 'INPUT' ||
+        target?.tagName === 'TEXTAREA' ||
+        target?.isContentEditable
+      ) {
+        return;
+      }
+      
       if (e.code === "Space" && document.activeElement?.tagName !== "INPUT") {
         e.preventDefault();
         if (audio.paused) {
@@ -86,6 +97,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
         setCurrIndex,
         isPlaying,
         setPlaying,
+        isAdmin,
       }}
     >
       <>{children}</>

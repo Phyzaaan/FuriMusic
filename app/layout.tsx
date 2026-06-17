@@ -5,8 +5,9 @@ import { Roboto } from "next/font/google";
 
 import { MusicProvider } from "./musicProvider";
 import Header from "./ui/sections/Header";
-import Sidebar from "./ui/sections/sidebar";
+import Sidebar from "./ui/sections/Sidebar";
 import MusicPlayer from "./ui/sections/MusicPlayer";
+import { headers } from "next/headers";
 
 const roboto = Roboto({
   weight: "400",
@@ -41,15 +42,17 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headerList = await headers();
+  const isAdmin = headerList.get("x-is-admin") === "true";
   return (
     <html lang="en" className={`${roboto.className} h-full w-full overflow-hidden`}>
       <body className="bg-dark-bg text-primary flex h-full w-full flex-col items-center justify-center overflow-hidden">
-        <MusicProvider>
+        <MusicProvider initialAdmin={isAdmin}>
           <Header />
           <Sidebar />
           <section className="absolute w-full h-full flex items-start justify-center overflow-hidden lg:left-0 lg:max-w-[60%] 2xl:left-auto 2xl:max-w-[40%]">

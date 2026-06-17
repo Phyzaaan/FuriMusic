@@ -5,7 +5,7 @@ export type Song = {
   banner: string;
   duration: string;
   artists: { id: number; name: string }[];
-  lyrics?: string | null;
+  lyrics?: string | null | undefined;
 };
 
 export type Playlist = {
@@ -31,7 +31,8 @@ export type MusicContextType = {
   fav: Song[];
   setFav: (fav: Song[]) => void;
   currIndex: number;
-  setCurrIndex: (index: number) => void;
+  setCurrIndex: (value: number) => void;
   isPlaying: boolean;
-  setPlaying: (playing: boolean) => void;
+  setPlaying: (value: boolean) => void;
+  isAdmin: boolean;
 };

@@ -8,7 +8,7 @@ import NavMenu from "../components/NavMenu";
 import ErrorMsg from "../components/Error";
 
 function Sidebar() {
-  const { showSidebar, fav, setQueue, setCurrTrack } = useMusic();
+  const { showSidebar, fav, setQueue, setCurrTrack, isAdmin } = useMusic();
 
   const handlePlayAll = () => {
     if (!fav?.length) return;
@@ -18,29 +18,31 @@ function Sidebar() {
     loadSong(first, true);
   };
 
+  const Links = [
+    {
+      name: "Home",
+      href: "/",
+      icon: "home",
+    },
+    {
+      name: "Playlists",
+      href: "/playlists",
+      icon: "playlist_play",
+    },
+    {
+      name: "Suggest Me",
+      href: "/suggest",
+      icon: "lightbulb"
+    },
+  ]
+  if (isAdmin) Links.pop();
   return (
     <section
       className={`absolute ${showSidebar ? "left-0" : "left-[-110%]"} bg-card-bg border-card-border top-20.25 z-20 flex max-h-[calc(100vh-81px)] h-full w-full max-w-lg flex-1 flex-col items-center justify-start rounded-r-xl border shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300 2xl:bottom-0 2xl:left-0 2xl:max-w-[30%]`}
     >
       {/* Main Navigation Menu */}
       <NavMenu
-        links={[
-          {
-            name: "Home",
-            href: "/",
-            icon: "home",
-          },
-          {
-            name: "Playlists",
-            href: "/playlists",
-            icon: "playlist_play",
-          },
-          {
-            name: "Suggest Me",
-            href: "/suggest",
-            icon: "lightbulb",
-          },
-        ]}
+        links={Links}
       />
 
       {/* Favorites & Playlists Section */}

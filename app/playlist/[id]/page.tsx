@@ -20,7 +20,7 @@ export default async function PlaylistByIdPage({ params }: Props) {
     ]);
     if (!playlist || !songs) return <ErrorMsg>404 NOT FOUND</ErrorMsg>;
     return (
-        <main className="no-scrollbar flex h-full w-full flex-col overflow-y-auto pt-22 pb-20">
+        <main className="no-scrollbar flex h-full w-full flex-col overflow-y-auto pt-22">
             <PlaylistPage Playlist={playlist} Songs={songs} />
         </main>
     );
