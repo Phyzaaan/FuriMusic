@@ -20,6 +20,7 @@ import { LoadLocalStorage, saveToLocalStorage, saveFavToLocalStorage } from "../
 import Lyrics from "./Lyrics";
 import SongEditor from "./SongEditor";
 import AddToPlaylistModal from "../components/AddToPlaylistModal";
+import { prewarmTrack } from "@/app/utils/libs/playerUtils";
 
 
 export default function MusicPlayer() {
@@ -45,7 +46,7 @@ export default function MusicPlayer() {
   const [showFullPlayer, setShowFullPlayer] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [showAddToPlaylist, setShowAddToPlaylist] = useState(false);
-  const [repeat, setRepeat] = useState(false);
+  const [repeat, setRepeat] = useState(true);
 
   const { data: lyricsText, isLoading } = useSWR<string | null>(
     currTrack?.id ? ["lyrics", currTrack.id] : null,
@@ -114,13 +115,33 @@ export default function MusicPlayer() {
     playbackRef.current = { currTrack, queue, repeat };
   }, [currTrack, queue, repeat]);
 
+  // Pre fetch next song
+  useEffect(() => {
+    if (!currTrack || queue.length === 0) return;
+
+    const currIndex = queue.findIndex((song) => song.id === currTrack.id);
+
+    const nextIndex = (currIndex + 1) % queue.length;
+    const nextSong = queue[nextIndex];
+
+    if (nextSong && !nextSong.blobUrl) {
+      prewarmTrack(nextSong).then((localBlobUrl) => {
+        if (localBlobUrl) {
+          nextSong.blobUrl = localBlobUrl;
+        }
+      });
+    }
+  }, [currTrack, queue]);
+
   useEffect(() => {
     if (!audioInstance) return;
 
     const handleEnded = () => {
       const { currTrack: current, queue: currentQueue, repeat: isRepeat } = playbackRef.current;
 
-      if (isRepeat) {
+      const isScreenOff = typeof document !== 'undefined' && document.hidden;
+
+      if (isRepeat || isScreenOff) {
         handleNextSong(current, setCurrTrack, currentQueue);
       } else {
         handleShuffle(setCurrTrack, currentQueue);

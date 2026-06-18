@@ -6,6 +6,7 @@ export type Song = {
   duration: string;
   artists: { id: number; name: string }[];
   lyrics?: string | null | undefined;
+  blobUrl?: string;
 };
 
 export type Playlist = {

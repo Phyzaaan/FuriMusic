@@ -16,11 +16,10 @@ export function loadSong(currTrack: Song, play: boolean = false) {
     return;
   }
 
-  const songUrl = currTrack.url;
+  const songUrl = currTrack.blobUrl || currTrack.url;
 
   if (audioInstance.src !== songUrl) {
     audioInstance.src = songUrl;
-    // audioInstance.load();
     if (play) playSong();
 
     if ("mediaSession" in navigator) {

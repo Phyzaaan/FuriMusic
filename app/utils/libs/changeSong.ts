@@ -9,9 +9,9 @@ export function handleNextSong(
   if (queue.length === 0) return;
   const currIndex = queue.findIndex((song) => song.id === currTrack?.id);
   const nextIndex = (currIndex + 1) % queue.length;
-  setCurrTrack(queue[nextIndex]);
-
   loadSong(queue[nextIndex], true);
+  
+  setCurrTrack(queue[nextIndex]);
 }
 
 export function handlePrevSong(
@@ -22,9 +22,9 @@ export function handlePrevSong(
   if (queue.length === 0) return;
   const currIndex = queue.findIndex((song) => song.id === currTrack?.id);
   const prevIndex = currIndex === 0 ? queue.length - 1 : currIndex - 1;
-  setCurrTrack(queue[prevIndex]);
-
   loadSong(queue[prevIndex], true);
+  
+  setCurrTrack(queue[prevIndex]);
 }
 
 export function handleShuffle(
@@ -33,7 +33,7 @@ export function handleShuffle(
 ) {
   if (queue.length === 0) return;
   const randomIndex = Math.floor(Math.random() * queue.length);
-
   loadSong(queue[randomIndex], true);
+
   setCurrTrack(queue[randomIndex]);
 }
