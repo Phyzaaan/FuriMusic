@@ -99,6 +99,8 @@ export default function SongEditor({ Song, showEditor, setShowEditor }: SongEdit
     };
 
     const handleDelete = async () => {
+        const userConfirmed = window.confirm("Are you sure you want to delete this Song?");
+        if (!userConfirmed) return;
         const res = await deleteItem("Songs", Song.id);
         if (res) window.alert(`${Song.name} is Removed!`);
         else window.alert(`Failed Deleting ${Song.name}`)
