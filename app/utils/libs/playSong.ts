@@ -20,8 +20,7 @@ export function loadSong(currTrack: Song, play: boolean = false) {
 
   if (audioInstance.src !== songUrl) {
     audioInstance.src = songUrl;
-    audioInstance.load();
-
+    // audioInstance.load();
     if (play) playSong();
 
     if ("mediaSession" in navigator) {

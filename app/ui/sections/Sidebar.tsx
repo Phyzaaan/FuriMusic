@@ -30,12 +30,22 @@ function Sidebar() {
       icon: "playlist_play",
     },
     {
+      name: "Artists",
+      href: "/artists",
+      icon: "artist",
+    },
+    {
+      name: "Songs",
+      href: "/songs",
+      icon: "music_note",
+    },
+    {
       name: "Suggest Me",
       href: "/suggest",
       icon: "lightbulb"
     },
   ]
-  if (isAdmin) Links.pop();
+  if (isAdmin) Links.filter(link => link.name !== "Suggest Me");
   return (
     <section
       className={`absolute ${showSidebar ? "left-0" : "left-[-110%]"} bg-card-bg border-card-border top-20.25 z-20 flex max-h-[calc(100vh-81px)] h-full w-full max-w-lg flex-1 flex-col items-center justify-start rounded-r-xl border shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300 2xl:bottom-0 2xl:left-0 2xl:max-w-[30%]`}

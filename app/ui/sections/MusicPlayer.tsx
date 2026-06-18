@@ -29,7 +29,10 @@ export default function MusicPlayer() {
     return currTrack && fav.some(track => track.id === currTrack.id);
   }, [currTrack, fav]);
 
-  const audioInstance = getAudioInstance();
+  const audioInstance = useMemo(() => {
+    return getAudioInstance();
+  }, []);
+
   const lastTimeSave = useRef(0);
 
   const [currTime, setCurrTime] = useState(0.0);
@@ -70,19 +73,22 @@ export default function MusicPlayer() {
   }, [fav]);
 
   useEffect(() => {
+    if (!audioInstance) return;
+
     const handleSave = () => {
       const now = Date.now();
       if (now - lastTimeSave.current >= 900) {
-        saveToLocalStorage(currTime, currTrack, repeat, queue);
+        const time = audioInstance.currentTime ?? 0;
+        saveToLocalStorage(time, currTrack, repeat, queue);
         lastTimeSave.current = now;
       }
     };
 
-    audioInstance?.addEventListener("timeupdate", handleSave);
+    audioInstance.addEventListener("timeupdate", handleSave);
     return () => {
-      audioInstance?.removeEventListener("timeupdate", handleSave);
-    }
-  }, [currTime, currTrack, repeat, audioInstance, queue]);
+      audioInstance.removeEventListener("timeupdate", handleSave);
+    };
+  }, [audioInstance, currTrack, repeat, queue]);
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -94,24 +100,39 @@ export default function MusicPlayer() {
       setDuration(audioInstance ? audioInstance.duration : 0);
     };
 
-    const handleEnded = () => {
-      if (repeat) {
-        handleNextSong(currTrack, setCurrTrack, queue);
-      } else {
-        handleShuffle(setCurrTrack, queue);
-      }
-    };
-
     audioInstance?.addEventListener("timeupdate", handleUpdate);
     audioInstance?.addEventListener("loadedmetadata", handleLoad);
-    audioInstance?.addEventListener("ended", handleEnded);
 
     return () => {
       audioInstance?.removeEventListener("timeupdate", handleUpdate);
       audioInstance?.removeEventListener("loadedmetadata", handleLoad);
-      audioInstance?.removeEventListener("ended", handleEnded);
     };
-  }, [audioInstance, currTrack, setCurrTime, setCurrTrack, queue, repeat]);
+  }, [audioInstance, currTrack, setCurrTime,]);
+
+  const playbackRef = useRef({ currTrack, queue, repeat });
+  useEffect(() => {
+    playbackRef.current = { currTrack, queue, repeat };
+  }, [currTrack, queue, repeat]);
+
+  useEffect(() => {
+    if (!audioInstance) return;
+
+    const handleEnded = () => {
+      const { currTrack: current, queue: currentQueue, repeat: isRepeat } = playbackRef.current;
+
+      if (isRepeat) {
+        handleNextSong(current, setCurrTrack, currentQueue);
+      } else {
+        handleShuffle(setCurrTrack, currentQueue);
+      }
+    };
+
+    audioInstance.addEventListener("ended", handleEnded);
+
+    return () => {
+      audioInstance.removeEventListener("ended", handleEnded);
+    };
+  }, [audioInstance, setCurrTrack]);
 
   return (
     <>
@@ -190,13 +211,15 @@ export default function MusicPlayer() {
             />
 
             {/* Add To Playlist */}
-            <PrimaryBtn
-              onClick={() => setShowAddToPlaylist(true)}
-              icon={`/icons/playlist_add.svg`}
-              width={30}
-              height={30}
-              className={`border rounded-md p-0.5 ${showLyrics ? 'border-card-border bg-card-bg' : 'border-transparent '}`}
-            />
+            {isAdmin &&
+              <PrimaryBtn
+                onClick={() => setShowAddToPlaylist(true)}
+                icon={`/icons/playlist_add.svg`}
+                width={30}
+                height={30}
+                className={`border rounded-md p-0.5 ${showLyrics ? 'border-card-border bg-card-bg' : 'border-transparent '}`}
+              />
+            }
 
 
             {/* Favorite Button  */}

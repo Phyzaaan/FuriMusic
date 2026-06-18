@@ -4,6 +4,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useRef,
   ReactNode,
 } from "react";
 import { getAudioInstance, pauseSong, playSong } from "./utils/libs/playSong";
@@ -21,6 +22,13 @@ export function MusicProvider({ children, initialAdmin }: { children: ReactNode,
   const [currIndex, setCurrIndex] = useState(0);
   const [isPlaying, setPlaying] = useState(false);
   const [isAdmin] = useState(initialAdmin);
+  const currTrackRef = useRef<Song | null>(null);
+  const queueRef = useRef<Song[]>([]);
+
+  useEffect(() => {
+    currTrackRef.current = currTrack;
+    queueRef.current = queue;
+  }, [currTrack, queue]);
 
   useEffect(() => {
     const audio = getAudioInstance();
@@ -35,7 +43,6 @@ export function MusicProvider({ children, initialAdmin }: { children: ReactNode,
     const handleKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
 
-      // Guard against typing in inputs/textareas
       if (
         target?.tagName === 'INPUT' ||
         target?.tagName === 'TEXTAREA' ||
@@ -43,29 +50,29 @@ export function MusicProvider({ children, initialAdmin }: { children: ReactNode,
       ) {
         return;
       }
-      
+
       if (e.code === "Space" && document.activeElement?.tagName !== "INPUT") {
         e.preventDefault();
         if (audio.paused) {
-          playSong()
+          playSong();
         } else {
-          pauseSong()
+          pauseSong();
         }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
 
-    // Media Session handlers
     if ("mediaSession" in navigator) {
       navigator.mediaSession.setActionHandler("play", playSong);
       navigator.mediaSession.setActionHandler("pause", pauseSong);
       navigator.mediaSession.setActionHandler("previoustrack", () =>
-        handlePrevSong(currTrack, setCurrTrack, queue)
+        handlePrevSong(currTrackRef.current, setCurrTrack, queueRef.current)
       );
       navigator.mediaSession.setActionHandler("nexttrack", () =>
-        handleNextSong(currTrack, setCurrTrack, queue)
+        handleNextSong(currTrackRef.current, setCurrTrack, queueRef.current)
       );
     }
+
 
     // CLEANUP EVERYTHING
     return () => {
