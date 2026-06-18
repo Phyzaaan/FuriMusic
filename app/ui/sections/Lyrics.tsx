@@ -97,7 +97,7 @@ export default function Lyrics({ currTime, lyricsText }: LyricsProps) {
 
   if (!lyricsText || !parsed.length) {
     return (
-      <div className="w-full flex-1 overflow-hidden ">
+      <div className="w-full h-full flex jusytify-center flex-1 overflow-hidden ">
         <div className="text-secondary px-2 py-6 ">No lyrics available.</div>
       </div>
     );

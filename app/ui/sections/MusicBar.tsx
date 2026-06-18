@@ -35,7 +35,7 @@ export default function MusicBar({
   return (
     /* Mini Player Sticky Bar */
     <section
-      className={`bg-card-bg border-card-border fixed ${!showFullPlayer && currTrack ? "bottom-0" : "bottom-[-110]"} items-between z-10 flex w-full max-w-150 flex-row justify-center rounded-t-xl border-t border-r border-l px-4 py-1 pt-4 pb-[env(safe-area-inset-bottom)] shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300`}
+      className={`bg-card-bg border-card-border fixed ${!showFullPlayer && currTrack ? "bottom-0" : "bottom-[-110%]"} items-between z-10 flex w-full max-w-150 flex-row justify-center rounded-t-xl border-t border-r border-l px-4 py-1 pt-4 pb-[env(safe-area-inset-bottom)] shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300`}
     >
       {/* Seekbar */}
       <div

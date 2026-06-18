@@ -205,10 +205,10 @@ export async function fetchArtistsRange(
   });
 }
 
-export async function fetchSongById(id: number) {
+export async function fetchSongById(id: number[]) {
   const supabase = createClient();
 
-  const { data: song, error } = await supabase
+  const { data: Song, error } = await supabase
     .from("Songs")
     .select(
       `
@@ -217,20 +217,19 @@ export async function fetchSongById(id: number) {
       url, 
       banner, 
       duration,
-      song_artists(Artists(name, id)),
-      lyrics
+      song_artists(Artists(name, id))
     `,
     )
-    .eq("id", id)
-    .single();
+    .in("id", id);
 
-  if (error || !song) {
+  if (error) {
     console.error("Error fetching song by Id:", error.details);
     return;
   }
+  if (!Song) return;
 
   // Clean up the deeply nested relational data into a flat array of strings
-  return {
+  return Song.map((song) => ({
     id: song.id,
     name: song.name,
     url: song.url,
@@ -251,8 +250,7 @@ export async function fetchSongById(id: number) {
       }
       return [{ id: 0, name: "Unknown Artist" }];
     }),
-    lyrics: song.lyrics,
-  };
+  }));
 }
 
 export async function fetchPlaylistInfo(id: number) {
@@ -463,7 +461,7 @@ export async function uploadFile(
     const { error } = await supabase.storage
       .from(bucket)
       .remove([sanitizedName]);
-      
+
     if (error) {
       console.error(error.message);
       return null;

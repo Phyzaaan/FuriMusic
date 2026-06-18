@@ -16,15 +16,13 @@ import MusicBar from "./MusicBar";
 import { PrimaryBtn } from "../components/Buttons";
 import QueueList from "./QueueList";
 import useMusic from "../../musicProvider";
-import { LoadLocalStorage, saveToLocalStorage, saveFavToLocalStorage } from "../../utils/libs/localStorage";
 import Lyrics from "./Lyrics";
 import SongEditor from "./SongEditor";
 import AddToPlaylistModal from "../components/AddToPlaylistModal";
 import { prewarmTrack } from "@/app/utils/libs/playerUtils";
 
-
 export default function MusicPlayer() {
-  const { currTrack, setCurrTrack, queue, setQueue, isPlaying, setFav, fav, isAdmin } = useMusic();
+  const { currTrack, setCurrTrack, queue, repeat, setRepeat, isPlaying, setFav, fav, isAdmin } = useMusic();
 
   const isFav = useMemo(() => {
     return currTrack && fav.some(track => track.id === currTrack.id);
@@ -33,8 +31,6 @@ export default function MusicPlayer() {
   const audioInstance = useMemo(() => {
     return getAudioInstance();
   }, []);
-
-  const lastTimeSave = useRef(0);
 
   const [currTime, setCurrTime] = useState(0.0);
   const [duration, setDuration] = useState(0);
@@ -46,7 +42,6 @@ export default function MusicPlayer() {
   const [showFullPlayer, setShowFullPlayer] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [showAddToPlaylist, setShowAddToPlaylist] = useState(false);
-  const [repeat, setRepeat] = useState(true);
 
   const { data: lyricsText, isLoading } = useSWR<string | null>(
     currTrack?.id ? ["lyrics", currTrack.id] : null,
@@ -63,33 +58,7 @@ export default function MusicPlayer() {
 
   const activeLyrics = lyricsText ?? currTrack?.lyrics;
 
-  useEffect(() => {
-    if (!audioInstance) return;
-    LoadLocalStorage(setCurrTrack, audioInstance, setRepeat, setQueue, setFav);
-  }, [setCurrTrack, audioInstance, setRepeat, setQueue, setFav]);
-
-  useEffect(() => {
-    if (!fav) return;
-    saveFavToLocalStorage(fav);
-  }, [fav]);
-
-  useEffect(() => {
-    if (!audioInstance) return;
-
-    const handleSave = () => {
-      const now = Date.now();
-      if (now - lastTimeSave.current >= 900) {
-        const time = audioInstance.currentTime ?? 0;
-        saveToLocalStorage(time, currTrack, repeat, queue);
-        lastTimeSave.current = now;
-      }
-    };
-
-    audioInstance.addEventListener("timeupdate", handleSave);
-    return () => {
-      audioInstance.removeEventListener("timeupdate", handleSave);
-    };
-  }, [audioInstance, currTrack, repeat, queue]);
+  
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -159,7 +128,7 @@ export default function MusicPlayer() {
     <>
       {/* Full Screen Player Pop-up */}
       <div
-        className={`bg-card-bg border-card-border fixed bottom-0 z-10 gap-1 flex max-h-[calc(100vh-81px)] w-full max-w-130 min-w-xs flex-col items-center overflow-hidden rounded-lg border px-2 py-2 shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300 ease-in-out ${showFullPlayer ? "bottom-0" : "bottom-[-110%]"
+        className={`bg-card-bg border-card-border fixed z-10 gap-1 flex max-h-[calc(100vh-84px)] w-full max-w-130 min-w-xs flex-col items-center overflow-hidden rounded-lg border px-2 py-2 shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300 ease-in-out ${showFullPlayer ? "top-21 bottom-0" : "top-[110%] bottom-[-110%]"
           }`}
       >
         {/* Top Header */}
@@ -202,7 +171,7 @@ export default function MusicPlayer() {
             ) : (
               <div className="relative z-10 flex h-full w-full flex-col overflow-hidden rounded-md border border-card-border bg-card-bg/70 backdrop-blur-md transition-all duration-200">
                 {isLoading && (
-                  <div className="flex-1 w-full overflow-hidden">
+                  <div className="flex justify-center flex-1 w-full h-full overflow-hidden">
                     <div className="px-2 py-6 text-secondary">Loading lyrics...</div>
                   </div>
                 )}

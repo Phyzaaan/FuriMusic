@@ -29,10 +29,10 @@ export type MusicContextType = {
   setCurrTrack: (track: Song | null) => void;
   queue: Song[];
   setQueue: (queue: Song[]) => void;
+  repeat: boolean;
+  setRepeat: (value: boolean) => void;
   fav: Song[];
   setFav: (fav: Song[]) => void;
-  currIndex: number;
-  setCurrIndex: (value: number) => void;
   isPlaying: boolean;
   setPlaying: (value: boolean) => void;
   isAdmin: boolean;

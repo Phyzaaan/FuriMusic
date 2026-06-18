@@ -6,11 +6,13 @@ import {
   useEffect,
   useRef,
   ReactNode,
+  useMemo,
 } from "react";
 import { getAudioInstance, pauseSong, playSong } from "./utils/libs/playSong";
 import { handleNextSong, handlePrevSong } from "./utils/libs/changeSong";
 import { Song } from "./utils/data/type";
 import { MusicContextType } from "./utils/data/type";
+import { LoadLocalStorage, saveFavToLocalStorage, saveToLocalStorage } from "./utils/libs/localStorage";
 
 const MusicContext = createContext<MusicContextType | null>(null);
 
@@ -19,11 +21,50 @@ export function MusicProvider({ children, initialAdmin }: { children: ReactNode,
   const [currTrack, setCurrTrack] = useState<Song | null>(null);
   const [queue, setQueue] = useState<Song[]>([]);
   const [fav, setFav] = useState<Song[]>([]);
-  const [currIndex, setCurrIndex] = useState(0);
+  const isLoaded = useRef(false);
   const [isPlaying, setPlaying] = useState(false);
   const [isAdmin] = useState(initialAdmin);
   const currTrackRef = useRef<Song | null>(null);
   const queueRef = useRef<Song[]>([]);
+  const [repeat, setRepeat] = useState(true);
+  const lastTimeSave = useRef(0);
+
+  const audio = useMemo(() => {
+    return getAudioInstance();
+  }, []);
+
+  useEffect(() => {
+    async function init() {
+      if (!audio) return;
+      const res = await LoadLocalStorage(setCurrTrack, audio, setRepeat, setQueue, setFav);
+      console.log(res);
+      isLoaded.current = true;
+    }
+    init();
+  }, [setCurrTrack, audio, setRepeat, setQueue, setFav]);
+
+  useEffect(() => {
+    if (!isLoaded.current) return;
+    saveFavToLocalStorage(fav);
+  }, [fav]);
+
+  useEffect(() => {
+    if (!audio || !isLoaded.current) return;
+
+    const handleSave = () => {
+      const now = Date.now();
+      if (now - lastTimeSave.current >= 900) {
+        const time = audio.currentTime ?? 0;
+        saveToLocalStorage(time, currTrack, repeat, queue);
+        lastTimeSave.current = now;
+      }
+    };
+
+    audio.addEventListener("timeupdate", handleSave);
+    return () => {
+      audio.removeEventListener("timeupdate", handleSave);
+    };
+  }, [audio, currTrack, repeat, queue]);
 
   useEffect(() => {
     currTrackRef.current = currTrack;
@@ -31,7 +72,6 @@ export function MusicProvider({ children, initialAdmin }: { children: ReactNode,
   }, [currTrack, queue]);
 
   useEffect(() => {
-    const audio = getAudioInstance();
     if (!audio) return;
 
     // Sync playing state
@@ -87,7 +127,7 @@ export function MusicProvider({ children, initialAdmin }: { children: ReactNode,
         navigator.mediaSession.setActionHandler("nexttrack", null);
       }
     };
-  }, [currTrack, queue]);
+  }, [audio, currTrack, queue]);
 
   return (
     <MusicContext.Provider
@@ -98,10 +138,10 @@ export function MusicProvider({ children, initialAdmin }: { children: ReactNode,
         setCurrTrack,
         queue,
         setQueue,
+        repeat,
+        setRepeat,
         fav,
         setFav,
-        currIndex,
-        setCurrIndex,
         isPlaying,
         setPlaying,
         isAdmin,

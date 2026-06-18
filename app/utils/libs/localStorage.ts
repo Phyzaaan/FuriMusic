@@ -1,5 +1,6 @@
 import { loadSong } from "./playSong";
 import { Song } from "../data/type";
+import { fetchSongById } from "../data/data";
 
 export function saveToLocalStorage(currTime: number | undefined, currSong: Song | null, repeat: boolean, queue: Song[]) {
   if (!currTime || !currSong) return;
@@ -7,7 +8,7 @@ export function saveToLocalStorage(currTime: number | undefined, currSong: Song 
     song: currSong,
     time: currTime,
     repeat: repeat,
-    queue: queue,
+    queue: queue.map(song => song.id),
   };
   try {
     localStorage.setItem("playingSong", JSON.stringify(data));
@@ -16,41 +17,58 @@ export function saveToLocalStorage(currTime: number | undefined, currSong: Song 
   }
 }
 
-export function LoadLocalStorage(
+export async function LoadLocalStorage(
   setCurrTrack: (track: Song | null) => void,
   audioInstance: HTMLMediaElement,
   setRepeat: (value: boolean) => void,
   setQueue: (value: Song[]) => void,
   setFav: (value: Song[]) => void,
 ) {
+  // --- LOAD QUEUE & TRACK ---
   const rawData = localStorage.getItem("playingSong");
-  if (!rawData) return;
-  try {
-    const data = JSON.parse(rawData);
-    if (!data) return;
-    audioInstance.currentTime = data.time;
-    setCurrTrack(data.song);
-    setRepeat(data.repeat);
-    loadSong(data.song);
-    if (data.queue) setQueue(data.queue);
-  } catch (e) {
-    console.error("Opse somthin not good!", e);
+  if (rawData) {
+    try {
+      const data = JSON.parse(rawData);
+      if (data) {
+        audioInstance.currentTime = data.time || 0;
+        setCurrTrack(data.song);
+        setRepeat(data.repeat);
+        loadSong(data.song);
+
+        if (data.queue && data.queue.length > 0) {
+          const queue = await fetchSongById(data.queue);
+          if (queue) setQueue(queue);
+        }
+      }
+    } catch (e) {
+      console.error("Error loading playingSong:", e);
+    }
   }
+
+  // --- LOAD FAVORITES ---
   const rawFav = localStorage.getItem("Favorite");
-  if (!rawFav) return;
-  try {
-    const data = JSON.parse(rawFav);
-    if (!data) return;
-    setFav(data.fav)
-  } catch (e) {
-    console.error("Opse somthin not good!", e);
+  if (rawFav) {
+    try {
+      const data = JSON.parse(rawFav);
+      if (data && data.fav && data.fav.length > 0) {
+        const favSongs = await fetchSongById(data.fav);
+        if (favSongs) {
+          favSongs.sort((a, b) => data.fav.indexOf(a.id) - data.fav.indexOf(b.id));
+          setFav(favSongs);
+        }
+      }
+    } catch (e) {
+      console.error("Error loading favorites:", e);
+    }
   }
+
+  return 200; 
 }
 
 export function saveFavToLocalStorage(fav: Song[]) {
   if (!fav) return;
   const data = {
-    fav: fav,
+    fav: fav.map(song => song.id),
   };
   try {
     localStorage.setItem("Favorite", JSON.stringify(data));
