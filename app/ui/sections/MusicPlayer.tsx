@@ -86,7 +86,9 @@ export default function MusicPlayer() {
 
   // Pre fetch next song
   useEffect(() => {
-    if (!currTrack || queue.length === 0) return;
+    const isScreenOff = typeof document !== 'undefined' && document.hidden;
+    
+    if (!currTrack || queue.length === 0 || !isScreenOff) return;
 
     const currIndex = queue.findIndex((song) => song.id === currTrack.id);
 
