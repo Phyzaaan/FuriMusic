@@ -30,7 +30,6 @@ function AddToPlaylistModal({ show, setShow, songId }: Props) {
   const close = () => {
     setShow(false);
     setQuery("");
-    setSongPlaylistsIds([]);
     setShowPlaylistEditor(false);
   };
 
@@ -71,7 +70,7 @@ function AddToPlaylistModal({ show, setShow, songId }: Props) {
       setSongPlaylistsIds(songPlaylists?.map(id => id) ?? []);
     }
     fetchSongPlaylists();
-  }, [songId])
+  }, [songId, playlists])
 
   if (!show) return null;
 

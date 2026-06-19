@@ -70,7 +70,7 @@ export default function PlaylistEditor({ playlist, showEditor = true, setShowEdi
 
         const userConfirmed = window.confirm("Are you sure you want to delete this Playlist?");
         if (userConfirmed) {
-            const res = await deleteItem("Artists", playlist.id);
+            const res = await deleteItem("Playlists", playlist.id);
             if (res) window.alert(`${playlist.name} is Removed!`);
             else window.alert(`Failed Deleting ${playlist.name}`);
         }
