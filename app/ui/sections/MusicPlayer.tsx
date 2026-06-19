@@ -194,7 +194,7 @@ export default function MusicPlayer() {
             {/* Lyrics Button */}
             <PrimaryBtn
               onClick={() => setShowLyrics(!showLyrics)}
-              icon={`/icons/music_note.svg`}
+              icon={`/icons/lyrics.svg`}
               width={30}
               height={30}
               className={`border rounded-md p-0.5 ${showLyrics ? 'border-card-border bg-card-bg' : 'border-transparent '}`}
