@@ -1,17 +1,37 @@
 "use client";
 import { useState } from "react";
-import { uploadSuggestion } from "../utils/data/data";
+// import { uploadSuggestion } from "../utils/data/data";
 import { SecondaryBtn } from "../ui/components/Buttons";
 import { PopUpMsg } from "../ui/components/Error";
 
 export default function Home() {
   const [url, setUrl] = useState("");
   const [status, setStatus] = useState<number | null>(null);
+  const [loading, setLoading] = useState(false)
 
   async function handleUpload() {
     if (!url) return;
-    const res = await uploadSuggestion(url);
-    setStatus(res);
+    setLoading(true)
+    try {
+      const response = await fetch("/api/fetchSong", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: url }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert(data)
+        console.log(data)
+        setUrl("");
+      } else {
+        alert(data.error || "Something went wrong");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -29,14 +49,14 @@ export default function Home() {
           onChange={(e) => setUrl(e.target.value)}
           value={url}
         />
-        <SecondaryBtn onClick={handleUpload}>Submit</SecondaryBtn>
+        <SecondaryBtn onClick={handleUpload} disabled={loading}>{loading ? "Submiting" : "Submit"}</SecondaryBtn>
       </div>
 
-      <PopUpMsg title={status == 200 ? "Thanks for Your Suggestion" : "Oopse! Somting Not Good!"} 
+      {status !== null && <PopUpMsg title={status == 200 ? "Thanks for Your Suggestion" : "Oopse! Somting Not Good!"} 
         details={status == 200 ? "I will personally review your song and I will add if I like it..." : "Please try again in a jiffy!"}
         onClick={() => setStatus(null)}
         show={!!status}
-      />
+      />}
     </main>
   );
 }

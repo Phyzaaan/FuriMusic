@@ -39,11 +39,11 @@ function Sidebar() {
       href: "/songs",
       icon: "music_note",
     },
-    {
-      name: "Suggest Me",
-      href: "/suggest",
-      icon: "lightbulb"
-    },
+    // {
+    //   name: "Suggest Me",
+    //   href: "/suggest",
+    //   icon: "lightbulb"
+    // },
   ]
   if (isAdmin) Links.filter(link => link.name !== "Suggest Me");
   return (

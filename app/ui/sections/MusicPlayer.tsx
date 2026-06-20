@@ -2,7 +2,6 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import Image from "next/image";
 import { getAudioInstance, pauseSong, playSong } from "../../utils/libs/playSong";
-import useSWR from "swr";
 import { fetchSongLyrics } from "@/app/utils/data/data";
 import {
   handleNextSong,
@@ -42,23 +41,30 @@ export default function MusicPlayer() {
   const [showFullPlayer, setShowFullPlayer] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [showAddToPlaylist, setShowAddToPlaylist] = useState(false);
+  const [isLoading, setLoading] = useState(false);
+  const [lyrics, setLyrics] = useState<string | undefined>(undefined);
 
-  const { data: lyricsText, isLoading } = useSWR<string | null>(
-    currTrack?.id ? ["lyrics", currTrack.id] : null,
-    async ([, id]: [string, number]) => {
-      const lyrics = await fetchSongLyrics(id);
-      return lyrics ?? null;
-    },
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-      revalidateIfStale: false,
-    }
-  );
+  useEffect(() => {
+    if (!currTrack) return;
 
-  const activeLyrics = lyricsText ?? currTrack?.lyrics;
+    let isMounted = true;
 
-  
+    const fetchLyrics = async () => {
+      setLoading(true);
+      const lyricsData = await fetchSongLyrics(currTrack.id);
+
+      if (isMounted) {
+        setLyrics(lyricsData);
+        setLoading(false);
+      }
+    };
+
+    fetchLyrics();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [currTrack]);
 
   useEffect(() => {
     const handleUpdate = () => {
@@ -87,8 +93,10 @@ export default function MusicPlayer() {
   // Pre fetch next song
   useEffect(() => {
     const isScreenOff = typeof document !== 'undefined' && document.hidden;
-    
-    if (!currTrack || queue.length === 0 || !isScreenOff) return;
+
+    const { repeat: isRepeat } = playbackRef.current;
+
+    if (!currTrack || queue.length === 0 || (!isRepeat && !isScreenOff)) return;
 
     const currIndex = queue.findIndex((song) => song.id === currTrack.id);
 
@@ -172,12 +180,13 @@ export default function MusicPlayer() {
               </div>
             ) : (
               <div className="relative z-10 flex h-full w-full flex-col overflow-hidden rounded-md border border-card-border bg-card-bg/70 backdrop-blur-md transition-all duration-200">
-                {isLoading && (
+                {isLoading ? (
                   <div className="flex justify-center flex-1 w-full h-full overflow-hidden">
                     <div className="px-2 py-6 text-secondary">Loading lyrics...</div>
                   </div>
-                )}
-                <Lyrics lyricsText={activeLyrics} currTime={currTime} />
+                ) :
+                  <Lyrics lyricsText={lyrics} currTime={currTime} />
+                }
               </div>
             )}
           </div>
@@ -331,10 +340,10 @@ export default function MusicPlayer() {
         </div>
       </div >
 
-      {currTrack && (
+      {(currTrack && !isLoading) && (
         <SongEditor
           key={currTrack.id}
-          Song={{ ...currTrack, lyrics: activeLyrics }}
+          Song={{ ...currTrack, lyrics }}
           showEditor={showEditor}
           setShowEditor={setShowEditor}
         />

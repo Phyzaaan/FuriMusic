@@ -301,7 +301,7 @@ export async function fetchPlaylistBody(id: number) {
     return;
   }
 
-  return playlistSongs.map((data) => {
+  const songs =  playlistSongs.map((data) => {
     const song = Array.isArray(data.Songs) ? data.Songs[0] : data.Songs;
 
     return {
@@ -327,6 +327,7 @@ export async function fetchPlaylistBody(id: number) {
       }),
     };
   });
+  return songs.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function fetchArtistInfo(id: number) {
@@ -374,9 +375,8 @@ export async function fetchArtistBody(id: number) {
     return;
   }
 
-  return ArtistSongs.map((data) => {
+  const songs = ArtistSongs.map((data) => {
     const song = Array.isArray(data.Songs) ? data.Songs[0] : data.Songs;
-
     return {
       id: song.id,
       name: song.name,
@@ -400,6 +400,7 @@ export async function fetchArtistBody(id: number) {
       }),
     };
   });
+  return songs.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function fetchSongLyrics(id: number) {
