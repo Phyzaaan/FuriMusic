@@ -18,6 +18,9 @@ const roboto = Roboto({
 export const metadata: Metadata = {
   title: "Furi Music",
   description: "This is my full stack music player web app",
+  verification: {
+    google: "RRiyfW24BmcSuk30NgTubki9me8yCvof3RWLi5iYQoI",
+  },
   icons: {
     icon: [
       {

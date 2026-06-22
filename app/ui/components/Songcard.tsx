@@ -4,6 +4,11 @@ import { playSong, pauseSong, loadSong } from "../../utils/libs/playSong";
 import useMusic from "../../musicProvider";
 import formatArtists from "@/app/utils/libs/formatArtists";
 import { Song } from "../../utils/data/type";
+import { SecondaryBtn } from "./Buttons";
+
+interface songProps extends Song {
+  onClick?: (value: number) => void;
+}
 
 export default function SongsCard({
   id,
@@ -12,7 +17,8 @@ export default function SongsCard({
   duration,
   banner,
   url,
-}: Song) {
+  onClick,
+}: songProps) {
   const { currTrack, setCurrTrack, isPlaying, setQueue, queue } = useMusic();
   const currSong = {
     id: id,
@@ -67,9 +73,9 @@ export default function SongsCard({
           {formatArtists(artists.map(artist => artist.name))}
         </p>
       </div>
-      <span className="text-secondary text-[16px]">
+      {onClick ? <SecondaryBtn onClick={() => onClick(id)} icon="/icons/edit.svg" /> : <span className="text-secondary text-[16px]">
         {isPlaying && currTrack?.id == id ? "Playing" : duration}
-      </span>
+      </span>}
     </li>
   );
 }

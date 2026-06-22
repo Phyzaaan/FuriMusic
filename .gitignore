@@ -40,6 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+#Play-dl
+.data
+auth.js
 
 # comming soon
 api/

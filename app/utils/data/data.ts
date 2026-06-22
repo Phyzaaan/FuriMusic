@@ -301,7 +301,7 @@ export async function fetchPlaylistBody(id: number) {
     return;
   }
 
-  const songs =  playlistSongs.map((data) => {
+  const songs = playlistSongs.map((data) => {
     const song = Array.isArray(data.Songs) ? data.Songs[0] : data.Songs;
 
     return {
@@ -432,12 +432,12 @@ export async function uploadSuggestion(url: string): Promise<number> {
   return 200;
 }
 
-function sanitizeName(name: string, originalFileName?: string) {
+export function sanitizeName(name: string, originalFileName?: string) {
   const safeName = name
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9\s]/g, "") // Kill special chars, but SPARE the spaces
-    .replace(/\s+/g, "_") // Now turn those spaces into snake_case
+    .replace(/\s+/g, "_") // Now turn spaces into snake_case
     .replace(/_+/g, "_"); // Deduplicate in case of double spaces
 
   if (!originalFileName) return safeName;
@@ -725,4 +725,51 @@ export async function toggleSongInPlaylist({
   }
 
   return { added: true };
+}
+
+
+
+export async function fetchSuggestions() {
+  const supabase = createClient();
+
+  console.log("fetching Songs")
+
+  const { data: songs, error } = await supabase
+    .from("Suggestions")
+    .select(
+      `
+      id, 
+      name, 
+      url, 
+      banner, 
+      duration,
+      artist_name,
+      artist_banner
+    `,
+    )
+    .order("name", { ascending: true })
+
+  if (error || !songs) {
+    console.error("Error fetching suggestions:", error ?? songs);
+    return [];
+  }
+  console.log("fetched Songs: ", songs)
+  
+  return songs.map((song) => {
+    const songName = typeof song.name === "string" && song.name.trim().length > 0 ? song.name.trim() : "Untitled";
+    const songUrl = typeof song.url === "string" && song.url.trim().length > 0 ? song.url.trim() : "";
+    const songBanner = typeof song.banner === "string" && song.banner.trim().length > 0 ? song.banner.trim() : "";
+    const songDuration = typeof song.duration === "string" && song.duration.trim().length > 0 ? song.duration.trim() : "";
+    const artistName = typeof song.artist_name === "string" && song.artist_name.trim().length > 0 ? song.artist_name.trim() : "Unknown Artist";
+    const artistBanner = typeof song.artist_banner === "string" && song.artist_banner.trim().length > 0 ? song.artist_banner.trim() : "";
+
+    return {
+      id: song.id,
+      name: songName,
+      url: songUrl,
+      banner: songBanner,
+      duration: songDuration,
+      artists: [{ name: artistName, banner: artistBanner }]
+    };
+  });
 }

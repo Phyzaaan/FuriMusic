@@ -37,3 +37,16 @@ export type MusicContextType = {
   setPlaying: (value: boolean) => void;
   isAdmin: boolean;
 };
+
+export type song = {
+    id: number;
+    name: string;
+    url: string;
+    banner: string;
+    duration: string;
+    artists: {
+        name: string;
+        banner: string;
+    }[];
+    lyrics?: string;
+}

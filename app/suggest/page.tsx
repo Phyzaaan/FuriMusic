@@ -1,12 +1,10 @@
 "use client";
 import { useState } from "react";
-// import { uploadSuggestion } from "../utils/data/data";
 import { SecondaryBtn } from "../ui/components/Buttons";
-import { PopUpMsg } from "../ui/components/Error";
+import { Song } from "../utils/data/type";
 
 export default function Home() {
   const [url, setUrl] = useState("");
-  const [status, setStatus] = useState<number | null>(null);
   const [loading, setLoading] = useState(false)
 
   async function handleUpload() {
@@ -21,7 +19,9 @@ export default function Home() {
 
       const data = await response.json();
       if (response.ok) {
-        alert(data)
+        const song = data as Song;
+        confirm(JSON.stringify(song))
+        alert(JSON.stringify(song))
         console.log(data)
         setUrl("");
       } else {
@@ -36,7 +36,6 @@ export default function Home() {
 
   return (
     <main className="no-scrollbar flex h-full w-full flex-col items-center gap-5 overflow-y-auto pt-22 pb-20">
-      <h1 className="text-3xl font-bold">Suggest Me!</h1>
       <p className="w-3/4 text-primary text-center">
         Help me find Amazing Songs! Just paste the link to your favorite song right below!
       </p>
@@ -51,12 +50,6 @@ export default function Home() {
         />
         <SecondaryBtn onClick={handleUpload} disabled={loading}>{loading ? "Submiting" : "Submit"}</SecondaryBtn>
       </div>
-
-      {status !== null && <PopUpMsg title={status == 200 ? "Thanks for Your Suggestion" : "Oopse! Somting Not Good!"} 
-        details={status == 200 ? "I will personally review your song and I will add if I like it..." : "Please try again in a jiffy!"}
-        onClick={() => setStatus(null)}
-        show={!!status}
-      />}
     </main>
   );
 }
