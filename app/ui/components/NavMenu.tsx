@@ -20,7 +20,7 @@ function NavMenu({ links }: navProps) {
           <Link
             key={link.name}
             href={link.href}
-            className={`w-11/12 cursor-pointer border ${pathname === link.href ? "border-card-border bg-card-bg shadow-lg" : "border-transparent"} text-primary hover:border-card-border flex items-center rounded-md py-2 pl-2 transition-all`}
+            className={`w-11/12 cursor-pointer border flex gap-2 ${pathname === link.href ? "border-card-border bg-card-bg shadow-lg" : "border-transparent"} text-primary hover:border-card-border flex items-center rounded-md py-2 pl-2 transition-all`}
           >
             <Image
               src={`/icons/${link.icon}.svg`}

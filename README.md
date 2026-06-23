@@ -2,41 +2,41 @@
 
 ## Purpose
 
-Furi Music is for myself, sharing with friends, and showcasing in my portfolio. It aims to deliver a modern, interactive experience with playlist management, artist discovery, lyrics display.
+Furi Music is for myself, ~~sharing with friends~~, and showcasing in my portfolio. It aims to deliver a modern, interactive experience with playlist management, artist discovery, lyrics display.
 
 ## Key Features
 
 - Responsive home page with navigation, search, music controls, and featured content.
 - Keyword, artist, playlist search, and filter support.
-- Playlist creation with public and private visibility.
+- Playlist creation ~~with public and private visibility~~ for admin only.
 - Artist library with unofficial collections and filtering.
 - Lyrics toggle for individual songs.
 - Songs favorite system.
-- User accounts storing favorites, playlists, uploaded songs, and qued song.
-- Dashboard for admin to edit and accept the songs and playlist uploaded by users.
-- Users can import playlists directly from youtube, apple music and spotify.
+- ~~User accounts storing favorites, playlists, uploaded songs,~~ Current Song, favortie Songs and qued song will be stored in the localStorage of the User.
+- Dashboard for admin to edit and accept the ~~songs and playlist uploaded~~ songs suggested by users.
+- Users can import ~~playlists~~ songs directly from youtube, apple music and spotify(Currently Working On it).
 
 ## Home Page Structure
 
 The home page includes several main sections:
 
-- **Navigation Bar:** Links for Home, Playlists, Artists, Profile and Credits.
+- **Navigation Bar:** Links for Home, Playlists, Artists, *Songs* ~~Profile~~, *Suggest Me* and ~~Credits~~ About.
 - **Search Bar:** Search by keyword, artist, or playlist, with filter options.
 - **Music Bar:** Player controls and currently playing track info.
-- **Main Body:** Display of playlists, artists and songs.
+- **Main Body:** Display of playlists, ~~artists~~ and songs.
 
 ### Main Body Sections
 
-- **Playlists:** A horizontal row showcasing featured playlists.
-- **Songs:** A horizontal row showcasing featured songs.
-- **Artists:** A horizontal row showcasing featured artists.
+- **Playlists:** A horizontal row showcasing ~~featured~~ Random playlists.
+- **Songs:** A horizontal row showcasing ~~featured~~ Random songs.
+- ~~**Artists:** A horizontal row showcasing featured artists.~~
 
 ## Songs
 
-- Users can suggest me songs.
+- Users can suggest me songs(Currently Working On it).
 - Songs will be added if I approve.
 - Added Songs may apper on Home page.
-- Playlists support content filtering to help users find songs quickly.
+- ~~Playlists support content filtering to help users find songs quickly.~~
 
 ### Songs Suggestion
 
@@ -46,12 +46,13 @@ It will also have an edit option which will have following feilds.
 - Title
 - Image Banner
 - Artist Selector
-- Mood Selector
+- *Artist Creator*
+- ~~Mood Selector~~
 - Lyrics
 
-### Songs Page
+### ~~Songs Page~~ Main Music Player
 
-Songs page will be a page where current playing song will be displayed.
+~~Songs page~~ Music Player will be a page where current playing song will be displayed.
 
 ## Lyrics Support
 
@@ -59,17 +60,17 @@ Songs page will be a page where current playing song will be displayed.
 
 ## Playlist System
 
-- Users can create playlists and select its visibility.
+-~~ Users can create playlists and select its visibility.~~
 - I can edit playlists.
-- Playlists will be published if I approve.
-- Public playlists may appear on the home page.
-- Playlists support content filtering to help users find songs quickly.
+-~~ Playlists will be published if I approve.~~
+-~~ Public playlists may appear on the home page.~~
+-~~ Playlists support content filtering to help users find songs quickly.~~
 
 ### Playlist Creation
 
 Playlist creator will have following feilds:
 
-- Import playlist
+-~~ Import playlist~~
 - Title
 - Image Banner
 
@@ -82,8 +83,8 @@ Playlist creator will have following feilds:
 
 - Contains an unofficial collection of artists.
 - I can create Artists or edit song's artist.
-- Artists may appear on the home page.
-- Includes filtering options to narrow down results.
+-~~ Artists may appear on the home page.~~
+-~~ Includes filtering options to narrow down results.~~
 
 ### Artist Creation
 
@@ -99,24 +100,24 @@ Artist creator will have following feilds:
 
 ## Account Features
 
-- User accounts store details such as played songs, favorite songs, playlists, and uploaded tracks.
-- Account creation is not required for playlist creation and song uploads.
+- User ~~accounts store~~ *data will be stored locally* ~~details~~ such as played songs, favorite songs, ~~playlists, and uploaded tracks~~ and Queued Songs.
+- Account creation is not required *At All* ~~for playlist creation and song uploads.~~
 
-## Library
+~~## Library
 
 Here is where all the user's created playlists and favorite songs will be displayed
 It will contain:
 
 - **My Favoriets**: User's favorite songs.
-- **Playlists**: User created playlists.
+- **Playlists**: User created playlists.~~
 
-## About Me
+## About ~~Me~~
 
-This is is where all the information about me and the music player is shown. Like:
+This is is where all the information about ~~me and ~~the music player is shown. Like:
 
-- My perosnal info and socials
+- ~~My perosnal info and socials~~
 - technologizes used for creating this music app.
-- Other stuff like copyrights etc.
+- Other stuff like copyrights(There are no copy rights) etc.
 
 ## Clean Up Funtion
 

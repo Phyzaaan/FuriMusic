@@ -39,6 +39,11 @@ function Sidebar() {
       href: "/songs",
       icon: "music_note",
     },
+    {
+      name: "About",
+      href: "/about",
+      icon: "info",
+    },
     // {
     //   name: "Suggest Me",
     //   href: "/suggest",

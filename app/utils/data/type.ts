@@ -50,3 +50,13 @@ export type song = {
     }[];
     lyrics?: string;
 }
+
+export type songDetails = {
+    name: string;
+    banner: string;
+    url: string;
+    duration: string;
+    artist_name: string;
+    artist_banner: string;
+    lyrics?: string;
+}
