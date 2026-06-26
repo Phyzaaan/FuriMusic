@@ -5,7 +5,7 @@ import { fetchSongById } from "../data/data";
 export function saveToLocalStorage(currTime: number | undefined, currSong: Song | null, repeat: boolean, queue: Song[]) {
   if (!currTime || !currSong) return;
   const data = {
-    song: currSong,
+    song: {...currSong, blobUrl: undefined},
     time: currTime,
     repeat: repeat,
     queue: queue.map(song => song.id),
@@ -33,7 +33,8 @@ export async function LoadLocalStorage(
         audioInstance.currentTime = data.time || 0;
         setCurrTrack(data.song);
         setRepeat(data.repeat);
-        loadSong(data.song);
+        console.log(data.song)
+        loadSong(data.song, false, true);
 
         if (data.queue && data.queue.length > 0) {
           const queue = await fetchSongById(data.queue);
@@ -53,7 +54,6 @@ export async function LoadLocalStorage(
       if (data && data.fav && data.fav.length > 0) {
         const favSongs = await fetchSongById(data.fav);
         if (favSongs) {
-          favSongs.sort((a, b) => data.fav.indexOf(a.id) - data.fav.indexOf(b.id));
           setFav(favSongs);
         }
       }

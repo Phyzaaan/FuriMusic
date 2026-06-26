@@ -10,7 +10,7 @@ if (typeof window !== "undefined") {
 
 export const getAudioInstance = () => audioInstance;
 
-export function loadSong(currTrack: Song, play: boolean = false) {
+export function loadSong(currTrack: Song, play: boolean = false, load = false) {
   if (!audioInstance) {
     console.error("Audio instance is not available.");
     return;
@@ -20,6 +20,7 @@ export function loadSong(currTrack: Song, play: boolean = false) {
 
   if (audioInstance.src !== songUrl) {
     audioInstance.src = songUrl;
+    if (load) audioInstance.load();
     if (play) playSong();
 
     if ("mediaSession" in navigator) {

@@ -53,10 +53,10 @@ export type song = {
 
 export type songDetails = {
     name: string;
-    banner: string;
+    banner: Buffer<ArrayBufferLike>;
     url: string;
     duration: string;
     artist_name: string;
-    artist_banner: string;
+    artist_banner: Buffer<ArrayBufferLike>;
     lyrics?: string;
 }

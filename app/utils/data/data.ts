@@ -219,7 +219,7 @@ export async function fetchSongById(id: number[]) {
       duration,
       song_artists(Artists(name, id))
     `,
-    )
+    ).order("name", { ascending: true })
     .in("id", id);
 
   if (error) {
