@@ -43,10 +43,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+#cookies 
+cookies/
+
 #Play-dl
 .data
 auth.js
-
-# comming soon
-api/
-suggest/

@@ -486,9 +486,10 @@ export async function uploadSong(song: {
   banner: string;
   url: string;
   duration: string;
-  artists: {
+  artists?: {
     id: number;
   }[];
+  artistsIds?: number[];
   lyrics?: string | null | undefined;
 }): Promise<null | number> {
   const supabase = createClient();
@@ -503,7 +504,7 @@ export async function uploadSong(song: {
 
   const { error: songError, data: songData } = await supabase
     .from("Songs")
-    .upsert(data)
+    .insert(data)
     .select("id")
     .single();
   if (songError) {
@@ -511,19 +512,25 @@ export async function uploadSong(song: {
     return null;
   }
 
-  const artistsData = song.artists.map((artist) => ({
-    song_id: songData.id,
-    artist_id: artist.id,
-  }));
+  const artistIds = (song.artistsIds ?? song.artists?.map((artist) => artist.id) ?? []).filter(
+    (value): value is number => typeof value === "number" && value > 0,
+  );
 
-  const { error } = await supabase.from("song_artists").upsert(artistsData);
+  if (artistIds.length > 0) {
+    const artistsData = artistIds.map((artistId) => ({
+      song_id: songData.id,
+      artist_id: artistId,
+    }));
 
-  if (error) {
-    console.error(error.message);
-    return null;
+    const { error } = await supabase.from("song_artists").insert(artistsData);
+
+    if (error) {
+      console.error(error.message);
+      return null;
+    }
   }
 
-  return 0;
+  return songData.id;
 }
 export async function updateSong(song: {
   id: number;
@@ -732,19 +739,17 @@ export async function toggleSongInPlaylist({
 export async function fetchSuggestions() {
   const supabase = createClient();
 
-  console.log("fetching Songs")
-
   const { data: songs, error } = await supabase
     .from("Suggestions")
     .select(
       `
-      id, 
-      name, 
-      url, 
-      banner, 
+      id,
+      name,
+      url,
+      banner,
       duration,
-      artist_name,
-      artist_banner
+      existing_artists,
+      new_artists
     `,
     )
     .order("name", { ascending: true })
@@ -754,14 +759,30 @@ export async function fetchSuggestions() {
     return [];
   }
   console.log("fetched Songs: ", songs)
-  
+ 
   return songs.map((song) => {
     const songName = typeof song.name === "string" && song.name.trim().length > 0 ? song.name.trim() : "Untitled";
     const songUrl = typeof song.url === "string" && song.url.trim().length > 0 ? song.url.trim() : "";
     const songBanner = typeof song.banner === "string" && song.banner.trim().length > 0 ? song.banner.trim() : "";
     const songDuration = typeof song.duration === "string" && song.duration.trim().length > 0 ? song.duration.trim() : "";
-    const artistName = typeof song.artist_name === "string" && song.artist_name.trim().length > 0 ? song.artist_name.trim() : "Unknown Artist";
-    const artistBanner = typeof song.artist_banner === "string" && song.artist_banner.trim().length > 0 ? song.artist_banner.trim() : "";
+
+    const existingArtistIds = Array.isArray(song.existing_artists)
+      ? song.existing_artists.filter((id): id is number => typeof id === "number" && id > 0)
+      : [];
+
+    const newArtists = Array.isArray(song.new_artists)
+      ? song.new_artists.filter(
+        (artist): artist is { name: string; banner: string | null } =>
+          !!artist && typeof artist === "object" && typeof artist.name === "string" && artist.name.trim().length > 0,
+      )
+      : typeof song.new_artists === "object" && song.new_artists && typeof song.new_artists.name === "string"
+        ? [{ name: song.new_artists.name.trim(), banner: song.new_artists.banner ?? null }]
+        : [];
+
+    const artists = [
+      ...existingArtistIds.map((id) => ({ id, name: `Artist ${id}` })),
+      ...newArtists.map((artist) => ({ id: 0, name: artist.name })),
+    ];
 
     return {
       id: song.id,
@@ -769,7 +790,7 @@ export async function fetchSuggestions() {
       url: songUrl,
       banner: songBanner,
       duration: songDuration,
-      artists: [{ name: artistName, banner: artistBanner }]
+      artists: artists.length > 0 ? artists : [{ id: 0, name: "Unknown Artist" }],
     };
   });
 }

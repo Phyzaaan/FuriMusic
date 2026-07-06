@@ -9,6 +9,21 @@ export type Song = {
   blobUrl?: string;
 };
 
+export type SongEditorSource = "songs" | "suggestions" | "new";
+
+export type SuggestionPayload = {
+  name: string;
+  duration: string;
+  lyrics: string;
+  url: string;
+  banner: string | null;
+  existing_artists: number[];
+  new_artists: {
+    name: string;
+    banner: string | null;
+  }[];
+};
+
 export type Playlist = {
   id: number;
   name: string;
@@ -53,10 +68,9 @@ export type song = {
 
 export type songDetails = {
     name: string;
-    banner: Buffer<ArrayBufferLike>;
+    banner: string;
     url: string;
     duration: string;
     artist_name: string;
-    artist_banner: Buffer<ArrayBufferLike>;
-    lyrics?: string;
+    artist_banner: string;
 }
