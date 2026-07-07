@@ -47,7 +47,7 @@ export default function AboutPage() {
                 <ul className="list-none space-y-2">
                     <li className="flex gap-2 text-gray-300">
                         <span>🎧</span>
-                        <span><strong>Suggest Me:</strong> A magical page where <em>you</em> get to dictate my playlist.</span>
+                        <span><strong>Suggest Me:</strong> Support for more platforms (Porbably)</span>
                     </li>
                     <li className="flex gap-2 text-gray-300">
                         <span>🐛</span>

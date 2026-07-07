@@ -3,13 +3,24 @@ import fs from "fs";
 import path from "path";
 
 let isConfigured = false;
-
 export default async function getPlayDlInstance() {
     if (!isConfigured) {
         try {
-            const cookiePath = path.join(process.cwd(), 'app/api/cookies/yt-cookies.txt');
-            let rawCookies = fs.readFileSync(cookiePath, 'utf-8');
+            let rawCookies = '';
 
+            // Load cookies from Vercel env or fallback to local file
+            if (process.env.VERCEL && process.env.YT_COOKIES) {
+                rawCookies = process.env.YT_COOKIES;
+            } else {
+                const cookiePath = path.join(process.cwd(), 'app/api/cookies/yt-cookies.txt');
+                if (fs.existsSync(cookiePath)) {
+                    rawCookies = fs.readFileSync(cookiePath, 'utf-8');
+                } else {
+                    throw new Error("Cookies file not found locally, and YT_COOKIES env is missing.");
+                }
+            }
+
+            // Parse the Netscape format into a standard cookie string
             if (rawCookies.includes('# Netscape HTTP Cookie File')) {
                 rawCookies = rawCookies
                     .split('\n')
@@ -22,6 +33,7 @@ export default async function getPlayDlInstance() {
                     .join('; ');
             }
 
+            // Apply the token
             await play.setToken({
                 youtube: {
                     cookie: rawCookies.trim()

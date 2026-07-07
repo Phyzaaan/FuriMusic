@@ -51,7 +51,9 @@ export default function SongsSection({ songs }: props) {
             {(showEditor && song) &&
                 <SongEditor Song={song} showEditor={showEditor} setShowEditor={setShowEditor} source="suggestions" />
             }
-            <UploadSongEditor showEditor={showAddEditor} setShowEditor={setShowAddEditor} source="new" />
+            {showAddEditor ? (
+                <UploadSongEditor showEditor={showAddEditor} setShowEditor={setShowAddEditor} />
+            ) : null}
         </>
     )
 }

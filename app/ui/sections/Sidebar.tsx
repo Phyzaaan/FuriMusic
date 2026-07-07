@@ -40,15 +40,15 @@ function Sidebar() {
       icon: "music_note",
     },
     {
+      name: "Suggest Me",
+      href: "/suggest",
+      icon: "lightbulb"
+    },
+    {
       name: "About",
       href: "/about",
       icon: "info",
     },
-    // {
-    //   name: "Suggest Me",
-    //   href: "/suggest",
-    //   icon: "lightbulb"
-    // },
   ]
   if (isAdmin) Links.filter(link => link.name !== "Suggest Me");
   return (

@@ -60,7 +60,7 @@ export default function Home() {
   }
 
   return (
-    <main className="no-scrollbar flex h-full w-full flex-col items-center justify-center overflow-y-auto px-4 pb-20 pt-22 gap-4">
+    <main className="no-scrollbar flex h-full w-full flex-col items-center overflow-y-auto px-4 pb-20 pt-22 gap-8">
 
       <div className="max-w-lg text-center">
         <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
@@ -71,37 +71,42 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="w-full flex items-center justify-center gap-2">
-        <input
-          type="url"
-          placeholder="Paste your favorite song link here..."
-          className="w-1/2 rounded-lg border border-card-border bg-dark-bg px-2 py-1 text-lg text-primary transition"
-          onChange={(e) => setUrl(e.target.value)}
-          onKeyDown={handleKeyDown}
-          value={url}
-        />
-        <SecondaryBtn
-          type="submit"
-          onClick={handleUpload}
-          disabled={loading || !url.trim()}
-          className="text-sm py-2 px-4 rounded-lg transition disabled:text-secondary"
-        >
-          {loading ? "Submitting..." : "Submit song"}
-        </SecondaryBtn>
-      </div>
-      <p className="mt-3 text-sm text-tertiary">
-        Tip: paste a direct YouTube song link for the best results.
-      </p>
+      <div className="w-full flex flex-col items-center gap-2">
+        <div className="w-full flex items-center justify-center gap-2">
+          <input
+            type="url"
+            placeholder="Paste your favorite song link here..."
+            className="w-1/2 rounded-lg border border-card-border bg-dark-bg px-2 py-1 text-lg text-primary transition"
+            onChange={(e) => setUrl(e.target.value)}
+            onKeyDown={handleKeyDown}
+            value={url}
+          />
+          <SecondaryBtn
+            type="submit"
+            onClick={handleUpload}
+            disabled={loading || !url.trim()}
+            className="text-sm py-2 px-4 rounded-lg transition disabled:text-secondary"
+          >
+            {loading ? "Submitting..." : "Submit song"}
+          </SecondaryBtn>
+        </div>
+        <p className="mt-3 text-sm text-tertiary">
+          Tip: paste a direct YouTube song link for the best results.
+        </p>
 
-      <div className="w-full border border-card-border"/>
-        <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-          Supported Platforms
-        </h1>
+      </div>
+
+    <div className="w-full flex flex-col items-center gap-4">
+
+      <div className="w-full border border-card-border" />
+      <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+        Supported Platforms
+      </h1>
       <div className="w-3/4 mt-8 grid gap-4 ">
         {platformCards.map((card) => (
           <div
             key={card.name}
-            className="rounded-lg border border-card-border bg-white/5 py-2 px-2 gap-8 transition hover:-translate-y-1 hover:bg-white"
+            className="rounded-lg border border-card-border bg-white/5 py-2 px-2 gap-8 transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-lg hover:shadow-white/10"
           >
             <div className="w-full flex items-center gap-1">
               <Image src={card.icon} alt={card.name} width={30} height={30} />
@@ -111,6 +116,7 @@ export default function Home() {
           </div>
         ))}
       </div>
+    </div>
 
       {(song && showEditor) && <SongEditor Song={song} showEditor={showEditor} setShowEditor={setShowEditor} />}
     </main>
