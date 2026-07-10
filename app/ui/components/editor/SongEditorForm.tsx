@@ -33,7 +33,6 @@ interface SongEditorFormProps {
   submitLabel?: string;
   deleteLabel?: string;
   hideDelete?: boolean;
-  showCreateArtist?: boolean;
   children?: ReactNode;
 }
 
@@ -45,7 +44,6 @@ export default function SongEditorForm({
   submitLabel = "Save Changes",
   deleteLabel = "Delete",
   hideDelete = false,
-  showCreateArtist = false,
   children,
 }: SongEditorFormProps) {
   const [selectedArtistIds, setSelectedArtistIds] = useState<number[]>(() => initialSong.artists?.map((artist) => artist.id) ?? []);
@@ -59,7 +57,7 @@ export default function SongEditorForm({
   });
   const [artistsFilter, setArtistsFilter] = useState("");
   const [isLoadingArtists, setIsLoadingArtists] = useState(false);
-  const [createOpen, setCreateOpen] = useState(showCreateArtist);
+  const [createOpen, setCreateOpen] = useState(false);
   const [newArtistName, setNewArtistName] = useState(initialArtist?.name ?? "");
   const [newArtistBanner, setNewArtistBanner] = useState<File | null>(null);
 
@@ -178,9 +176,17 @@ export default function SongEditorForm({
     setCreateOpen(false);
   };
 
+  const handleFormKeyDown = (event: React.KeyboardEvent<HTMLFormElement>) => {
+    if (event.key === "Enter" && (event.target as HTMLElement).tagName !== "BUTTON") {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  };
+
   const submitForm = async (data: SongEditorFormValues) => {
     if (createOpen) {
       alert("Please finish creating the new artist before submitting the Song.");
+      return;
     }
     await onSubmit({
       ...data,
@@ -191,12 +197,12 @@ export default function SongEditorForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(submitForm)} className="flex-1 overflow-y-auto px-2 py-1 flex flex-col gap-2 no-scrollbar">
+    <form onSubmit={handleSubmit(submitForm)} onKeyDown={handleFormKeyDown} className="flex-1 overflow-y-auto px-2 py-1 pb-12 flex flex-col gap-2 no-scrollbar">
       <div className="flex flex-col w-full gap-2 py-1">
         <label className="text-sm font-medium text-secondary">Song Banner</label>
         {songBannerPreview ? (
           <div className="relative">
-            <Image src={songBannerPreview} alt="Song banner preview" width={160} height={160} className="w-full rounded-lg object-cover border border-card-border" />
+            <Image src={songBannerPreview} alt="Song banner preview" width={160} height={160} className="w-full aspect-3/2 rounded-lg object-cover border border-card-border" />
             <SecondaryBtn
               type="button"
               onClick={() => {
@@ -293,50 +299,52 @@ export default function SongEditorForm({
         </div>
       </div>
 
-      <div className="w-full">
+      <div className="relative w-full">
         {createOpen ? (
-          <div className="flex flex-col gap-2 bg-card-bg border border-card-border rounded-md px-2 py-2">
-            <div className="flex flex-col gap-1 pb-1">
-              <label className="text-sm font-medium text-secondary">Artist Banner</label>
-              {artistBannerPreview ? (
-                <div className="relative">
-                  <Image src={artistBannerPreview} alt="Artist banner preview" width={160} height={160} className="w-full rounded-lg object-cover border border-card-border" />
-                  <SecondaryBtn
-                    type="button"
-                    onClick={() => {
-                      setNewArtistBanner(null);
-                      setArtistBannerPreview("");
-                    }}
-                    className="absolute bottom-2 right-2 bg-dark-bg/80"
-                  >
-                    Remove
-                  </SecondaryBtn>
-                </div>
-              ) : (<input
-                type="file"
-                accept="image/*"
-                onChange={(event) => handleBannerChange(event.target.files?.[0] ?? null, false)}
-                className="border-card-border bg-dark-bg w-full rounded-md border py-1 text-sm file:mx-auto file:py-1 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-btn file:text-primary hover:file:bg-opacity-80 transition-all cursor-pointer"
-              />)}
-            </div>
+          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/55 px-3 py-4 backdrop-blur-sm">
+            <div className="flex max-h-[min(80vh,42rem)] w-full max-w-lg flex-col gap-2 overflow-y-auto rounded-2xl border border-card-border bg-dark-bg/95 px-4 py-4 shadow-2xl shadow-black/50 backdrop-blur-xl no-scrollbar">
+              <div className="flex flex-col gap-1 pb-1">
+                <label className="text-sm font-medium text-secondary">Artist Banner</label>
+                {artistBannerPreview ? (
+                  <div className="relative">
+                    <Image src={artistBannerPreview} alt="Artist banner preview" width={160} height={160} className="w-full aspect-square rounded-lg object-cover border border-card-border" />
+                    <SecondaryBtn
+                      type="button"
+                      onClick={() => {
+                        setNewArtistBanner(null);
+                        setArtistBannerPreview("");
+                      }}
+                      className="absolute bottom-2 right-2 bg-dark-bg/80"
+                    >
+                      Remove
+                    </SecondaryBtn>
+                  </div>
+                ) : (<input
+                  type="file"
+                  accept="image/*"
+                  onChange={(event) => handleBannerChange(event.target.files?.[0] ?? null, false)}
+                  className="border-card-border bg-dark-bg w-full rounded-md border py-1 text-sm file:mx-auto file:py-1 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-btn file:text-primary hover:file:bg-opacity-80 transition-all cursor-pointer"
+                />)}
+              </div>
 
-            <div className="flex flex-col gap-1 pb-1">
-              <label className="text-sm font-medium text-secondary">Artist Name</label>
-              <input
-                type="text"
-                value={newArtistName}
-                onChange={(event) => setNewArtistName(event.target.value)}
-                placeholder="New artist name"
-                className="bg-dark-bg border-card-border w-full rounded-md border px-2 py-1 text-primary focus:outline-none focus:ring-1 focus:ring-accent-from transition-all"
-              />
-            </div>
-            <div className="flex justify-between gap-2">
-              <SecondaryBtn type="button" onClick={() => void handleCreateLocalArtist()} className="hover:bg-green-500/50">
-                Create
-              </SecondaryBtn>
-              <SecondaryBtn type="button" onClick={() => setCreateOpen(false)} className="hover:bg-transparent border-transparent hover:text-red-400">
-                Cancel
-              </SecondaryBtn>
+              <div className="flex flex-col gap-1 pb-1">
+                <label className="text-sm font-medium text-secondary">Artist Name</label>
+                <input
+                  type="text"
+                  value={newArtistName}
+                  onChange={(event) => setNewArtistName(event.target.value)}
+                  placeholder="New artist name"
+                  className="bg-dark-bg border-card-border w-full rounded-md border px-2 py-1 text-primary focus:outline-none focus:ring-1 focus:ring-accent-from transition-all"
+                />
+              </div>
+              <div className="flex justify-between gap-2">
+                <SecondaryBtn type="button" onClick={() => void handleCreateLocalArtist()} className="hover:bg-green-500/50">
+                  Create
+                </SecondaryBtn>
+                <SecondaryBtn type="button" onClick={() => setCreateOpen(false)} className="hover:bg-transparent border-transparent hover:text-red-400">
+                  Cancel
+                </SecondaryBtn>
+              </div>
             </div>
           </div>
         ) : (
@@ -357,7 +365,7 @@ export default function SongEditorForm({
 
       {children}
 
-      <div className="flex justify-between items-center py-2 gap-2">
+      <div className="fixed bottom-0 inset-x-0 z-10 mt-2 flex items-center justify-between gap-2 rounded-md border-t border-card-border bg-card-bg/90 px-2 py-3 backdrop-blur-sm">
         {!hideDelete ? (
           <SecondaryBtn type="button" onClick={() => void onDelete?.()} className="text-red-400 hover:bg-red-600 hover:text-primary transition-all">
             {deleteLabel}

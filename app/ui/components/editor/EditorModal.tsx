@@ -6,9 +6,10 @@ interface EditorModalProps {
     onClose: () => void;
     children: ReactNode;
     footer?: ReactNode;
+    disableClose?: boolean;
 }
 
-export default function EditorModal({ title, onClose, children, footer }: EditorModalProps) {
+export default function EditorModal({ title, onClose, children, footer, disableClose = false }: EditorModalProps) {
     return (
         <div className="absolute z-50 top-21 mx-auto w-full max-w-2xl flex flex-col max-h-[calc(100vh-81px)] bg-card-bg border border-card-border rounded-lg shadow-2xl backdrop-blur-2xl overflow-hidden text-primary">
             <div className="px-4 py-2 border-b border-card-border bg-dark-bg flex justify-between items-center">
@@ -19,6 +20,8 @@ export default function EditorModal({ title, onClose, children, footer }: Editor
                     width={24}
                     height={24}
                     onClick={onClose}
+                    disabled={disableClose}
+                    className={disableClose ? "opacity-50" : ""}
                 />
             </div>
 

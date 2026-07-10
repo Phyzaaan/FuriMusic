@@ -63,7 +63,7 @@ export default function Home() {
     <main className="no-scrollbar flex h-full w-full flex-col items-center overflow-y-auto px-4 pb-20 pt-22 gap-8">
 
       <div className="max-w-lg text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+        <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-2">
           Suggest me your favorite song
         </h1>
         <p className="text-secondary indent-2">

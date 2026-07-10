@@ -44,6 +44,7 @@ type PrimaryBtnProps = {
   height?: number;
   alt?: string;
   type?: "button" | "submit" | "reset" | undefined;
+  disabled?: boolean;
 };
 
 export function PrimaryBtn({
@@ -54,12 +55,14 @@ export function PrimaryBtn({
   width = 32,
   height = 32,
   alt = "icon",
-  type
+  type,
+  disabled = false,
 }: PrimaryBtnProps) {
   return (
     <button
       type={type}
       onClick={onClick}
+      disabled={disabled}
       className={`hover:drop-shadow-glow cursor-pointer transition-all duration-150 hover:scale-110 active:scale-100 ${className}`}
     >
       {icon && <Image src={icon} alt={alt} width={width} height={height} />}
