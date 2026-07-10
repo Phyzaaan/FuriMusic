@@ -432,18 +432,13 @@ export async function uploadSuggestion(url: string): Promise<number> {
   return 200;
 }
 
-export function sanitizeName(name: string, originalFileName?: string) {
-  const safeName = name
+export function sanitizeName(filename: string) {
+  return filename
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9\s]/g, "") // Kill special chars, but SPARE the spaces
-    .replace(/\s+/g, "_") // Now turn spaces into snake_case
-    .replace(/_+/g, "_"); // Deduplicate in case of double spaces
-
-  if (!originalFileName) return safeName;
-
-  const ext = originalFileName.split(".").pop();
-  return `${safeName}.${ext}`;
+    .replace(/\.(?=.*\.)|[^a-z0-9.\s]/g, "") // Keep only the last dot
+    .replace(/\s+/g, "_")
+    .replace(/_+/g, "_");
 }
 
 export async function uploadFile(
@@ -452,7 +447,8 @@ export async function uploadFile(
   name: string,
 ): Promise<string | null> {
   const supabase = createClient();
-  const sanitizedName = sanitizeName(name, file.name);
+  const filename = name + file.name.split(".").pop();
+  const sanitizedName = sanitizeName(filename);
 
   const { data: exists } = await supabase.storage
     .from(bucket)
@@ -759,7 +755,7 @@ export async function fetchSuggestions() {
     return [];
   }
   console.log("fetched Songs: ", songs)
- 
+
   return songs.map((song) => {
     const songName = typeof song.name === "string" && song.name.trim().length > 0 ? song.name.trim() : "Untitled";
     const songUrl = typeof song.url === "string" && song.url.trim().length > 0 ? song.url.trim() : "";
@@ -793,4 +789,87 @@ export async function fetchSuggestions() {
       artists: artists.length > 0 ? artists : [{ id: 0, name: "Unknown Artist" }],
     };
   });
+}
+
+export async function uploadSuggestionSong(
+  file: File,
+  path: string,
+  token: string
+) {
+  const supabase = createClient();
+
+  const { error } = await supabase.storage
+    .from("songs")
+    .uploadToSignedUrl(path, token, file);
+
+  if (error) {
+    throw error;
+  }
+
+  const {data} = supabase.storage.from("songs").getPublicUrl(path);
+
+  return data.publicUrl;
+}
+
+
+export async function downloadAndUploadSuggestionSong(
+  youtubeUrl: string,
+  name: string,
+  captchaToken: string
+): Promise<string> {
+  const fileName = name + ".mp3";
+  // Verify CAPTCHA & get signed upload token
+  const uploadRes = await fetch("/api/getUploadUrl", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      captchaToken,
+      name: name,
+      extension: "mp3",
+    }),
+  });
+
+  if (!uploadRes.ok) {
+    alert("Make sure You are authenticated!");
+    throw new Error("Failed to get upload token.");
+  }
+
+  const { token, path } = await uploadRes.json();
+
+  // Get the download URL
+  const downloadRes = await fetch("/api/getAudioUrl", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      youtubeUrl,
+    }),
+  });
+
+  if (!downloadRes.ok) {
+    throw new Error("Failed to get download URL.");
+  }
+
+  const { downloadUrl } = await downloadRes.json();
+
+  // Download the MP3
+  const blob = await fetch(downloadUrl).then((r) => {
+    if (!r.ok) throw new Error("Failed to download audio.");
+    return r.blob();
+  });
+
+  // Create a File
+  const file = new File(
+    [blob],
+    sanitizeName(fileName),
+    {
+      type: "audio/mpeg",
+    }
+  );
+
+  // Upload to Supabase
+  return await uploadSuggestionSong(file, path, token);
 }

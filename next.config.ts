@@ -14,18 +14,21 @@ module.exports = {
   ],
   images: {
     remotePatterns: [
-      new URL(
-        "https://omdzngdkqxzjgodfrjlf.supabase.co/storage/v1/object/public/songsBanner/**",
-      ),
-      new URL(
-        "https://omdzngdkqxzjgodfrjlf.supabase.co/storage/v1/object/public/artistsBanner/**",
-      ),
-      new URL(
-        "https://omdzngdkqxzjgodfrjlf.supabase.co/storage/v1/object/public/songs/**",
-      ),
-      new URL(
-        "https://omdzngdkqxzjgodfrjlf.supabase.co/storage/v1/object/public/playlistsBanner/**",
-      ),
+      {
+        protocol: 'https',
+        hostname: 'omdzngdkqxzjgodfrjlf.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.ytimg.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'yt3.ggpht.com',
+        pathname: '/**',
+      },
     ],
   },
 };

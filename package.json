@@ -6,9 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cleanup": "curl -i --request POST 'https://omdzngdkqxzjgodfrjlf.supabase.co/functions/v1/clean-up'   --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tZHpuZ2RrcXh6amdvZGZyamxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MDQxNTYsImV4cCI6MjA5NTI4MDE1Nn0.pWeeLGdCya__TCzq-XwhqovF749v9SroUNLh9s-JoCg'"
   },
   "dependencies": {
+    "@marsidev/react-turnstile": "^1.5.3",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.2",
     "fs": "^0.0.1-security",

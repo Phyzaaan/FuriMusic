@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { SecondaryBtn } from "@/app/ui/components/Buttons";
 import { fetchArtistsRange } from "@/app/utils/data/data";
 import type { Song } from "@/app/utils/data/type";
-import base64ToFile from "@/app/utils/libs/stringToFile";
 
 export type PendingArtistDraft = {
   tempId: number;
@@ -65,11 +64,17 @@ export default function SongEditorForm({
   const [newArtistBanner, setNewArtistBanner] = useState<File | null>(null);
 
   useEffect(() => {
-    if (initialArtist?.banner) {
-      base64ToFile(initialArtist.banner, `${initialArtist.name}.jpg`)
-        .then((file) => setNewArtistBanner(file))
-        .catch(() => setNewArtistBanner(null));
+    if (!initialArtist?.banner) return;
+    const fetchArtistBanner = async () => {
+      try {
+        const file = await fetch(initialArtist.banner).then((res) => res.blob()).then((blob) => new File([blob], "banner.jpg", { type: blob.type }));
+        setNewArtistBanner(file);
+      } catch (error) {
+        alert("Failed to fetch artist banner. Please upload a new banner.");
+        console.error("Error fetching artist banner:", error);
+      }
     }
+    fetchArtistBanner();
   }, [initialArtist]);
 
   const [artistBannerPreview, setArtistBannerPreview] = useState<string>(initialArtist?.banner ?? "");
@@ -105,14 +110,24 @@ export default function SongEditorForm({
     setValue("artistsIds", selectedArtistIds);
   }, [selectedArtistIds, setValue]);
 
+  const MAX_IMAGE_SIZE = 500 * 1024; // 500 KB
+
   const handleBannerChange = (file: File | null, isSong: boolean) => {
     if (!file) return;
+
+    if (file.size > MAX_IMAGE_SIZE) {
+      alert("Image must be under 500 KB.");
+      return;
+    }
+
+    const preview = URL.createObjectURL(file);
+
     if (isSong) {
       setSongBanner(file);
-      setSongBannerPreview(URL.createObjectURL(file));
+      setSongBannerPreview(preview);
     } else {
       setNewArtistBanner(file);
-      setArtistBannerPreview(URL.createObjectURL(file));
+      setArtistBannerPreview(preview);
     }
   };
 
@@ -164,14 +179,14 @@ export default function SongEditorForm({
   };
 
   const submitForm = async (data: SongEditorFormValues) => {
-    if(createOpen) {
+    if (createOpen) {
       alert("Please finish creating the new artist before submitting the Song.");
     }
     await onSubmit({
       ...data,
       artistsIds: selectedArtistIds,
       pendingArtists,
-      bannerFile: songBanner ?? undefined,
+      bannerFile: songBanner,
     });
   };
 
