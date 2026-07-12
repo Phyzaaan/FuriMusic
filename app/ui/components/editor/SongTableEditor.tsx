@@ -4,10 +4,10 @@ import { useState } from "react";
 import EditorModal from "@/app/ui/components/editor/EditorModal";
 import SongEditorForm, { type SongEditorFormValues } from "@/app/ui/components/editor/SongEditorForm";
 import { deleteItem, updateSong, uploadArtist, uploadFile, uploadSong } from "@/app/utils/data/data";
-import type { Song, SongEditorSource } from "@/app/utils/data/type";
+import type { Song, suggestionSong, SongEditorSource } from "@/app/utils/data/type";
 
 interface SongTableEditorProps {
-  song: Song;
+  song: Song | suggestionSong;
   showEditor: boolean;
   setShowEditor: (value: boolean) => void;
   source?: SongEditorSource;
@@ -55,13 +55,17 @@ export default function SongTableEditor({ song, showEditor, setShowEditor, sourc
 
       const pendingArtistIds = new Map<number, number>();
       for (const pendingArtist of payload.pendingArtists ?? []) {
-        const uploadedArtistBanner = await uploadFile("artistsBanner", pendingArtist.bannerFile, pendingArtist.name);
-        if (!uploadedArtistBanner) {
-          window.alert(`Failed uploading banner for artist ${pendingArtist.name}`);
-          return;
+        let artistBannerUrl = pendingArtist.banner as string;
+        if (typeof pendingArtist.banner !== "string") {
+          const uploadArtistBanner = await uploadFile("artistsBanner", pendingArtist.banner, pendingArtist.name);
+          if (!uploadArtistBanner) {
+            window.alert(`Failed uploading banner for artist ${pendingArtist.name}`);
+            return;
+          }
+          artistBannerUrl = uploadArtistBanner;
         }
 
-        const createdArtistId = await uploadArtist({ name: pendingArtist.name, banner: uploadedArtistBanner });
+        const createdArtistId = await uploadArtist({ name: pendingArtist.name, banner: artistBannerUrl });
         if (!createdArtistId) {
           window.alert(`Failed creating artist ${pendingArtist.name}`);
           return;
@@ -72,7 +76,7 @@ export default function SongTableEditor({ song, showEditor, setShowEditor, sourc
 
       const resolvedArtistIds = payload.artistsIds
         .map((artistId) => pendingArtistIds.get(artistId) ?? artistId)
-        .filter((artistId) => artistId > 0);
+        .filter((artistId) => artistId >= 0);
 
       if (source === "suggestions") {
         const createdSongId = await uploadSong({
@@ -81,7 +85,7 @@ export default function SongTableEditor({ song, showEditor, setShowEditor, sourc
           url: payload.url || song.url,
           duration: payload.duration || song.duration,
           artistsIds: resolvedArtistIds,
-          lyrics: payload.lyrics ?? song.lyrics ?? "",
+          lyrics: payload.lyrics ?? (song).lyrics ?? "",
         });
 
         if (createdSongId) {
@@ -122,6 +126,7 @@ export default function SongTableEditor({ song, showEditor, setShowEditor, sourc
     <EditorModal title={source === "suggestions" ? "Approve Song" : "Edit Song"} onClose={() => setShowEditor(false)}>
       <SongEditorForm
         initialSong={song}
+        initialArtists={(song as suggestionSong).pendingArtists}
         onSubmit={handleSubmit}
         onDelete={handleDelete}
         submitLabel={isSaving ? "Saving..." : source === "suggestions" ? "Approve to Songs" : "Save Changes"}

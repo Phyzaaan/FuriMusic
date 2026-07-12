@@ -1,10 +1,10 @@
 "use client";
 
 import SongTableEditor from "@/app/ui/components/editor/SongTableEditor";
-import type { Song } from "@/app/utils/data/type";
+import type { suggestionSong } from "@/app/utils/data/type";
 
 interface SongEditorProps {
-  Song: Song;
+  Song: suggestionSong;
   showEditor: boolean;
   setShowEditor: (val: boolean) => void;
   source?: "songs" | "suggestions";

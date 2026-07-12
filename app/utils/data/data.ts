@@ -420,18 +420,6 @@ export async function fetchSongLyrics(id: number) {
   return typeof data.lyrics === "string" ? data.lyrics : "";
 }
 
-export async function uploadSuggestion(url: string): Promise<number> {
-  const supabase = createClient();
-
-  const { error } = await supabase.from("Suggestions").insert({ url });
-  if (error) {
-    console.error(error.details);
-    return 404;
-  }
-
-  return 200;
-}
-
 export function sanitizeName(filename: string) {
   return filename
     .toLowerCase()
@@ -754,7 +742,13 @@ export async function fetchSuggestions() {
     console.error("Error fetching suggestions:", error ?? songs);
     return [];
   }
-  console.log("fetched Songs: ", songs)
+  console.log("fetched Songs: ", songs);
+
+  const artistIds = songs.map(song => Array.isArray(song.existing_artists)
+    ? song.existing_artists.filter((id): id is number => typeof id === "number" && id > 0)
+    : []).flat();
+
+  const { data: artists } = await supabase.from("Artists").select("id, name").in("id", artistIds);
 
   return songs.map((song) => {
     const songName = typeof song.name === "string" && song.name.trim().length > 0 ? song.name.trim() : "Untitled";
@@ -766,19 +760,16 @@ export async function fetchSuggestions() {
       ? song.existing_artists.filter((id): id is number => typeof id === "number" && id > 0)
       : [];
 
+    const existingArtists = artists?.filter(artist => existingArtistIds.includes(artist.id)) ?? [];
+
     const newArtists = Array.isArray(song.new_artists)
       ? song.new_artists.filter(
-        (artist): artist is { name: string; banner: string | null } =>
-          !!artist && typeof artist === "object" && typeof artist.name === "string" && artist.name.trim().length > 0,
-      )
-      : typeof song.new_artists === "object" && song.new_artists && typeof song.new_artists.name === "string"
-        ? [{ name: song.new_artists.name.trim(), banner: song.new_artists.banner ?? null }]
-        : [];
-
-    const artists = [
-      ...existingArtistIds.map((id) => ({ id, name: `Artist ${id}` })),
-      ...newArtists.map((artist) => ({ id: 0, name: artist.name })),
-    ];
+          (artist): artist is { name: string; banner: string } =>
+            !!artist &&
+            typeof artist === "object" &&
+            typeof artist.name === "string" &&
+            artist.name.trim().length > 0,
+        ): [];
 
     return {
       id: song.id,
@@ -786,7 +777,8 @@ export async function fetchSuggestions() {
       url: songUrl,
       banner: songBanner,
       duration: songDuration,
-      artists: artists.length > 0 ? artists : [{ id: 0, name: "Unknown Artist" }],
+      artists: existingArtists,
+      pendingArtists: newArtists,
     };
   });
 }
@@ -806,7 +798,7 @@ export async function uploadSuggestionSong(
     throw error;
   }
 
-  const {data} = supabase.storage.from("songs").getPublicUrl(path);
+  const { data } = supabase.storage.from("songs").getPublicUrl(path);
 
   return data.publicUrl;
 }

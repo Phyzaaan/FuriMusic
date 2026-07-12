@@ -41,12 +41,13 @@ export async function POST(req: Request) {
         // Pending Artist Banners
         const newArtistsData: { name: string, banner: string | null }[] = await Promise.all(pendingMeta.map(async (artistName, idx: number) => {
             const artistFile = formData.get(`pendingArtistBanner_${idx}`) as File | null;
-            let bannerUrl = null;
+            let bannerUrl: string | null = null;
             if (artistFile) {
                 const safeArtist = sanitizeName(artistName);
                 bannerUrl = await uploadToSupabase("artistsBanner", `${safeArtist}.jpg`, artistFile);
             }
             return { name: artistName, banner: bannerUrl };
+
         }));
 
         // --- DB INSERTION ---

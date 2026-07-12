@@ -10,7 +10,7 @@ import type { Song } from "@/app/utils/data/type";
 export type PendingArtistDraft = {
   tempId: number;
   name: string;
-  bannerFile: File;
+  banner: File | string;
 };
 
 export type SongEditorFormValues = {
@@ -27,7 +27,7 @@ export type SongEditorFormValues = {
 
 interface SongEditorFormProps {
   initialSong: Song;
-  initialArtist?: { name: string, banner: string };
+  initialArtists?: { name: string, banner: string }[];
   onSubmit: (payload: SongEditorFormValues) => Promise<void> | void;
   onDelete?: () => Promise<void> | void;
   submitLabel?: string;
@@ -38,7 +38,7 @@ interface SongEditorFormProps {
 
 export default function SongEditorForm({
   initialSong,
-  initialArtist,
+  initialArtists,
   onSubmit,
   onDelete,
   submitLabel = "Save Changes",
@@ -49,6 +49,7 @@ export default function SongEditorForm({
   const [selectedArtistIds, setSelectedArtistIds] = useState<number[]>(() => initialSong.artists?.map((artist) => artist.id) ?? []);
   const [songBanner, setSongBanner] = useState<File | null>(null);
   const [songBannerPreview, setSongBannerPreview] = useState<string>(initialSong.banner ?? "");
+
   const [artistsResults, setArtistsResults] = useState<{ id: number; name: string }[]>([]);
   const [knownArtists, setKnownArtists] = useState<Map<number, { id: number; name: string }>>(() => {
     const initial = new Map<number, { id: number; name: string }>();
@@ -58,14 +59,16 @@ export default function SongEditorForm({
   const [artistsFilter, setArtistsFilter] = useState("");
   const [isLoadingArtists, setIsLoadingArtists] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
-  const [newArtistName, setNewArtistName] = useState(initialArtist?.name ?? "");
+  const [newArtistName, setNewArtistName] = useState(initialArtists? initialArtists[0].name : "");
   const [newArtistBanner, setNewArtistBanner] = useState<File | null>(null);
 
+
   useEffect(() => {
-    if (!initialArtist?.banner) return;
+    if (!initialArtists) return;
     const fetchArtistBanner = async () => {
+      if (initialArtists[0].banner.includes("supabase")) return;
       try {
-        const file = await fetch(initialArtist.banner).then((res) => res.blob()).then((blob) => new File([blob], "banner.jpg", { type: blob.type }));
+        const file = await fetch(initialArtists[0].banner).then((res) => res.blob()).then((blob) => new File([blob], "banner.jpg", { type: blob.type }));
         setNewArtistBanner(file);
       } catch (error) {
         alert("Failed to fetch artist banner. Please upload a new banner.");
@@ -73,9 +76,9 @@ export default function SongEditorForm({
       }
     }
     fetchArtistBanner();
-  }, [initialArtist]);
+  }, [initialArtists]);
 
-  const [artistBannerPreview, setArtistBannerPreview] = useState<string>(initialArtist?.banner ?? "");
+  const [artistBannerPreview, setArtistBannerPreview] = useState<string>(initialArtists? initialArtists[0].banner : "");
   const [pendingArtists, setPendingArtists] = useState<PendingArtistDraft[]>([]);
 
   const { register, handleSubmit, setValue } = useForm<SongEditorFormValues>({
@@ -91,6 +94,7 @@ export default function SongEditorForm({
   });
 
   const updateKnownArtists = (list: { id: number; name: string }[]) => {
+
     setKnownArtists((prev) => {
       const next = new Map(prev);
       list.forEach((artist) => next.set(artist.id, artist));
@@ -107,6 +111,26 @@ export default function SongEditorForm({
   useEffect(() => {
     setValue("artistsIds", selectedArtistIds);
   }, [selectedArtistIds, setValue]);
+
+
+  useEffect(() => {
+    initialArtists?.forEach((artist) => {
+      if (artist.banner.includes("supabase")) {
+        const tempArtistId = -(Date.now() + Math.floor(Math.random() * 1000000));
+        const created = { tempId: tempArtistId, name: artist.name.trim(), banner: artist.banner };
+
+        setPendingArtists((prev) => [...prev, created]);
+        setSelectedArtistIds((prev) => {
+          const next = prev.includes(tempArtistId) ? prev : [...prev, tempArtistId];
+          setValue("artistsIds", next);
+          return next;
+        });
+        updateKnownArtists([{ id: tempArtistId, name: created.name }]);
+        setArtistsResults((prev) => [{ id: tempArtistId, name: created.name }, ...prev]);
+      }
+    })
+    // eslint-disable-next-line
+  }, [initialArtists])
 
   const MAX_IMAGE_SIZE = 500 * 1024; // 500 KB
 
@@ -161,7 +185,7 @@ export default function SongEditorForm({
     }
 
     const tempArtistId = -(Date.now() + Math.floor(Math.random() * 1000000));
-    const created = { tempId: tempArtistId, name: newArtistName.trim(), bannerFile: newArtistBanner };
+    const created = { tempId: tempArtistId, name: newArtistName.trim(), banner: newArtistBanner };
 
     setPendingArtists((prev) => [...prev, created]);
     setSelectedArtistIds((prev) => {
@@ -172,28 +196,35 @@ export default function SongEditorForm({
     updateKnownArtists([{ id: tempArtistId, name: created.name }]);
     setArtistsResults((prev) => [{ id: tempArtistId, name: created.name }, ...prev]);
     setNewArtistName("");
+    setArtistBannerPreview("");
     setNewArtistBanner(null);
     setCreateOpen(false);
   };
 
   const handleFormKeyDown = (event: React.KeyboardEvent<HTMLFormElement>) => {
-    if (event.key === "Enter" && (event.target as HTMLElement).tagName !== "BUTTON") {
+    const target = event.target as HTMLElement;
+
+    if (event.key === "Enter" && target.tagName !== "BUTTON" && target.tagName !== "TEXTAREA") {
       event.preventDefault();
       event.stopPropagation();
     }
   };
 
+
   const submitForm = async (data: SongEditorFormValues) => {
+    console.log("Handle form submission");
     if (createOpen) {
       alert("Please finish creating the new artist before submitting the Song.");
       return;
     }
+    console.log("Submitting form with data:", data);
     await onSubmit({
       ...data,
       artistsIds: selectedArtistIds,
       pendingArtists,
       bannerFile: songBanner,
     });
+    console.log("Form submitted successfully with data:", data);
   };
 
   return (
@@ -371,7 +402,7 @@ export default function SongEditorForm({
             {deleteLabel}
           </SecondaryBtn>
         ) : <span />}
-        <SecondaryBtn type="submit" className="font-bold transition-all hover:bg-green-500/50">
+        <SecondaryBtn type="submit"  onClick={() => console.log("Submit clicked")} className="font-bold transition-all hover:bg-green-500/50">
           {submitLabel}
         </SecondaryBtn>
       </div>

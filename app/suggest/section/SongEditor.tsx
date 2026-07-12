@@ -74,7 +74,9 @@ export default function SongEditor({ Song, showEditor, setShowEditor }: SongEdit
             formData.append("banner", banner);
 
             pendingArtists.forEach((artist, index) => {
-                formData.append(`pendingArtistBanner_${index}`, artist.bannerFile);
+                if (typeof artist.banner !== "string") {
+                    formData.append(`pendingArtistBanner_${index}`, artist.banner);
+                }
             });
 
             updateSubmissionState("uploading", "Uploading your song and artwork...", 72);
@@ -119,7 +121,7 @@ export default function SongEditor({ Song, showEditor, setShowEditor }: SongEdit
                 <div className="relative flex-1">
                     <SongEditorForm
                         initialSong={normalizedSong}
-                        initialArtist={{ name: Song.artist_name, banner: Song.artist_banner }}
+                        initialArtists={[{ name: Song.artist_name, banner: Song.artist_banner }]}
                         onSubmit={onSubmit}
                         submitLabel={isSubmitting ? "Submitting..." : "Submit Suggestion"}
                         hideDelete

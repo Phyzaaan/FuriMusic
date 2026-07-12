@@ -9,6 +9,19 @@ export type Song = {
   blobUrl?: string;
 };
 
+
+export type suggestionSong = {
+  id: number;
+  name: string;
+  url: string;
+  banner: string;
+  duration: string;
+  artists: { id: number; name: string }[];
+  pendingArtists: { name: string; banner: string; }[];
+  lyrics?: string | null | undefined;
+};
+
+
 export type SongEditorSource = "songs" | "suggestions" | "new";
 
 export type SuggestionPayload = {
@@ -16,13 +29,16 @@ export type SuggestionPayload = {
   duration: string;
   lyrics: string;
   url: string;
+  // Song banner in Suggestions can be null (no banner provided)
   banner: string | null;
   existing_artists: number[];
   new_artists: {
     name: string;
+    // New artist banner can be null if no banner was provided
     banner: string | null;
   }[];
 };
+
 
 export type Playlist = {
   id: number;
@@ -54,23 +70,23 @@ export type MusicContextType = {
 };
 
 export type song = {
-    id: number;
+  id: number;
+  name: string;
+  url: string;
+  banner: string;
+  duration: string;
+  artists: {
     name: string;
-    url: string;
     banner: string;
-    duration: string;
-    artists: {
-        name: string;
-        banner: string;
-    }[];
-    lyrics?: string;
+  }[];
+  lyrics?: string;
 }
 
 export type songDetails = {
-    name: string;
-    banner: string;
-    url: string;
-    duration: string;
-    artist_name: string;
-    artist_banner: string;
+  name: string;
+  banner: string;
+  url: string;
+  duration: string;
+  artist_name: string;
+  artist_banner: string;
 }

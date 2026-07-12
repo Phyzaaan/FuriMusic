@@ -1,45 +1,66 @@
 import { NextResponse } from "next/server";
-import { YouTubeVideo } from "play-dl";
+import { Innertube } from "youtubei.js";
+import getVideoId from "@/app/utils/libs/getVideoId";
+
 import formatTime from "@/app/utils/libs/formatTime";
 import { songDetails } from "@/app/utils/data/type";
-import getPlayDlInstance from "../libs/play";
+
+let youtube: Innertube | null = null;
+
+type Thumbnail = {
+    url: string;
+    width: number;
+    height: number;
+}
+async function getYoutube() {
+    if (!youtube) {
+        youtube = await Innertube.create();
+    }
+
+    return youtube;
+}
+function getBestBanner(thumbnail: Thumbnail[]) {
+    return thumbnail.reduce((best, current) =>
+            (current.width ?? 0) * (current.height ?? 0) >
+                (best.width ?? 0) * (best.height ?? 0)
+                ? current
+                : best
+        ).url;
+}
 
 export async function POST(req: Request) {
     try {
-        const play = await getPlayDlInstance();
         const { url } = await req.json();
-        if (!url) return NextResponse.json({ error: "URL is required" }, { status: 400 });
+        const videoId = getVideoId(url);
 
-        const songDetails: songDetails = {
-            name: "",
-            banner: "",
-            url: "",
-            duration: "",
-            artist_name: "",
-            artist_banner: ""
+        if (!url || !videoId) {
+            return NextResponse.json(
+                { error: "URL is required" },
+                { status: 400 }
+            );
         }
 
-        const urlType = await play.validate(url);
-        // Youtube
-        if (urlType === "yt_video") {
-            const videoInfo = await play.video_info(url);
-            const details = videoInfo.video_details as YouTubeVideo;
+        const yt = await getYoutube();
+        const info = await yt.getInfo(videoId);
+        const details = info.basic_info;
+        const channel = await yt.getChannel(details.channel!.id);
 
-            songDetails.name = details.title ?? "youtube_track";
-            songDetails.duration = formatTime(details.durationInSec);
+        const data: songDetails = {
+            name: details.title ?? "youtube_track",
+            banner: getBestBanner(details.thumbnail ?? []) ?? "",
+            url: details.url_canonical ?? url,
+            duration: formatTime(details.duration ?? 0),
+            artist_name: details.channel?.name ?? "",
+            artist_banner: getBestBanner(channel.metadata.thumbnail ?? []) ?? ""
+        };
 
-            songDetails.url = details.url;
-
-            songDetails.banner = details.thumbnails[details.thumbnails.length - 1]?.url ?? "";
-
-            songDetails.artist_name = details.channel?.name ?? "";
-
-            songDetails.artist_banner = details.channel?.icons?.[details.channel?.icons?.length - 1]?.url ?? "";
-        }
-
-        return NextResponse.json(songDetails, { status: 200 });
+        return NextResponse.json(data, { status: 200 });
     } catch (error) {
         console.error("Processing failed:", error);
-        return NextResponse.json({ error: "Failed to process audio/images" }, { status: 500 });
+
+        return NextResponse.json(
+            { error: "Failed to process audio/images" },
+            { status: 500 }
+        );
     }
 }

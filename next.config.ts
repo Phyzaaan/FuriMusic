@@ -26,7 +26,7 @@ module.exports = {
       },
       {
         protocol: 'https',
-        hostname: 'yt3.ggpht.com',
+        hostname: 'yt3.googleusercontent.com',
         pathname: '/**',
       },
     ],
