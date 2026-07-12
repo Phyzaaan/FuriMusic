@@ -46,7 +46,8 @@ export async function POST(req: Request) {
         const yt = await getYoutube();
         const info = await yt.getInfo(videoId);
         const details = info.basic_info;
-        console.log(info.actions);
+        console.log(JSON.stringify(info, null, 2));
+        console.log(Object.keys(details));
         const channel = await yt.getChannel(details.channel!.id);
 
         const data: songDetails = {
