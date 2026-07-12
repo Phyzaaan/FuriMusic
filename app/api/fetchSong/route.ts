@@ -14,18 +14,21 @@ type Thumbnail = {
 }
 async function getYoutube() {
     if (!youtube) {
-        youtube = await Innertube.create();
+        youtube = await Innertube.create({
+            lang: "en",
+            location: "US"
+        });
     }
 
     return youtube;
 }
 function getBestBanner(thumbnail: Thumbnail[]) {
     return thumbnail.reduce((best, current) =>
-            (current.width ?? 0) * (current.height ?? 0) >
-                (best.width ?? 0) * (best.height ?? 0)
-                ? current
-                : best
-        ).url;
+        (current.width ?? 0) * (current.height ?? 0) >
+            (best.width ?? 0) * (best.height ?? 0)
+            ? current
+            : best
+    ).url;
 }
 
 export async function POST(req: Request) {
