@@ -43,8 +43,7 @@ function getBestThumbnail(thumbnails: Thumbnails) {
 
 export async function POST(req: Request) {
     try {
-        const headersList = await headers();
-
+        const headersList = await headers();   
         const ip = headersList.get("x-forwarded-for")?.split(",")[0].trim();
 
         if (!ip) {

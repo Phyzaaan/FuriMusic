@@ -4,10 +4,11 @@ import { playSong, pauseSong, loadSong } from "../../utils/libs/playSong";
 import useMusic from "../../musicProvider";
 import formatArtists from "@/app/utils/libs/formatArtists";
 import { Song } from "../../utils/data/type";
-import { SecondaryBtn } from "./Buttons";
+import { PrimaryBtn } from "./Buttons";
 
 interface songProps extends Song {
   onClick?: (value: number) => void;
+  onClickIcon?: string;
 }
 
 export default function SongsCard({
@@ -18,6 +19,7 @@ export default function SongsCard({
   banner,
   url,
   onClick,
+  onClickIcon
 }: songProps) {
   const { currTrack, setCurrTrack, isPlaying, setQueue, queue } = useMusic();
   const currSong = {
@@ -73,9 +75,13 @@ export default function SongsCard({
           {formatArtists(artists.map(artist => artist.name))}
         </p>
       </div>
-      {onClick ? <SecondaryBtn onClick={() => onClick(id)} icon="/icons/edit.svg" /> : <span className="text-secondary text-[16px]">
-        {isPlaying && currTrack?.id == id ? "Playing" : duration}
-      </span>}
+      {onClick ?
+        (<PrimaryBtn onClick={() => onClick(id)} icon={onClickIcon ? onClickIcon : "icons/edit.svg"} width={28} height={28} className={`${onClickIcon?.includes("delete") && "hover:drop-shadow-red-600"}`} />)
+        :
+        (<span className="text-secondary text-[16px]">
+          {isPlaying && currTrack?.id == id ? "Playing" : duration}
+        </span>)
+      }
     </li>
   );
 }

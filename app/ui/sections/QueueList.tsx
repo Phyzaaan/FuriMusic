@@ -2,6 +2,9 @@ import SongsCard from "../components/Songcard";
 import { PrimaryBtn } from "../components/Buttons";
 import useMusic from "../../musicProvider";
 import ErrorMsg from "../components/Error";
+import Image from "next/image";
+import { useState } from "react";
+import { SecondaryBtn } from "../components/Buttons";
 
 type Props = {
   showPlaylist: boolean;
@@ -9,8 +12,12 @@ type Props = {
 };
 
 function QueueList({ showPlaylist, setShowPlaylist }: Props) {
-  const { queue } = useMusic();
+  const { queue, setQueue } = useMusic();
+  const [edit, setEdit] = useState(false);
 
+  const handleRemove = (id: number) => {
+    setQueue(queue.filter(q => q.id !== id));
+  } 
   return (
     <>
       {/* Playlist Pop-up Container */}
@@ -19,7 +26,10 @@ function QueueList({ showPlaylist, setShowPlaylist }: Props) {
       >
         {/* Playlist Header */}
         <div className="my-2 flex h-8 w-full items-center justify-between">
+          <div className="flex justify-center items-center ">
+          <Image src="/icons/queue_music.svg" alt="Queue list icon" width={38} height={38} />
           <h1 className="text-3xl font-semibold">Queue List</h1>
+          </div>
           <PrimaryBtn
             onClick={() => setShowPlaylist(!showPlaylist)}
             icon="/icons/close.svg"
@@ -38,11 +48,16 @@ function QueueList({ showPlaylist, setShowPlaylist }: Props) {
               duration={song.duration}
               banner={song.banner}
               url={song.url}
+              onClick={edit ? handleRemove : undefined}
+              onClickIcon="/icons/delete.svg"
             />
           )) : (
                   <ErrorMsg>You dont have any Songs here!</ErrorMsg>
                 )}
         </ul>
+        <div className="absolute bottom-1 right-1">
+          <SecondaryBtn icon={!edit ? "/icons/edit.svg" : "/icons/close.svg"} onClick={() => setEdit(!edit)}>{edit ? "Exit" : "Edit"}</SecondaryBtn>
+        </div>
       </div>
     </>
   );

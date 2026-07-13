@@ -5,13 +5,6 @@ const nextConfig: NextConfig = {
 };
 
 module.exports = {
-  allowedDevOrigins: [
-    "10.66.15.115",
-    "192.168.240.37",
-    "192.168.240.141",
-    "192.168.222.37",
-    '10.144.2.115',
-  ],
   images: {
     remotePatterns: [
       {
