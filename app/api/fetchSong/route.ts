@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import getVideoId from "@/app/utils/libs/getVideoId";
 import { songDetails } from "@/app/utils/data/type";
+import supabase from "@/app/utils/supabase/server";
+import { headers } from "next/headers";
 
 const API_KEY = process.env.YOUTUBE_API_KEY!;
+const RATE_LIMIT_MS = 60_000;
 
 function parseDuration(duration: string) {
     const match = duration.match(/PT(?:(\d+)M)?(?:(\d+)S)?/);
@@ -40,6 +43,17 @@ function getBestThumbnail(thumbnails: Thumbnails) {
 
 export async function POST(req: Request) {
     try {
+        const headersList = await headers();
+
+        const ip = headersList.get("x-forwarded-for")?.split(",")[0].trim();
+
+        if (!ip) {
+            return NextResponse.json(
+                { error: "Failed to validate your request. Please try again!" },
+                { status: 400 }
+            );
+        }
+
         const { url } = await req.json();
         const videoId = getVideoId(url);
 
@@ -48,6 +62,24 @@ export async function POST(req: Request) {
                 { error: "Invalid YouTube URL" },
                 { status: 400 }
             );
+        }
+
+        const oneMinuteAgo = new Date(Date.now() - RATE_LIMIT_MS).toISOString();
+
+        const { data: logData } = await supabase
+            .from("request_log")
+            .select("ip, yt_id")
+            .gte("created_at", oneMinuteAgo);
+
+        if (logData) {
+            const duplicateVideo = logData.some(x => x.yt_id === videoId);
+            const rateLimited = logData.some(x => x.ip === ip);
+
+            if (duplicateVideo) {
+                return NextResponse.json({ error: "Video is Already Submitted!" }, { status: 400 });
+            } else if (rateLimited) {
+                return NextResponse.json({ error: "Please wait one minute before suggesting another song." }, { status: 400 });
+            }
         }
 
         // Video details

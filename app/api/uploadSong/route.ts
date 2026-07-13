@@ -1,12 +1,8 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import { sanitizeName } from "@/app/utils/data/data";
 import { compressImage } from "@/app/utils/libs/compressImage";
-
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { headers } from "next/headers";
+import supabase from "@/app/utils/supabase/server";
 
 async function uploadToSupabase(bucket: string, path: string, file: File) {
     const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true });
@@ -16,7 +12,19 @@ async function uploadToSupabase(bucket: string, path: string, file: File) {
 
 export async function POST(req: Request) {
     try {
+        const headersList = await headers();
+
+        const ip = headersList.get("x-forwarded-for")?.split(",")[0].trim();
+
+        if (!ip) {
+            return NextResponse.json(
+                { error: "Failed to validate your request. Please try again!" },
+                { status: 400 }
+            );
+        }
+
         const formData = await req.formData();
+        const videoId = formData.get("videoId") as string;
 
         const name = formData.get("name") as string;
         const url = formData.get("url") as string;
@@ -63,6 +71,14 @@ export async function POST(req: Request) {
 
         const { error: dbError } = await supabase.from("Suggestions").insert(suggestionPayload);
         if (dbError) throw new Error(dbError.message);
+
+        const log = { yt_id: videoId, ip };
+        const { error } = await supabase.from("request_log").insert(log);
+
+        if (error) {
+            console.error(error);
+            return NextResponse.json({ error: "Unable to submit your suggestion. Please try again." }, { status: 500 });
+        }
 
         return NextResponse.json({ message: "Suggestion queued successfully!" }, { status: 200 });
 

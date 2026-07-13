@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import EditorModal from "@/app/ui/components/editor/EditorModal";
 import SongEditorForm, { type SongEditorFormValues } from "@/app/ui/components/editor/SongEditorForm";
@@ -7,6 +6,7 @@ import type { Song } from "@/app/utils/data/type";
 import type { songDetails } from "@/app/utils/data/type";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { downloadAndUploadSuggestionSong } from "@/app/utils/data/data";
+import getVideoId from "@/app/utils/libs/getVideoId";
 
 interface SongEditorProps {
     Song: songDetails;
@@ -61,6 +61,9 @@ export default function SongEditor({ Song, showEditor, setShowEditor }: SongEdit
             const ytUrl = Song.url;
             const url = await downloadAndUploadSuggestionSong(ytUrl, payload.name, token);
 
+            const videoId = getVideoId(Song.url);
+            if (videoId) formData.append("videoId", videoId);
+
             formData.append("url", url);
             formData.append("duration", payload.duration || Song.duration);
             formData.append("lyrics", payload.lyrics || "");
@@ -96,9 +99,18 @@ export default function SongEditor({ Song, showEditor, setShowEditor }: SongEdit
                 return;
             }
 
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                const errorData = await response.json();
+                alert(errorData.error || "Something went wrong");
+            } else {
+                const errorText = await response.text();
+                console.error("Server HTML Error:", errorText);
+                alert("Server crashed or returned an invalid response.");
+            }
+
             updateSubmissionState("error", "Submission failed. Please try again.", 0);
             setIsSubmitting(false);
-            window.alert("Failed submitting suggestion.");
         } catch (error) {
             console.error(error);
             updateSubmissionState("error", "A network issue interrupted the submission.", 0);
