@@ -50,7 +50,7 @@ function Sidebar() {
       icon: "info",
     },
   ]
-  if (isAdmin) Links.push({
+  if (isAdmin && Links[-1].name !== "Dashboard") Links.push({
     name: "Dashboard",
     href: "/Dashboard",
     icon: "admin",
