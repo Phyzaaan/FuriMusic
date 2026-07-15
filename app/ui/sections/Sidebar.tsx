@@ -50,7 +50,11 @@ function Sidebar() {
       icon: "info",
     },
   ]
-  if (isAdmin) Links.filter(link => link.name !== "Suggest Me");
+  if (isAdmin) Links.push({
+    name: "Dashboard",
+    href: "/Dashboard",
+    icon: "admin",
+  });
   return (
     <section
       className={`absolute ${showSidebar ? "left-0" : "left-[-110%]"} bg-card-bg border-card-border top-20.25 z-20 flex max-h-[calc(100vh-81px)] h-full w-full max-w-lg flex-1 flex-col items-center justify-start rounded-r-xl border shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300 2xl:bottom-0 2xl:left-0 2xl:max-w-[30%]`}
