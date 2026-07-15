@@ -59,12 +59,12 @@ export default function SongEditorForm({
   const [artistsFilter, setArtistsFilter] = useState("");
   const [isLoadingArtists, setIsLoadingArtists] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
-  const [newArtistName, setNewArtistName] = useState(initialArtists? initialArtists[0].name : "");
+  const [newArtistName, setNewArtistName] = useState(initialArtists && initialArtists.length > 0 ? initialArtists[0].name : "");
   const [newArtistBanner, setNewArtistBanner] = useState<File | null>(null);
 
 
   useEffect(() => {
-    if (!initialArtists) return;
+    if (!initialArtists || !(initialArtists.length > 0)) return;
     const fetchArtistBanner = async () => {
       if (initialArtists[0].banner.includes("supabase")) return;
       try {
@@ -78,7 +78,7 @@ export default function SongEditorForm({
     fetchArtistBanner();
   }, [initialArtists]);
 
-  const [artistBannerPreview, setArtistBannerPreview] = useState<string>(initialArtists? initialArtists[0].banner : "");
+  const [artistBannerPreview, setArtistBannerPreview] = useState<string>(initialArtists && initialArtists.length > 0 ? initialArtists[0].banner : "");
   const [pendingArtists, setPendingArtists] = useState<PendingArtistDraft[]>([]);
 
   const { register, handleSubmit, setValue } = useForm<SongEditorFormValues>({
@@ -114,12 +114,15 @@ export default function SongEditorForm({
 
 
   useEffect(() => {
-    initialArtists?.forEach((artist) => {
+    if (!initialArtists || !(initialArtists.length > 0)) return;
+
+    initialArtists.forEach((artist) => {
       if (artist.banner.includes("supabase")) {
         const tempArtistId = -(Date.now() + Math.floor(Math.random() * 1000000));
         const created = { tempId: tempArtistId, name: artist.name.trim(), banner: artist.banner };
 
-        setPendingArtists((prev) => [...prev, created]);
+        setPendingArtists((prev) => prev.some(p => p.name === created.name) ? prev : [...prev, created]);
+      
         setSelectedArtistIds((prev) => {
           const next = prev.includes(tempArtistId) ? prev : [...prev, tempArtistId];
           setValue("artistsIds", next);
@@ -217,14 +220,14 @@ export default function SongEditorForm({
       alert("Please finish creating the new artist before submitting the Song.");
       return;
     }
-    console.log("Submitting form with data:", data);
+    const activePending = pendingArtists.filter(p => selectedArtistIds.includes(p.tempId));
+
     await onSubmit({
       ...data,
       artistsIds: selectedArtistIds,
-      pendingArtists,
+      pendingArtists: activePending,
       bannerFile: songBanner,
     });
-    console.log("Form submitted successfully with data:", data);
   };
 
   return (
@@ -233,7 +236,7 @@ export default function SongEditorForm({
         <label className="text-sm font-medium text-secondary">Song Banner</label>
         {songBannerPreview ? (
           <div className="relative">
-            <Image src={songBannerPreview} alt="Song banner preview" width={160} height={160} className="w-full aspect-3/2 rounded-lg object-cover border border-card-border" />
+            <Image src={songBannerPreview} alt="Song banner preview" width={360} height={360} className="w-full aspect-3/2 rounded-lg object-cover border border-card-border" />
             <SecondaryBtn
               type="button"
               onClick={() => {
@@ -338,7 +341,7 @@ export default function SongEditorForm({
                 <label className="text-sm font-medium text-secondary">Artist Banner</label>
                 {artistBannerPreview ? (
                   <div className="relative">
-                    <Image src={artistBannerPreview} alt="Artist banner preview" width={160} height={160} className="w-full aspect-square rounded-lg object-cover border border-card-border" />
+                    <Image src={artistBannerPreview} alt="Artist banner preview" width={360} height={360} className="w-full aspect-square rounded-lg object-cover border border-card-border" />
                     <SecondaryBtn
                       type="button"
                       onClick={() => {
@@ -402,7 +405,7 @@ export default function SongEditorForm({
             {deleteLabel}
           </SecondaryBtn>
         ) : <span />}
-        <SecondaryBtn type="submit"  onClick={() => console.log("Submit clicked")} className="font-bold transition-all hover:bg-green-500/50">
+        <SecondaryBtn type="submit" onClick={() => console.log("Submit clicked")} className="font-bold transition-all hover:bg-green-500/50">
           {submitLabel}
         </SecondaryBtn>
       </div>

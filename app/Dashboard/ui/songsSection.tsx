@@ -34,7 +34,7 @@ export default function SongsSection({ songs }: props) {
             <div className="no-scrollbar flex flex-col items-center justify-center w-full gap-2 flex-wrap px-2 py-1">
                 {songs && songs.map((songItem) => {
                     let artists = songItem.pendingArtists.map(artist => ({id: Math.floor(Math.random() * 100), name: artist.name}));
-                    artists = {...artists, ...songItem.artists}
+                    artists = [...artists, ...songItem.artists]
                     return (
                         <SongsCard
                             key={songItem.id}

@@ -72,7 +72,7 @@ export default function SongsCard({
           {name}
         </h3>
         <p className="text-secondary w-full truncate text-[14px]">
-          {formatArtists(artists.map(artist => artist.name))}
+          {formatArtists(artists.map(artist => artist.name)) ?? "Unknow Artist"}
         </p>
       </div>
       {onClick ?

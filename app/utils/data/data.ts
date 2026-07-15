@@ -554,28 +554,17 @@ export async function updateSong(song: {
 
   return 200;
 }
-
-export async function uploadArtist(artist: {
-  name: string;
-  banner: string;
-}): Promise<null | number> {
+export async function uploadArtist(artist: { name: string; banner: string }): Promise<null | number> {
   const supabase = createClient();
 
-  const data = { name: artist.name, banner: artist.banner };
+  const { data: existing } = await supabase.from("Artists").select("id").eq("name", artist.name).single();
+  if (existing) return existing.id;
 
-  const { error: artistError, data: artistData } = await supabase
-    .from("Artists")
-    .upsert(data)
-    .select("id")
-    .single();
-
-  if (artistError) {
-    console.error(artistError.message);
-    return null;
-  }
-
-  return artistData.id;
+  const { data, error } = await supabase.from("Artists").insert(artist).select("id").single();
+  if (error) console.error(error.message);
+  return data?.id ?? null;
 }
+
 export async function updateArtist(artist: Artist): Promise<null | number> {
   const supabase = createClient();
 
@@ -742,7 +731,6 @@ export async function fetchSuggestions() {
     console.error("Error fetching suggestions:", error ?? songs);
     return [];
   }
-  console.log("fetched Songs: ", songs);
 
   const artistIds = songs.map(song => Array.isArray(song.existing_artists)
     ? song.existing_artists.filter((id): id is number => typeof id === "number" && id > 0)
@@ -760,16 +748,16 @@ export async function fetchSuggestions() {
       ? song.existing_artists.filter((id): id is number => typeof id === "number" && id > 0)
       : [];
 
-    const existingArtists = artists?.filter(artist => existingArtistIds.includes(artist.id)) ?? [];
+    const existingArtists = artists ? artists.filter(artist => existingArtistIds.includes(artist.id)) : [];
 
     const newArtists = Array.isArray(song.new_artists)
       ? song.new_artists.filter(
-          (artist): artist is { name: string; banner: string } =>
-            !!artist &&
-            typeof artist === "object" &&
-            typeof artist.name === "string" &&
-            artist.name.trim().length > 0,
-        ): [];
+        (artist): artist is { name: string; banner: string } =>
+          !!artist &&
+          typeof artist === "object" &&
+          typeof artist.name === "string" &&
+          artist.name.trim().length > 0,
+      ) : [];
 
     return {
       id: song.id,

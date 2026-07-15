@@ -126,7 +126,7 @@ export default function SongTableEditor({ song, showEditor, setShowEditor, sourc
     <EditorModal title={source === "suggestions" ? "Approve Song" : "Edit Song"} onClose={() => setShowEditor(false)}>
       <SongEditorForm
         initialSong={song}
-        initialArtists={(song as suggestionSong).pendingArtists}
+        initialArtists={source === "suggestions" ? (song as suggestionSong).pendingArtists : undefined}
         onSubmit={handleSubmit}
         onDelete={handleDelete}
         submitLabel={isSaving ? "Saving..." : source === "suggestions" ? "Approve to Songs" : "Save Changes"}

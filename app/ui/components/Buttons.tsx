@@ -64,7 +64,10 @@ export function PrimaryBtn({
   return (
     <button
       type={type}
-      onClick={onClick}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (onClick) onClick();
+      }}
       disabled={disabled}
       className={`hover:drop-shadow-glow cursor-pointer transition-all duration-150 hover:scale-110 active:scale-100 ${className}`}
     >
