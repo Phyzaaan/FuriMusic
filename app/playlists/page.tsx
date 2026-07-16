@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import PlaylistHeader from "./sections/Header";
 
 export default function Playlist() {
-
   return (
     <main className="no-scrollbar flex h-full w-full flex-col overflow-y-auto pt-22 pb-20">
       {/* Title Section  */}

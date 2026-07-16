@@ -231,7 +231,7 @@ export default function SongEditorForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(submitForm)} onKeyDown={handleFormKeyDown} className="flex-1 overflow-y-auto px-2 py-1 pb-12 flex flex-col gap-2 no-scrollbar">
+    <form onSubmit={handleSubmit(submitForm)} onKeyDown={handleFormKeyDown} className="flex-1 overflow-y-auto px-2 py-1 pb-14 md:pb-1 flex flex-col gap-2 no-scrollbar">
       <div className="flex flex-col w-full gap-2 py-1">
         <label className="text-sm font-medium text-secondary">Song Banner</label>
         {songBannerPreview ? (
@@ -399,7 +399,7 @@ export default function SongEditorForm({
 
       {children}
 
-      <div className="fixed bottom-0 inset-x-0 z-10 mt-2 flex items-center justify-between gap-2 rounded-md border-t border-card-border bg-card-bg/90 px-2 py-3 backdrop-blur-sm">
+      <div className="flex items-center justify-between gap-2 rounded-md border border-card-border bg-card-bg/90 px-2 py-3 backdrop-blur-sm">
         {!hideDelete ? (
           <SecondaryBtn type="button" onClick={() => void onDelete?.()} className="text-red-400 hover:bg-red-600 hover:text-primary transition-all">
             {deleteLabel}

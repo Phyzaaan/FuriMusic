@@ -162,7 +162,7 @@ export default function MusicPlayer() {
                 src={currTrack.banner}
                 alt={currTrack.name}
                 fill
-                sizes="576"
+                sizes="600"
                 className="object-cover rounded-lg"
               />
             </div>
