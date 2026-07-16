@@ -25,15 +25,15 @@ export default function SongsSection({ songs }: props) {
 
     return (
         <>
-            <div className="w-full flex items-center justify-between px-2">
-                <h1 className="text-3xl font-bold">Suggestions</h1>
+            <div className="my-2 flex w-full items-center justify-between px-2 py-1">
+                <h1 className="text-3xl font-semibold">Suggestions</h1>
                 <SecondaryBtn type="button" onClick={() => setShowAddEditor(true)}>
                     Add Song
                 </SecondaryBtn>
-            </div>
+            </div >
             <div className="no-scrollbar flex flex-col items-center justify-center w-full gap-2 flex-wrap px-2 py-1">
                 {songs && songs.map((songItem) => {
-                    let artists = songItem.pendingArtists.map(artist => ({id: Math.floor(Math.random() * 100), name: artist.name}));
+                    let artists = songItem.pendingArtists.map(artist => ({ id: Math.floor(Math.random() * 100), name: artist.name }));
                     artists = [...artists, ...songItem.artists]
                     return (
                         <SongsCard
@@ -49,12 +49,15 @@ export default function SongsSection({ songs }: props) {
                     )
                 })}
             </div>
-            {(showEditor && song) &&
+            {
+                (showEditor && song) &&
                 <SongEditor Song={song} showEditor={showEditor} setShowEditor={setShowEditor} source="suggestions" />
             }
-            {showAddEditor ? (
-                <UploadSongEditor showEditor={showAddEditor} setShowEditor={setShowAddEditor} />
-            ) : null}
+            {
+                showAddEditor ? (
+                    <UploadSongEditor showEditor={showAddEditor} setShowEditor={setShowAddEditor} />
+                ) : null
+            }
         </>
     )
 }

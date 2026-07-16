@@ -6,9 +6,11 @@ import useMusic from "../../musicProvider";
 import { loadSong } from "@/app/utils/libs/playSong";
 import NavMenu from "../components/NavMenu";
 import ErrorMsg from "../components/Error";
+import { useState } from "react";
 
 function Sidebar() {
-  const { showSidebar, fav, setQueue, setCurrTrack, isAdmin } = useMusic();
+  const { showSidebar, fav, setFav, setQueue, setCurrTrack, isAdmin } = useMusic();
+  const [edit, setEdit] = useState(false);
 
   const handlePlayAll = () => {
     if (!fav?.length) return;
@@ -17,6 +19,10 @@ function Sidebar() {
     setCurrTrack(first);
     loadSong(first, true);
   };
+
+  const handleRemove = (id: number) => {
+    setFav(fav.filter(f => f.id !== id));
+  } 
 
   const Links = [
     {
@@ -50,18 +56,17 @@ function Sidebar() {
       icon: "info",
     },
   ]
-  if (isAdmin && Links[-1].name !== "Dashboard") Links.push({
-    name: "Dashboard",
-    href: "/Dashboard",
-    icon: "admin",
-  });
+  const sidebarLinks = isAdmin 
+  ? [...Links, { name: "Dashboard", href: "/Dashboard", icon: "admin" }] 
+  : Links;
+
   return (
     <section
       className={`absolute ${showSidebar ? "left-0" : "left-[-110%]"} bg-card-bg border-card-border top-20.25 z-20 flex max-h-[calc(100vh-81px)] h-full w-full max-w-lg flex-1 flex-col items-center justify-start rounded-r-xl border shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300 2xl:bottom-0 2xl:left-0 2xl:max-w-[30%]`}
     >
       {/* Main Navigation Menu */}
       <NavMenu
-        links={Links}
+        links={sidebarLinks}
       />
 
       {/* Favorites & Playlists Section */}
@@ -93,11 +98,16 @@ function Sidebar() {
               duration={song.duration}
               banner={song.banner}
               url={song.url}
+              onClick={edit ? handleRemove : undefined}
+              onClickIcon="/icons/delete.svg"
             />
           )) : (
             <ErrorMsg>You dont have an Favorites!</ErrorMsg>
           )}
         </ul>
+        <div className="absolute bottom-1 right-1">
+          <SecondaryBtn icon={!edit ? "/icons/edit.svg" : "/icons/close.svg"} onClick={() => setEdit(!edit)}>{edit ? "Exit" : "Edit"}</SecondaryBtn>
+        </div>
       </div>
     </section>
   );
