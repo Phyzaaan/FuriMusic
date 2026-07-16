@@ -62,8 +62,8 @@ export default function SongsCard({
         <Image
           src={`/icons/${isPlaying && currTrack?.id == id ? "pause" : "play_arrow"}.svg`}
           alt="Play button"
-          width="42"
-          height="42"
+          width="62"
+          height="62"
           className="invisible scale-70 transform transition-all duration-200 group-hover:visible group-hover:scale-100"
         />
       </div>

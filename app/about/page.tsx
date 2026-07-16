@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 
 export default function AboutPage() {
@@ -47,7 +48,7 @@ export default function AboutPage() {
                 <ul className="list-none space-y-2">
                     <li className="flex gap-2 text-gray-300">
                         <span>🎧</span>
-                        <span><strong>Suggest Me:</strong> Support for more platforms (Porbably)</span>
+                        <span><strong>Suggest Me:</strong> Support for more platforms (Maybe)</span>
                     </li>
                     <li className="flex gap-2 text-gray-300">
                         <span>🐛</span>
@@ -73,8 +74,13 @@ export default function AboutPage() {
                 >
                     <h3 className="font-bold text-lg pb-2">👋 Stalk Me (Professionally)</h3>
                     <div className="flex flex-col gap-2">
-                        <Link href="https://github.com/Phyzaaan" target="_blank" className="text-secondary hover:text-white transition">🐙 GitHub</Link>
-                        <Link href="https://phyzaan.vercel.app" target="_blank" className="text-secondary hover:text-white transition">🌐 Portfolio</Link>
+                        <Link href="https://github.com/Phyzaaan" target="_blank" className="flex gap-1 text-secondary hover:text-white transition ">
+                            <Image src="/logos/github.svg" alt="Github Logo" width={22} height={22} />
+                            GitHub
+                        </Link>
+                        <Link href="https://phyzaaan.vercel.app" target="_blank" className="text-secondary hover:text-white transition">
+                            🌐 Portfolio
+                        </Link>
                     </div>
                 </div>
             </div>

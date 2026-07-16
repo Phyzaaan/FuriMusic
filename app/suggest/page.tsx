@@ -6,7 +6,7 @@ import SongEditor from "./section/SongEditor";
 import Image from "next/image";
 
 const platformCards = [
-  { name: "YouTube", icon: "/logos/youtube.webp", description: "Paste a song link and we’ll pull the details in." }
+  { name: "YouTube", icon: "/logos/youtube.svg", description: "Paste a song link and we’ll pull the details in." }
 ];
 
 export default function Home() {
