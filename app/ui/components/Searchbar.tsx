@@ -14,7 +14,6 @@ function Searchbar({ showSearchbar }: props) {
 
   const handleSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
-    if (!query.trim()) return;
     router.push(`/search?query=${encodeURIComponent(query)}`);
   };
 
