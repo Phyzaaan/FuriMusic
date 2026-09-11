@@ -4,7 +4,7 @@ import ErrorMsg from "@/app/ui/components/Error";
 
 export default async function SongsPage() {
     const songs = await fetchSongsRange(25);
-    if (!songs || songs.length === 0) return <ErrorMsg>404 NO Artist Found</ErrorMsg>;
+    if (!songs || songs.length === 0) return <ErrorMsg>404 NO Songs Found</ErrorMsg>;
 
     return (
         <main className="no-scrollbar flex h-full w-full flex-col overflow-y-auto pt-22 pb-20">
