@@ -55,7 +55,7 @@ export default function MusicBar({
         onTouchEnd={dragEnd}
         className="group absolute -top-2 flex h-7 w-full flex-col items-center justify-between gap-1 px-3 py-2 pb-2 select-none"
       >
-        <div className="flex h-0.5 w-full items-center rounded-full bg-white/20">
+        <div className="relative flex h-0.5 w-full items-center rounded-full bg-white/20">
           <div
             style={{ width: `${Math.floor((currTime / duration) * 100)}%` }}
             className={`bg-primary-gradient h-0.5 rounded-full`}
