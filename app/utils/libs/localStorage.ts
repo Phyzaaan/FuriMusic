@@ -33,7 +33,6 @@ export async function LoadLocalStorage(
         audioInstance.currentTime = data.time || 0;
         setCurrTrack(data.song);
         setRepeat(data.repeat);
-        console.log(data.song)
         loadSong(data.song, false, true);
 
         if (data.queue && data.queue.length > 0) {

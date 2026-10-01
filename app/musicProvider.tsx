@@ -36,8 +36,7 @@ export function MusicProvider({ children, initialAdmin }: { children: ReactNode,
   useEffect(() => {
     async function init() {
       if (!audio) return;
-      const res = await LoadLocalStorage(setCurrTrack, audio, setRepeat, setQueue, setFav);
-      console.log(res);
+      await LoadLocalStorage(setCurrTrack, audio, setRepeat, setQueue, setFav);
       isLoaded.current = true;
     }
     init();

@@ -185,7 +185,6 @@ export async function fetchArtistsRange(
     .range(from, to);
 
   if (filter && filter.length > 0) {
-    console.log(filter);
     query = query.ilike("name", `%${filter}%`);
   }
 
@@ -812,7 +811,6 @@ export async function downloadAndUploadSuggestionSong(
   });
 
   if (!uploadRes.ok) {
-    alert("Make sure You are authenticated!");
     throw new Error("Failed to get upload token.");
   }
 

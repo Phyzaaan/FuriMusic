@@ -21,7 +21,7 @@ export default function getVideoId(url: string): string | null {
     parsed.pathname.startsWith("/shorts/")
   ) {
     return parsed.pathname.split("/")[2];
-  }
+  } 
 
   return null;
 }

@@ -215,7 +215,6 @@ export default function SongEditorForm({
 
 
   const submitForm = async (data: SongEditorFormValues) => {
-    console.log("Handle form submission");
     if (createOpen) {
       alert("Please finish creating the new artist before submitting the Song.");
       return;
@@ -405,7 +404,7 @@ export default function SongEditorForm({
             {deleteLabel}
           </SecondaryBtn>
         ) : <span />}
-        <SecondaryBtn type="submit" onClick={() => console.log("Submit clicked")} className="font-bold transition-all hover:bg-green-500/50">
+        <SecondaryBtn type="submit" className="font-bold transition-all hover:bg-green-500/50">
           {submitLabel}
         </SecondaryBtn>
       </div>

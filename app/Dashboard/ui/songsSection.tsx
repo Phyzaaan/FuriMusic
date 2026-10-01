@@ -20,7 +20,6 @@ export default function SongsSection({ songs }: props) {
         if (!currSong) return;
         setSong(currSong);
         setShowEditor(true);
-        console.log("Editing song:", currSong);
     }
 
     return (
