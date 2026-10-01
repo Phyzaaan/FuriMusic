@@ -38,7 +38,7 @@ function QueueList({ showPlaylist, setShowPlaylist }: Props) {
         </div>
 
         {/* Playlist Body & Song List */}
-        <ul className="my-3 flex min-h-0 w-full flex-1 list-none flex-col items-center justify-start gap-1.5 overflow-y-auto rounded-md px-2 pt-3 pb-[env(safe-area-inset-bottom)]">
+        <ul className="my-3 flex min-h-0 w-full flex-1 list-none flex-col items-center justify-start gap-1.5 overflow-y-auto rounded-md px-2 pt-3 pb-6">
           {queue.length > 0 ?queue.map((song) => (
             <SongsCard
               key={song.name}

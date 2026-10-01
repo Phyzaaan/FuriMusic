@@ -22,7 +22,7 @@ function Sidebar() {
 
   const handleRemove = (id: number) => {
     setFav(fav.filter(f => f.id !== id));
-  } 
+  }
 
   const Links = [
     {
@@ -56,13 +56,13 @@ function Sidebar() {
       icon: "info",
     },
   ]
-  const sidebarLinks = isAdmin 
-  ? [...Links, { name: "Dashboard", href: "/Dashboard", icon: "admin" }] 
-  : Links;
+  const sidebarLinks = isAdmin
+    ? [...Links, { name: "Dashboard", href: "/Dashboard", icon: "admin" }]
+    : Links;
 
   return (
     <section
-      className={`absolute ${showSidebar ? "left-0" : "left-[-110%]"} bg-card-bg border-card-border top-20.25 z-20 flex max-h-[calc(100vh-81px)] h-full w-full max-w-lg flex-1 flex-col items-center justify-start rounded-r-xl border shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300 2xl:bottom-0 2xl:left-0 2xl:max-w-[30%]`}
+      className={`fixed ${showSidebar ? "left-0" : "left-[-110%]"} bg-card-bg border-card-border top-20.25 z-20 flex max-h-[calc(100dvh-84px)] h-full w-full max-w-lg pb-[env(safe-area-inset-bottom)] flex-1 flex-col items-center justify-start rounded-r-xl border shadow-lg saturate-150 backdrop-blur-xl transition-all duration-300 2xl:left-0 2xl:max-w-[30%]`}
     >
       {/* Main Navigation Menu */}
       <NavMenu
@@ -88,7 +88,7 @@ function Sidebar() {
         </div>
 
         {/* Favorites List */}
-        <ul className="relative my-3 flex min-h-0 w-full flex-1 list-none flex-col items-center justify-start gap-1.5 overflow-y-auto rounded-md px-2 pt-3 pb-[env(safe-area-inset-bottom)]">
+        <ul className="relative my-3 flex min-h-0 w-full flex-1 list-none flex-col items-center justify-start gap-1.5 overflow-y-auto rounded-md px-2 pt-3 pb-6">
           {fav.length > 0 ? fav.map((song) => (
             <SongsCard
               key={song.id}
