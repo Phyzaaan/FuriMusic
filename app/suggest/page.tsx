@@ -78,7 +78,7 @@ export default function Home() {
               id="song-url"
               type="url"
               placeholder="Paste your favorite song link here..."
-              className="h-12 w-full rounded-xl border border-card-border bg-white/5 px-4 text-base text-primary outline-none transition placeholder:text-tertiary focus:border-white/30 focus:bg-white/[0.07]"
+              className="h-12 w-full rounded-xl border border-card-border bg-white/5 px-4 text-base text-primary outline-none transition placeholder:text-tertiary focus:bg-white/[0.07] focus:outline-none focus:ring-2 focus:ring-accent-from"
               onChange={(e) => setUrl(e.target.value)}
               onKeyDown={handleKeyDown}
               value={url}

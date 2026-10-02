@@ -377,10 +377,12 @@ export default function SongEditorForm({
             {createOpen ? (
               <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/55 px-3 py-4 backdrop-blur-sm">
                 <div className="flex max-h-[min(80vh,42rem)] w-full max-w-lg flex-col gap-2 overflow-y-auto rounded-xl border border-card-border bg-dark-bg/95 px-4 py-4 shadow-2xl shadow-black/50 backdrop-blur-xl no-scrollbar">
-                  <h4 className="text-sm font-semibold text-primary">New artist</h4>
+                  <div className="pb-2 border-b border-card-border bg-dark-bg flex justify-between items-center">
+                    <h3 className="text-md font-semibold text-primary">New artist</h3>
+                  </div>
 
-                  <div className="flex flex-col gap-3">
-                    <div className="flex flex-col gap-2">
+                  <div className="flex gap-3">
+                    <div className="flex flex-col gap-2 w-42 shrink-0">
                       <span className="text-sm font-medium text-secondary">Banner</span>
                       {artistBannerPreview ? (
                         <div className="relative">
@@ -460,7 +462,7 @@ export default function SongEditorForm({
           <textarea
             id="song-lyrics"
             {...register("lyrics")}
-            placeholder="No lyrics yet..."
+            placeholder="Paste lyrics here if you have them..."
             className="bg-dark-bg border-card-border flex w-full min-h-56 shrink-0 resize-y rounded-lg border px-3 py-2 text-sm leading-relaxed text-primary focus:outline-none focus:ring-2 focus:ring-accent-from transition-all"
           />
         </div>

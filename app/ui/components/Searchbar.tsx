@@ -20,7 +20,7 @@ function Searchbar({ showSearchbar }: props) {
   return (
     <div className={`bg-card-bg absolute ${showSearchbar ? "top-0" : "-top-full"} flex h-full w-full items-center justify-center transition-all duration-150`}>
       <form onSubmit={handleSubmit}
-        className="bg-dark-bg border-card-border flex w-3/4 items-center justify-between rounded-md border">
+        className="bg-dark-bg border-card-border flex w-3/4 items-center justify-between rounded-md border focus-within:outline-none focus-within:ring-2 focus-within:ring-accent-from">
         <PrimaryBtn
           type="submit"
           icon={`/icons/search.svg`}

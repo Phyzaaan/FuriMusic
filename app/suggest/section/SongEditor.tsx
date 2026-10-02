@@ -18,6 +18,7 @@ type SubmissionPhase = "idle" | "preparing" | "downloading" | "uploading" | "fin
 
 export default function SongEditor({ Song, showEditor, setShowEditor }: SongEditorProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isSubmitted, setIsSubmitted] = useState(false);
     const [token, setToken] = useState("");
     const [submissionPhase, setSubmissionPhase] = useState<SubmissionPhase>("idle");
     const [submissionMessage, setSubmissionMessage] = useState("Preparing your suggestion...");
@@ -46,9 +47,10 @@ export default function SongEditor({ Song, showEditor, setShowEditor }: SongEdit
             alert("Please complete the CAPTCHA before submitting.");
             return;
         }
+        await new Promise((resolve) => setTimeout(resolve, 50)); // Small delay for UX
 
         setIsSubmitting(true);
-        updateSubmissionState("preparing", "Preparing your suggestion...", 12);
+        updateSubmissionState("preparing", "Preparing your suggestion...", 0);
 
         try {
             const existingArtistIds = (payload.artistsIds ?? []);
@@ -57,7 +59,7 @@ export default function SongEditor({ Song, showEditor, setShowEditor }: SongEdit
             const formData = new FormData();
             formData.append("name", payload.name);
 
-            updateSubmissionState("downloading", "Downloading and processing the audio...", 36);
+            setTimeout(() => updateSubmissionState("downloading", "Downloading and processing the audio...", 34), 1000);
             const ytUrl = Song.url;
             const url = await downloadAndUploadSuggestionSong(ytUrl, payload.name, token);
 
@@ -91,11 +93,15 @@ export default function SongEditor({ Song, showEditor, setShowEditor }: SongEdit
             if (response.ok) {
                 updateSubmissionState("finishing", "Finalizing your suggestion...", 100);
                 window.setTimeout(() => {
-                    setShowEditor(false);
                     setIsSubmitting(false);
                     updateSubmissionState("idle", "Preparing your suggestion...", 0);
-                    alert("Your suggestion has been submitted successfully!");
+                    setIsSubmitted(true);
+                    window.setTimeout(() => {
+                        setShowEditor(false);
+                        setIsSubmitted(false);
+                    }, 2500);
                 }, 900);
+
                 return;
             }
 
@@ -166,6 +172,74 @@ export default function SongEditor({ Song, showEditor, setShowEditor }: SongEdit
                                 <div className="pt-3 flex items-center gap-2 text-xs text-tertiary">
                                     <span className={`h-2.5 w-2.5 rounded-full ${submissionPhase === "error" ? "bg-red-500" : "bg-green-400"}`} />
                                     <span>{submissionPhase === "error" ? "We hit a snag. You can try again after adjusting the form." : "This usually takes a few moments while we process the song."}</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    {isSubmitted && (
+                        <div role="status" aria-live="polite" className="fixed inset-0 z-10 flex items-center justify-center rounded-lg bg-dark-bg/85 border-card-border px-4 py-6 backdrop-blur-sm">
+                            {/* Self-contained keyframes so no tailwind config / global css changes are needed */}
+                            <style>{`
+                                @keyframes submitted-draw { to { stroke-dashoffset: 0; } }
+                                @keyframes submitted-pop {
+                                    0% { transform: scale(0.92); opacity: 0; }
+                                    100% { transform: scale(1); opacity: 1; }
+                                }
+                                @keyframes submitted-rise {
+                                    from { transform: translateY(6px); opacity: 0; }
+                                    to { transform: translateY(0); opacity: 1; }
+                                }
+                                .submitted-card { animation: submitted-pop 0.25s ease-out both; }
+                                .submitted-ring { stroke-dasharray: 1; stroke-dashoffset: 1; animation: submitted-draw 0.6s ease-out 0.1s forwards; }
+                                .submitted-tick { stroke-dasharray: 1; stroke-dashoffset: 1; animation: submitted-draw 0.4s ease-out 0.65s forwards; }
+                                .submitted-text { opacity: 0; animation: submitted-rise 0.4s ease-out 0.9s forwards; }
+                                @media (prefers-reduced-motion: reduce) {
+                                    .submitted-card, .submitted-ring, .submitted-tick, .submitted-text { animation: none; opacity: 1; stroke-dashoffset: 0; transform: none; }
+                                }
+                            `}</style>
+
+                            <div className="submitted-card w-full max-w-md rounded-2xl border border-card-border bg-card-bg/95 p-5 shadow-2xl">
+                                <div className="flex items-center gap-3 pb-3">
+                                    {/* Same 40px circle as the loading spinner, now drawn in green with a tick */}
+                                    <svg className="h-10 w-10 shrink-0 text-green-400" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+                                        <circle cx="20" cy="20" r="18" fill="currentColor" fillOpacity="0.12" />
+                                        <circle
+                                            className="submitted-ring"
+                                            cx="20"
+                                            cy="20"
+                                            r="18"
+                                            pathLength="1"
+                                            stroke="currentColor"
+                                            strokeWidth="3"
+                                            strokeLinecap="round"
+                                            transform="rotate(-90 20 20)"
+                                        />
+                                        <path
+                                            className="submitted-tick"
+                                            d="M12 20.5l5.5 5.5L28 15"
+                                            pathLength="1"
+                                            stroke="currentColor"
+                                            strokeWidth="3"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+                                    </svg>
+
+                                    <div className="submitted-text">
+                                        <p className="text-lg font-semibold text-primary">Thank you!</p>
+                                        <p className="pt-1 text-sm text-tertiary">
+                                            Your song has been submitted successfully.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="h-2 w-full overflow-hidden rounded-full bg-card-border">
+                                    <div className="h-full w-full rounded-full bg-green-400" />
+                                </div>
+
+                                <div className="pt-3 flex items-center gap-2 text-xs text-tertiary">
+                                    <span className="h-2.5 w-2.5 rounded-full bg-green-400" />
+                                    <span>All done. Thanks for contributing to the library!</span>
                                 </div>
                             </div>
                         </div>
