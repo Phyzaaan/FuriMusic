@@ -122,7 +122,7 @@ export default function SongEditorForm({
         const created = { tempId: tempArtistId, name: artist.name.trim(), banner: artist.banner };
 
         setPendingArtists((prev) => prev.some(p => p.name === created.name) ? prev : [...prev, created]);
-      
+
         setSelectedArtistIds((prev) => {
           const next = prev.includes(tempArtistId) ? prev : [...prev, tempArtistId];
           setValue("artistsIds", next);
@@ -230,181 +230,250 @@ export default function SongEditorForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(submitForm)} onKeyDown={handleFormKeyDown} className="flex-1 overflow-y-auto px-2 py-1 pb-14 md:pb-1 flex flex-col gap-2 no-scrollbar">
-      <div className="flex flex-col w-full gap-2 py-1">
-        <label className="text-sm font-medium text-secondary">Song Banner</label>
-        {songBannerPreview ? (
-          <div className="relative">
-            <Image src={songBannerPreview} alt="Song banner preview" width={360} height={360} className="w-full aspect-3/2 rounded-lg object-cover border border-card-border" />
-            <SecondaryBtn
-              type="button"
-              onClick={() => {
-                setSongBanner(null);
-                setSongBannerPreview("");
-              }}
-              className="absolute bottom-2 right-2 bg-dark-bg/80"
-            >
-              Remove
-            </SecondaryBtn>
-          </div>
-        ) : (
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(event) => handleBannerChange(event.target.files?.[0] ?? null, true)}
-            className="bg-dark-bg border-card-border w-full rounded-md border py-1 text-sm file:mr-4 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-btn file:text-primary hover:file:bg-opacity-80 transition-all cursor-pointer"
-          />
-        )}
-      </div>
+    <form onSubmit={handleSubmit(submitForm)} onKeyDown={handleFormKeyDown} className="flex flex-col gap-3 px-1 pt-2 pb-14 md:pb-2">
 
-      <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-secondary">Song Name</label>
-        <input
-          type="text"
-          {...register("name")}
-          placeholder="Song name..."
-          className="bg-dark-bg border-card-border w-full text-lg rounded-md border px-2 py-1 text-primary focus:outline-none focus:ring-1 focus:ring-accent-from transition-all"
-        />
-      </div>
-
-      <div className="flex flex-col gap-1 pb-1">
-        <label className="text-sm font-semibold text-tertiary">Selected Artists ({selectedArtists.length})</label>
-        <div className="flex gap-2 max-h-45 flex-wrap overflow-y-auto no-scrollbar shrink-0 px-2 py-2 border border-card-border rounded-md bg-dark-bg">
-          {selectedArtists.length > 0 ? (
-            selectedArtists.map((artist) => (
-              <button
-                key={artist.id}
-                type="button"
-                onClick={() => toggleArtist(artist.id)}
-                className="rounded-lg px-2 py-1 text-xs border bg-card-bg border-card-border text-secondary hover:border-card-border hover:text-primary hover:bg-red-500/30 cursor-pointer transition-all duration-100"
-              >
-                {artist.name}
-              </button>
-            ))
-          ) : (
-            <span>No artists selected</span>
-          )}
+      {/* ───────── Song details ───────── */}
+      <section className="flex flex-col overflow-hidden rounded-xl border border-card-border bg-dark-bg/40">
+        <div className="flex items-center justify-between gap-2 border-b border-card-border bg-dark-bg/60 px-3 py-2">
+          <h3 className="text-sm font-semibold text-primary">Song details</h3>
         </div>
-      </div>
 
-      <div className="flex flex-col gap-1 pb-1">
-        <label className="text-sm font-semibold text-tertiary">Add More Artists</label>
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              value={artistsFilter}
-              onChange={(event) => setArtistsFilter(event.target.value)}
-              placeholder="Search artists..."
-              className="bg-dark-bg border-card-border grow rounded-lg border px-2 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent-from transition-all"
-            />
-            <SecondaryBtn
-              type="button"
-              onClick={() => searchArtists(artistsFilter)}
-              disabled={isLoadingArtists}
-              className="whitespace-nowrap min-w-25 bg-card-bg py-2 text-sm"
-            >
-              {isLoadingArtists ? "Searching..." : "Search"}
-            </SecondaryBtn>
-          </div>
-
-          <div className="w-full max-h-34 p-2 border border-card-border rounded-lg bg-dark-bg overflow-y-auto no-scrollbar">
-            {artistsResults.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {artistsResults.map((artist) => {
-                  const selected = selectedArtistIds.includes(artist.id);
-                  return (
-                    <button
-                      key={artist.id}
-                      type="button"
-                      onClick={() => toggleArtist(artist.id)}
-                      className={`rounded-lg px-2 py-1 text-xs border transition-all duration-200 cursor-pointer ${selected ? "bg-dark-bg border-card-border shadow-lg hover:bg-red-500/30" : "bg-card-bg border-transparent text-secondary hover:border-card-border hover:text-primary"}`}
-                    >
-                      {artist.name}
-                    </button>
-                  );
-                })}
+        <div className="flex flex-col gap-4 p-3 md:flex-row">
+          {/* Banner (preview and drop box share the same width + aspect ratio) */}
+          <div className="flex w-full shrink-0 flex-col gap-2 md:w-72">
+            <span className="text-sm font-medium text-secondary">Song banner</span>
+            {songBannerPreview ? (
+              <div className="relative">
+                <Image src={songBannerPreview} alt="Song banner preview" width={360} height={360} className="w-full aspect-3/2 rounded-lg object-cover border border-card-border" />
+                <SecondaryBtn
+                  type="button"
+                  onClick={() => {
+                    setSongBanner(null);
+                    setSongBannerPreview("");
+                  }}
+                  className="absolute bottom-2 right-2 bg-dark-bg/80"
+                >
+                  Remove
+                </SecondaryBtn>
               </div>
             ) : (
-              <span>Search results will appear here</span>
+              <div className="relative flex w-full aspect-3/2 flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-card-border bg-dark-bg p-3 text-center transition-all hover:border-accent-from hover:bg-card-bg focus-within:border-accent-from focus-within:ring-2 focus-within:ring-accent-from">
+                <svg className="pointer-events-none h-7 w-7 text-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 16V4m0 0L8 8m4-4 4 4" />
+                  <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+                </svg>
+                <span className="pointer-events-none text-sm font-medium text-primary">Click to upload</span>
+                <span className="pointer-events-none text-xs text-tertiary">or drag and drop an image</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  title=""
+                  aria-label="Upload song banner"
+                  onChange={(event) => handleBannerChange(event.target.files?.[0] ?? null, true)}
+                  className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-1 min-w-0 flex-col gap-2">
+            <label htmlFor="song-name" className="text-sm font-medium text-secondary">Song name</label>
+            <input
+              id="song-name"
+              type="text"
+              {...register("name")}
+              placeholder="Song name..."
+              className="bg-dark-bg border-card-border w-full text-lg rounded-lg border px-3 py-2 text-primary focus:outline-none focus:ring-2 focus:ring-accent-from transition-all"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ───────── Artists ───────── */}
+      <section className="flex flex-col overflow-hidden rounded-xl border border-card-border bg-dark-bg/40">
+        <div className="flex items-center justify-between gap-2 border-b border-card-border bg-dark-bg/60 px-3 py-2">
+          <h3 className="text-sm font-semibold text-primary">Artists</h3>
+          <span className="rounded-md border border-card-border bg-card-bg px-2 py-0.5 text-xs text-secondary">
+            {selectedArtists.length} selected
+          </span>
+        </div>
+
+        <div className="flex flex-col gap-4 p-3">
+          {/* Selected */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-sm font-medium text-secondary">Selected artists</span>
+              {selectedArtists.length > 0 && <span className="text-xs text-tertiary">Tap to remove</span>}
+            </div>
+            <div className="flex gap-2 min-h-14 max-h-45 flex-wrap content-start items-start overflow-y-auto no-scrollbar shrink-0 p-2 border border-card-border rounded-lg bg-dark-bg">
+              {selectedArtists.length > 0 ? (
+                selectedArtists.map((artist) => (
+                  <button
+                    key={artist.id}
+                    type="button"
+                    title="Remove artist"
+                    onClick={() => toggleArtist(artist.id)}
+                    className="flex items-center gap-2 rounded-md px-3 py-1.5 text-sm border bg-card-bg border-card-border text-primary hover:bg-red-500/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-from cursor-pointer transition-all duration-100"
+                  >
+                    {artist.name}
+                    <span aria-hidden="true" className="text-xs text-tertiary">✕</span>
+                  </button>
+                ))
+              ) : (
+                <span className="w-full py-2 text-center text-sm text-tertiary">No artists selected yet</span>
+              )}
+            </div>
+          </div>
+
+          {/* Search */}
+          <div className="flex flex-col gap-2">
+            <label htmlFor="artist-search" className="text-sm font-medium text-secondary">Add more artists</label>
+            <div className="flex items-center gap-2">
+              <input
+                id="artist-search"
+                type="text"
+                value={artistsFilter}
+                onChange={(event) => setArtistsFilter(event.target.value)}
+                placeholder="Search artists..."
+                className="bg-dark-bg border-card-border grow min-w-0 rounded-lg border px-3 py-2 text-sm text-primary focus:outline-none focus:ring-2 focus:ring-accent-from transition-all"
+              />
+              <SecondaryBtn
+                type="button"
+                onClick={() => searchArtists(artistsFilter)}
+                disabled={isLoadingArtists}
+                className="whitespace-nowrap min-w-25 bg-card-bg py-2 text-sm"
+              >
+                {isLoadingArtists ? "Searching..." : "Search"}
+              </SecondaryBtn>
+            </div>
+
+            <div className="w-full min-h-14 max-h-34 p-2 border border-card-border rounded-lg bg-dark-bg overflow-y-auto no-scrollbar">
+              {artistsResults.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {artistsResults.map((artist) => {
+                    const selected = selectedArtistIds.includes(artist.id);
+                    return (
+                      <button
+                        key={artist.id}
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() => toggleArtist(artist.id)}
+                        className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm border focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-from transition-all duration-200 cursor-pointer ${selected ? "bg-dark-bg border-accent-from text-primary shadow-lg hover:bg-red-500/30" : "bg-card-bg border-transparent text-secondary hover:border-card-border hover:text-primary"}`}
+                      >
+                        {selected && <span aria-hidden="true" className="text-xs">✓</span>}
+                        {artist.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <span className="block w-full py-2 text-center text-sm text-tertiary">Search results will appear here</span>
+              )}
+            </div>
+          </div>
+
+          {/* Create artist */}
+          <div className="border-t border-card-border pt-3">
+            {createOpen ? (
+              <div className="flex flex-col gap-3 rounded-lg border border-card-border bg-card-bg p-3">
+                <h4 className="text-sm font-semibold text-primary">New artist</h4>
+
+                <div className="flex gap-3">
+                  <div className="flex w-36 shrink-0 flex-col gap-2">
+                    <span className="text-sm font-medium text-secondary">Banner</span>
+                    {artistBannerPreview ? (
+                      <div className="relative">
+                        <Image src={artistBannerPreview} alt="Artist banner preview" width={360} height={360} className="w-full aspect-square rounded-lg object-cover border border-card-border" />
+                        <SecondaryBtn
+                          type="button"
+                          onClick={() => {
+                            setNewArtistBanner(null);
+                            setArtistBannerPreview("");
+                          }}
+                          className="absolute bottom-1 right-1 bg-dark-bg/80 text-xs"
+                        >
+                          Remove
+                        </SecondaryBtn>
+                      </div>
+                    ) : (
+                      <div className="relative flex w-full aspect-square flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-card-border bg-dark-bg p-2 text-center transition-all hover:border-accent-from hover:bg-card-bg focus-within:border-accent-from focus-within:ring-2 focus-within:ring-accent-from">
+                        <svg className="pointer-events-none h-6 w-6 text-secondary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M12 16V4m0 0L8 8m4-4 4 4" />
+                          <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+                        </svg>
+                        <span className="pointer-events-none text-xs font-medium text-primary">Upload</span>
+                        <span className="pointer-events-none text-xs text-tertiary">or drop here</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          title=""
+                          aria-label="Upload artist banner"
+                          onChange={(event) => handleBannerChange(event.target.files?.[0] ?? null, false)}
+                          className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex flex-1 min-w-0 flex-col gap-2">
+                    <label htmlFor="new-artist-name" className="text-sm font-medium text-secondary">Artist name</label>
+                    <input
+                      id="new-artist-name"
+                      type="text"
+                      value={newArtistName}
+                      onChange={(event) => setNewArtistName(event.target.value)}
+                      placeholder="New artist name"
+                      className="bg-dark-bg border-card-border w-full rounded-lg border px-3 py-2 text-primary focus:outline-none focus:ring-2 focus:ring-accent-from transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-2">
+                  <SecondaryBtn type="button" onClick={() => setCreateOpen(false)} className="hover:bg-transparent border-transparent hover:text-red-400">
+                    Cancel
+                  </SecondaryBtn>
+                  <SecondaryBtn type="button" onClick={() => void handleCreateLocalArtist()} className="px-4 font-semibold hover:bg-green-500/50">
+                    Create
+                  </SecondaryBtn>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm text-tertiary">Can&apos;t find an artist?</span>
+                <SecondaryBtn type="button" onClick={() => setCreateOpen(true)} className="bg-card-bg px-3">
+                  Create artist
+                </SecondaryBtn>
+              </div>
             )}
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="relative w-full">
-        {createOpen ? (
-          <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/55 px-3 py-4 backdrop-blur-sm">
-            <div className="flex max-h-[min(80vh,42rem)] w-full max-w-lg flex-col gap-2 overflow-y-auto rounded-2xl border border-card-border bg-dark-bg/95 px-4 py-4 shadow-2xl shadow-black/50 backdrop-blur-xl no-scrollbar">
-              <div className="flex flex-col gap-1 pb-1">
-                <label className="text-sm font-medium text-secondary">Artist Banner</label>
-                {artistBannerPreview ? (
-                  <div className="relative">
-                    <Image src={artistBannerPreview} alt="Artist banner preview" width={360} height={360} className="w-full aspect-square rounded-lg object-cover border border-card-border" />
-                    <SecondaryBtn
-                      type="button"
-                      onClick={() => {
-                        setNewArtistBanner(null);
-                        setArtistBannerPreview("");
-                      }}
-                      className="absolute bottom-2 right-2 bg-dark-bg/80"
-                    >
-                      Remove
-                    </SecondaryBtn>
-                  </div>
-                ) : (<input
-                  type="file"
-                  accept="image/*"
-                  onChange={(event) => handleBannerChange(event.target.files?.[0] ?? null, false)}
-                  className="border-card-border bg-dark-bg w-full rounded-md border py-1 text-sm file:mx-auto file:py-1 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary-btn file:text-primary hover:file:bg-opacity-80 transition-all cursor-pointer"
-                />)}
-              </div>
-
-              <div className="flex flex-col gap-1 pb-1">
-                <label className="text-sm font-medium text-secondary">Artist Name</label>
-                <input
-                  type="text"
-                  value={newArtistName}
-                  onChange={(event) => setNewArtistName(event.target.value)}
-                  placeholder="New artist name"
-                  className="bg-dark-bg border-card-border w-full rounded-md border px-2 py-1 text-primary focus:outline-none focus:ring-1 focus:ring-accent-from transition-all"
-                />
-              </div>
-              <div className="flex justify-between gap-2">
-                <SecondaryBtn type="button" onClick={() => void handleCreateLocalArtist()} className="hover:bg-green-500/50">
-                  Create
-                </SecondaryBtn>
-                <SecondaryBtn type="button" onClick={() => setCreateOpen(false)} className="hover:bg-transparent border-transparent hover:text-red-400">
-                  Cancel
-                </SecondaryBtn>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <SecondaryBtn type="button" onClick={() => setCreateOpen(true)} className="bg-card-bg px-2">
-            Create Artist
-          </SecondaryBtn>
-        )}
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <label className="text-sm font-medium text-secondary">Lyrics</label>
-        <textarea
-          {...register("lyrics")}
-          placeholder="No Lyrics yet..."
-          className="bg-dark-bg border-card-border flex w-full min-h-40 shrink-0 rounded-md border px-2 py-1"
-        />
-      </div>
+      {/* ───────── Lyrics ───────── */}
+      <section className="flex flex-col overflow-hidden rounded-xl border border-card-border bg-dark-bg/40">
+        <div className="flex items-center justify-between gap-2 border-b border-card-border bg-dark-bg/60 px-3 py-2">
+          <label htmlFor="song-lyrics" className="text-sm font-semibold text-primary">Lyrics</label>
+        </div>
+        <div className="flex flex-col p-3">
+          <textarea
+            id="song-lyrics"
+            {...register("lyrics")}
+            placeholder="No lyrics yet..."
+            className="bg-dark-bg border-card-border flex w-full min-h-56 shrink-0 resize-y rounded-lg border px-3 py-2 text-sm leading-relaxed text-primary focus:outline-none focus:ring-2 focus:ring-accent-from transition-all"
+          />
+        </div>
+      </section>
 
       {children}
 
-      <div className="flex items-center justify-between gap-2 rounded-md border border-card-border bg-card-bg/90 px-2 py-3 backdrop-blur-sm">
+      {/* ───────── Actions ───────── */}
+      <div className="flex items-center justify-between gap-2 border-t border-card-border pt-3">
         {!hideDelete ? (
           <SecondaryBtn type="button" onClick={() => void onDelete?.()} className="text-red-400 hover:bg-red-600 hover:text-primary transition-all">
             {deleteLabel}
           </SecondaryBtn>
         ) : <span />}
-        <SecondaryBtn type="submit" className="font-bold transition-all hover:bg-green-500/50">
+        <SecondaryBtn type="submit" className="px-5 font-bold bg-green-500/20 transition-all hover:bg-green-500/50">
           {submitLabel}
         </SecondaryBtn>
       </div>

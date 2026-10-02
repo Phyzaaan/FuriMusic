@@ -33,20 +33,12 @@ export default function Home() {
         setShowEditor(true);
         setUrl("");
       } else {
-        const contentType = response.headers.get("content-type");
-
-        if (contentType && contentType.includes("application/json")) {
-          const errorData = await response.json();
-          alert(errorData.error || "Something went wrong");
-        } else {
-          const errorText = await response.text();
-          console.error("Server HTML Error:", errorText);
-          alert("Server crashed or returned an invalid response.");
-        }
+        const errorData = await response.json();
+        alert(errorData.error || "Failed to fetch song details.");
       }
     } catch (err) {
       console.error(err);
-      alert("Something went wrong while fetching the song.");
+      alert(err instanceof Error ? err.message : "Something went wrong while fetching the song.");
     } finally {
       setLoading(false);
     }
@@ -60,63 +52,81 @@ export default function Home() {
   }
 
   return (
-    <main className="no-scrollbar flex h-full w-full flex-col items-center overflow-y-auto px-4 pb-20 pt-22 gap-8">
-
-      <div className="max-w-lg text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-2">
-          Suggest me your favorite song
-        </h1>
-        <p className="text-secondary indent-2">
-          Paste a song link below and we’ll help you turn it into a polished suggestion in seconds.
-        </p>
-      </div>
-
-      <div className="w-full flex flex-col items-center gap-2">
-        <div className="w-full flex items-center justify-center gap-2">
-          <input
-            type="url"
-            placeholder="Paste your favorite song link here..."
-            className="w-1/2 rounded-lg border border-card-border bg-dark-bg px-2 py-1 text-lg text-primary transition"
-            onChange={(e) => setUrl(e.target.value)}
-            onKeyDown={handleKeyDown}
-            value={url}
-          />
-          <SecondaryBtn
-            type="submit"
-            onClick={handleUpload}
-            disabled={loading || !url.trim()}
-            className="text-sm py-2 px-4 rounded-lg transition disabled:text-secondary"
-          >
-            {loading ? "Submitting..." : "Submit song"}
-          </SecondaryBtn>
+    <main className="no-scrollbar flex h-full w-full flex-col items-center gap-8 overflow-y-auto px-4 pb-20 pt-22">
+      <section className="flex w-full max-w-5xl flex-col items-center gap-6 sm:p-8">
+        <div className="flex w-full max-w-2xl flex-col items-center gap-3 text-center">
+          <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            Suggest me your favorite song
+          </h1>
+          <p className="max-w-xl text-base text-secondary sm:text-lg">
+            Paste a song link below and we’ll turn it into a polished recommendation in seconds.
+          </p>
         </div>
-        <p className="mt-3 text-sm text-tertiary">
-          Tip: paste a direct YouTube song link for the best results.
-        </p>
 
-      </div>
-
-    <div className="w-full flex flex-col items-center gap-4">
-
-      <div className="w-full border border-card-border" />
-      <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-        Supported Platforms
-      </h1>
-      <div className="w-3/4 mt-8 grid gap-4 ">
-        {platformCards.map((card) => (
-          <div
-            key={card.name}
-            className="rounded-lg border border-card-border bg-white/5 py-2 px-2 gap-8 transition hover:-translate-y-1 hover:bg-white/10 hover:shadow-lg hover:shadow-white/10"
-          >
-            <div className="w-full flex items-center gap-1">
-              <Image src={card.icon} alt={card.name} width={30} height={30} />
-              <h3 className="mt-3 font-semibold text-white">{card.name}</h3>
-            </div>
-            <p className="text-sm indent-5 text-secondary">{card.description}</p>
+        <form
+          className="flex w-full max-w-3xl flex-col gap-3 rounded-xl border border-card-border bg-dark-bg/70 p-3 sm:p-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void handleUpload();
+          }}
+        >
+          <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
+            <label className="sr-only" htmlFor="song-url">
+              Song URL
+            </label>
+            <input
+              id="song-url"
+              type="url"
+              placeholder="Paste your favorite song link here..."
+              className="h-12 w-full rounded-xl border border-card-border bg-white/5 px-4 text-base text-primary outline-none transition placeholder:text-tertiary focus:border-white/30 focus:bg-white/[0.07]"
+              onChange={(e) => setUrl(e.target.value)}
+              onKeyDown={handleKeyDown}
+              value={url}
+            />
+            <SecondaryBtn
+              type="submit"
+              disabled={loading || !url.trim()}
+              className="h-10 sm:h-12 whitespace-nowrap rounded-xl border border-white/10 bg-primary-gradient px-2 text-sm font-semibold text-white shadow-[0_0_20px_rgba(102,126,234,0.35)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60 disabled:text-secondary"
+            >
+              {loading ? "Submitting..." : "Submit song"}
+            </SecondaryBtn>
           </div>
-        ))}
-      </div>
-    </div>
+
+          <p className="px-1 text-sm text-tertiary">
+            Tip: paste a direct YouTube song link for the best results.
+          </p>
+        </form>
+      </section>
+
+      <section className="flex w-full max-w-5xl flex-col gap-5 rounded-xl border border-card-border bg-card-bg/50 p-6 backdrop-blur-sm sm:p-8">
+        <div className="flex items-center justify-between gap-3 border-b border-card-border pb-4">
+          <div className="flex flex-col gap-1">
+            <p className="text-xs font-medium tracking-[0.2em] text-secondary uppercase">
+              Supported sources
+            </p>
+            <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              Platforms
+            </h2>
+          </div>
+        </div>
+
+        <div className="grid gap-4">
+          {platformCards.map((card) => (
+            <article
+              key={card.name}
+              className="group flex flex-col gap-3 rounded-xl border border-card-border bg-white/3 p-4 transition duration-200 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.05] hover:shadow-[0_16px_35px_rgba(255,255,255,0.05)]"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5">
+                  <Image src={card.icon} alt={card.name} width={24} height={24} />
+                </div>
+                <h3 className="text-lg font-semibold text-white">{card.name}</h3>
+              </div>
+              <p className="text-sm leading-6 text-secondary">{card.description}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
       {(song && showEditor) && <SongEditor Song={song} showEditor={showEditor} setShowEditor={setShowEditor} />}
     </main>

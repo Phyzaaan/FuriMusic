@@ -807,11 +807,14 @@ export async function downloadAndUploadSuggestionSong(
       captchaToken,
       name: name,
       extension: "mp3",
+      url: youtubeUrl,
     }),
   });
 
   if (!uploadRes.ok) {
-    throw new Error("Failed to get upload token.");
+    const error = await uploadRes.json().then((res) => res.error || "Failed to get upload token.");
+    window.alert(error);
+    throw new Error(error);
   }
 
   const { token, path } = await uploadRes.json();
@@ -828,7 +831,9 @@ export async function downloadAndUploadSuggestionSong(
   });
 
   if (!downloadRes.ok) {
-    throw new Error("Failed to get download URL.");
+    const error = await downloadRes.json().then((res) => res.error || "Failed to get download URL.");
+    window.alert(error);
+    throw new Error(error);
   }
 
   const { downloadUrl } = await downloadRes.json();

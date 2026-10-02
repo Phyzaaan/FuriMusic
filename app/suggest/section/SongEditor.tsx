@@ -115,7 +115,6 @@ export default function SongEditor({ Song, showEditor, setShowEditor }: SongEdit
             console.error(error);
             updateSubmissionState("error", "A network issue interrupted the submission.", 0);
             setIsSubmitting(false);
-            window.alert("An unexpected network error occurred.");
         }
     };
 
@@ -147,8 +146,8 @@ export default function SongEditor({ Song, showEditor, setShowEditor }: SongEdit
                     {isSubmitting && (
                         <div className="fixed inset-0 z-10 flex items-center justify-center rounded-lg bg-dark-bg/85 border-card-border px-4 py-6 backdrop-blur-sm">
                             <div className="w-full max-w-md rounded-2xl border border-card-border bg-card-bg/95 p-5 shadow-2xl">
-                                <div className="flex items-center gap-3">
-                                    <div className="h-10 w-10 animate-spin rounded-full border-3 border-t-transparent" />
+                                <div className="flex items-center gap-3 pb-3">
+                                    <div className="h-10 w-10 shrink-0 animate-spin rounded-full border-3 border-t-transparent" />
                                     <div>
                                         <p className="text-lg font-semibold text-primary">{submissionMessage}</p>
                                         <p className="pt-1 text-sm text-tertiary">
@@ -157,14 +156,14 @@ export default function SongEditor({ Song, showEditor, setShowEditor }: SongEdit
                                     </div>
                                 </div>
 
-                                <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-dark-bg">
+                                <div className="h-2 w-full overflow-hidden rounded-full bg-card-border">
                                     <div
-                                        className="h-full rounded-full bg-linear-to-r from-accent-from to-accent-to transition-all duration-500"
+                                        className="h-full rounded-full bg-primary-gradient transition-all duration-500"
                                         style={{ width: `${submissionProgress}%` }}
                                     />
                                 </div>
 
-                                <div className="mt-3 flex items-center gap-2 text-xs text-tertiary">
+                                <div className="pt-3 flex items-center gap-2 text-xs text-tertiary">
                                     <span className={`h-2.5 w-2.5 rounded-full ${submissionPhase === "error" ? "bg-red-500" : "bg-green-400"}`} />
                                     <span>{submissionPhase === "error" ? "We hit a snag. You can try again after adjusting the form." : "This usually takes a few moments while we process the song."}</span>
                                 </div>

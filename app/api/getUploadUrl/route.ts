@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { sanitizeName } from "@/app/utils/data/data";
+import getVideoId from "@/app/utils/libs/getVideoId";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,7 +10,7 @@ const supabase = createClient(
 
 export async function POST(req: NextRequest) {
   try {
-    const { captchaToken, name, extension } = await req.json();
+    const { captchaToken, name, extension, url } = await req.json();
 
     if (!captchaToken) {
       return NextResponse.json(
@@ -42,8 +43,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    //get video id from url
+    const videoId = getVideoId(url);
+
+    if (!videoId) {
+      return NextResponse.json(
+        { error: "Invalid YouTube URL" },
+        { status: 400 }
+      );
+    }
+
     // Generate filename
-    const fileName = `${sanitizeName(name)}.${extension ?? "mp3"}`;
+    const fileName = `${sanitizeName(name)}-${videoId}.${extension ?? "mp3"}`;
 
     // Create signed upload URL
     const { data, error } = await supabase.storage

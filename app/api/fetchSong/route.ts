@@ -43,7 +43,7 @@ function getBestThumbnail(thumbnails: Thumbnails) {
 
 export async function POST(req: Request) {
     try {
-        const headersList = await headers();   
+        const headersList = await headers();
         const ip = headersList.get("x-forwarded-for")?.split(",")[0].trim();
 
         if (!ip) {
@@ -65,20 +65,26 @@ export async function POST(req: Request) {
 
         const oneMinuteAgo = new Date(Date.now() - RATE_LIMIT_MS).toISOString();
 
-        const { data: logData } = await supabase
+        const { data: logData, error: logError } = await supabase
             .from("request_log")
-            .select("ip, yt_id")
-            .gte("created_at", oneMinuteAgo);
+            .select("ip, yt_id, created_at")
+            .or(
+                `yt_id.eq."${videoId}",and(ip.eq."${ip}",created_at.gte."${oneMinuteAgo}")`
+            );
 
-        if (logData) {
-            const duplicateVideo = logData.some(x => x.yt_id === videoId);
-            const rateLimited = logData.some(x => x.ip === ip);
+        if (logError) {
+            return NextResponse.json({ error: "Something went wrong." }, { status: 500 });
+        }
 
-            if (duplicateVideo) {
-                return NextResponse.json({ error: "Video is Already Submitted!" }, { status: 400 });
-            } else if (rateLimited) {
-                return NextResponse.json({ error: "Please wait one minute before suggesting another song." }, { status: 400 });
-            }
+        if (logData?.some((x) => x.yt_id === videoId)) {
+            return NextResponse.json({ error: "This Song is Already Submitted!" }, { status: 400 });
+        }
+
+        if (logData?.some((x) => x.ip === ip)) {
+            return NextResponse.json(
+                { error: "Please wait one minute before suggesting another song." },
+                { status: 400 }
+            );
         }
 
         // Video details
