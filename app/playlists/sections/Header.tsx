@@ -14,12 +14,14 @@ export default function PlaylistHeader({ sort }: { sort: Sort; }) {
     <>
       <div className="flex w-full items-center justify-between gap-3 px-2 py-1">
         <h1 className="text-3xl font-semibold">Playlists Page</h1>
-        <PlaylistFilters current={sort} target="playlists" />
-        {isAdmin && (
-          <SecondaryBtn onClick={() => setShowEditor(true)}>
-            Create Playlist
-          </SecondaryBtn>
-        )}
+        <div>
+          <PlaylistFilters current={sort} target="playlists" />
+          {isAdmin && (
+            <SecondaryBtn onClick={() => setShowEditor(true)}>
+              Create Playlist
+            </SecondaryBtn>
+          )}
+        </div>
       </div>
 
       <PlaylistEditor showEditor={showEditor} setShowEditor={setShowEditor} />
