@@ -477,7 +477,7 @@ export default function SongEditorForm({
             {deleteLabel}
           </SecondaryBtn>
         ) : <span />}
-        <SecondaryBtn type="submit" className="px-5 font-bold bg-green-500/20 transition-all hover:bg-green-500/50">
+        <SecondaryBtn type="submit" className="px-5 font-bold bg-card-bg transition-all hover:bg-green-500/50">
           {submitLabel}
         </SecondaryBtn>
       </div>

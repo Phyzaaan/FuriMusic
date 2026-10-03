@@ -105,22 +105,17 @@ export default function SongEditor({ Song, showEditor, setShowEditor }: SongEdit
                 return;
             }
 
-            const contentType = response.headers.get("content-type");
-            if (contentType && contentType.includes("application/json")) {
-                const errorData = await response.json();
-                alert(errorData.error || "Something went wrong");
-            } else {
-                const errorText = await response.text();
-                console.error("Server HTML Error:", errorText);
-                alert("Server crashed or returned an invalid response.");
-            }
-
-            updateSubmissionState("error", "Submission failed. Please try again.", 0);
-            setIsSubmitting(false);
+            throw new Error(response.statusText || "Failed to submit the suggestion. Please try again.");
         } catch (error) {
             console.error(error);
-            updateSubmissionState("error", "A network issue interrupted the submission.", 0);
-            setIsSubmitting(false);
+            if (error instanceof Error) {
+                updateSubmissionState("error", error.message, 0);
+            } else {
+                updateSubmissionState("error", error as string, 0);
+            }
+            setTimeout(() => {
+                setIsSubmitting(false);
+            }, 3000);
         }
     };
 

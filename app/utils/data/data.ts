@@ -813,7 +813,6 @@ export async function downloadAndUploadSuggestionSong(
 
   if (!uploadRes.ok) {
     const error = await uploadRes.json().then((res) => res.error || "Failed to get upload token.");
-    window.alert(error);
     throw new Error(error);
   }
 
@@ -832,7 +831,6 @@ export async function downloadAndUploadSuggestionSong(
 
   if (!downloadRes.ok) {
     const error = await downloadRes.json().then((res) => res.error || "Failed to get download URL.");
-    window.alert(error);
     throw new Error(error);
   }
 

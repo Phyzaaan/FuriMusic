@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate filename
-    const fileName = `${sanitizeName(name)}-${videoId}.${extension ?? "mp3"}`;
+    const fileName = `${sanitizeName(name)}-${Math.random() * 10000 + 1}.${extension ?? "mp3"}`;
 
     // Create signed upload URL
     const { data, error } = await supabase.storage

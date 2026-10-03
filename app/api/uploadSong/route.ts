@@ -41,9 +41,10 @@ export async function POST(req: Request) {
 
         // Song Banner
         let songBannerUrl: string | null = null;
+        const ext = songBanner instanceof File ? songBanner.name.split(".").pop()?.toLowerCase() : null;
         if (songBanner) {
             const bannerFile = await compressImage(songBanner, 250);
-            songBannerUrl = await uploadToSupabase("songsBanner", `${safeName}.jpg`, bannerFile);
+            songBannerUrl = await uploadToSupabase("songsBanner", `${safeName}.${ext ?? 'jpg'}`, bannerFile);
         }
 
         // Pending Artist Banners
