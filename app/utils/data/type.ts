@@ -51,6 +51,7 @@ export type Artist = {
   id: number;
   name: string;
   banner: string;
+  totalSongs?: number;
 };
 
 export type MusicContextType = {

@@ -3,13 +3,15 @@ import { SecondaryBtn } from "@/app/ui/components/Buttons";
 import PlaylistCard from "@/app/ui/components/PlaylistCard";
 import { fetchPlaylistsRange } from "@/app/utils/data/data";
 import { Playlist } from "@/app/utils/data/type";
+import { Sort } from "@/app/utils/libs/sort";
 import { useState } from "react";
 
 interface PlaylistProps {
   Playlists: Playlist[];
+  sort: Sort;
 }
 
-function PlaylistsSection({ Playlists }: PlaylistProps) {
+function PlaylistsSection({ Playlists, sort }: PlaylistProps) {
   const [playlists, setPlaylists] = useState<Playlist[]>(Playlists);
   const [loading, setLoading] = useState(false);
 
@@ -18,17 +20,18 @@ function PlaylistsSection({ Playlists }: PlaylistProps) {
 
   const loadMore = async () => {
     setLoading(true);
-    const newPlaylists = await fetchPlaylistsRange(25, offset);
+    const newPlaylists = await fetchPlaylistsRange(25, offset, undefined, false, sort);
     if (newPlaylists) {
       setPlaylists([...playlists, ...newPlaylists]);
       setOffset(offset + 25);
       if (newPlaylists?.length < 25) setHasMore(Playlists.length < 25);
     }
     setLoading(false);
-  }
+  };
+
   return (
     <>
-      <div className="no-scrollbar grid grid-cols-2 md:grid-cols-3 justify-items-center w-full gap-2 flex-wrap px-2 py-1">
+      <div className="no-scrollbar grid w-full grid-cols-2 flex-wrap justify-items-center gap-2 px-2 py-1 md:grid-cols-3">
         {playlists && playlists.map(({ id, banner, name, totalSongs }) => {
           return (
             <PlaylistCard

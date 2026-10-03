@@ -4,12 +4,14 @@ import { fetchSongsRange } from "@/app/utils/data/data";
 import { useState } from "react";
 import { Song } from "@/app/utils/data/type";
 import { SecondaryBtn } from "@/app/ui/components/Buttons";
+import { Sort } from "@/app/utils/libs/sort";
 
 interface SongsProps {
     Songs: Song[];
+    sort: Sort;
 }
 
-function SongsSection({ Songs }: SongsProps) {
+function SongsSection({ Songs, sort }: SongsProps) {
     const [songs, setSongs] = useState<Song[]>(Songs);
     const [loading, setLoading] = useState(false);
 
@@ -18,7 +20,7 @@ function SongsSection({ Songs }: SongsProps) {
 
     const loadMore = async () => {
         setLoading(true);
-        const newSongs = await fetchSongsRange(25, offset);
+        const newSongs = await fetchSongsRange(25, offset, undefined, false, sort);
         if (newSongs) {
             setSongs([...songs, ...newSongs]);
             setOffset(offset + 25);

@@ -19,7 +19,7 @@ function PlaylistCard({ name, banner, totalSongs, id }: Playlist) {
         </div>
         <div className="w-full px-1">
           <h3 className="truncate text-xl font-medium">{name}</h3>
-          <p className="text-secondary text-[15px]">{totalSongs} Songs</p>
+          <p className="text-secondary text-[15px]">{totalSongs} {totalSongs === 1 ? "song" : "songs"}</p>
         </div>
       </div>
     </Link>

@@ -3,13 +3,10 @@ import ArtistCard from "../components/ArtistCard";
 import TitleBar from "../components/Title";
 import { useRef } from "react";
 import ErrorMsg from "../components/Error";
+import { Artist } from "@/app/utils/data/type";
 
 type artistProps = {
-  Artists: {
-    id: number;
-    name: string;
-    banner: string;
-  }[] | undefined;
+  Artists: Artist[] | undefined;
   link?: string
 };
 
@@ -36,6 +33,7 @@ function ArtistsSection({ Artists, link }: artistProps) {
               id={artist.id}
               banner={artist.banner}
               name={artist.name}
+              totalSongs={artist.totalSongs}
             />
           )
           )) : (

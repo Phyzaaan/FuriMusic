@@ -1,13 +1,19 @@
+import { Sort, SORT_CONFIG } from "../libs/sort";
 import { createClient } from "../supabase/client";
 import { Artist } from "./type";
+
 
 export async function fetchSongsRange(
   limit = 12,
   offset = 0,
-  filter?: string,
+  search?: string,
   random?: boolean,
+  sort: Sort = "recent",
 ) {
   const supabase = createClient();
+
+  // Escape LIKE wildcards so searching "50%" or "a_b" is literal
+  const term = search?.trim().replace(/[%_\\]/g, "\\$&");
 
   // Calculate the range bounds for Postgres (.range() is inclusive)
   let from = offset;
@@ -31,6 +37,8 @@ export async function fetchSongsRange(
     to = randomOffset + limit - 1;
   }
 
+  const { column, ascending } = SORT_CONFIG[sort];
+
   let query = supabase
     .from("Songs")
     .select(
@@ -43,12 +51,11 @@ export async function fetchSongsRange(
       song_artists(Artists(name, id))
     `,
     )
-    .order("name", { ascending: true })
+    .order(column, { ascending, nullsFirst: false })
+    .order("id")
     .range(from, to);
 
-  if (filter && filter.length > 0) {
-    query = query.ilike("name", `%${filter}%`);
-  }
+  if (term) query = query.ilike("name", `%${term}%`);
 
   const { data: songs, error } = await query;
 
@@ -85,10 +92,14 @@ export async function fetchSongsRange(
 export async function fetchPlaylistsRange(
   limit = 8,
   offset = 0,
-  filter?: string,
+  search?: string,
   random?: boolean,
+  sort: Sort = "recent",
 ) {
   const supabase = createClient();
+
+  // Escape LIKE wildcards so searching "50%" or "a_b" is literal
+  const term = search?.trim().replace(/[%_\\]/g, "\\$&");
 
   // Calculate the range bounds for Postgres (.range() is inclusive)
   let from = offset;
@@ -112,6 +123,8 @@ export async function fetchPlaylistsRange(
     to = randomOffset + limit - 1;
   }
 
+  const { column, ascending } = SORT_CONFIG[sort]
+
   let query = supabase
     .from("Playlists")
     .select(
@@ -119,15 +132,14 @@ export async function fetchPlaylistsRange(
     id, 
     name, 
     banner, 
-    playlist_songs(count)
+    song_count
   `,
     )
-    .order("name", { ascending: true })
+    .order(column, { ascending, nullsFirst: false })
+    .order("id") // tiebreaker
     .range(from, to);
 
-  if (filter && filter.length > 0) {
-    query = query.ilike("name", `%${filter}%`);
-  }
+  if (term) query = query.ilike("name", `%${term}%`);
 
   const { data, error } = await query;
   if (error || !data) {
@@ -136,14 +148,12 @@ export async function fetchPlaylistsRange(
   }
 
   return data.map((playlist) => {
-    // Extract the count from the nested array object
-    const totalSongs = playlist.playlist_songs?.[0]?.count || 0;
 
     return {
       id: playlist.id,
       name: playlist.name,
       banner: playlist.banner,
-      totalSongs,
+      totalSongs: playlist.song_count || 0,
     };
   });
 }
@@ -151,10 +161,14 @@ export async function fetchPlaylistsRange(
 export async function fetchArtistsRange(
   limit = 8,
   offset = 0,
-  filter?: string,
+  search?: string,
   random?: boolean,
+  sort: Sort = "recent",
 ) {
   const supabase = createClient();
+
+  // Escape LIKE wildcards so searching "50%" or "a_b" is literal
+  const term = search?.trim().replace(/[%_\\]/g, "\\$&");
 
   // Calculate the range bounds for Postgres (.range() is inclusive)
   let from = offset;
@@ -178,15 +192,16 @@ export async function fetchArtistsRange(
     to = randomOffset + limit - 1;
   }
 
+  const { column, ascending } = SORT_CONFIG[sort];
+
   let query = supabase
     .from("Artists")
-    .select("id, name, banner")
-    .order("name", { ascending: true })
+    .select("id, name, banner, song_count")
+    .order(column, { ascending, nullsFirst: false })
+    .order("id")
     .range(from, to);
 
-  if (filter && filter.length > 0) {
-    query = query.ilike("name", `%${filter}%`);
-  }
+  if (term) query = query.ilike("name", `%${term}%`);
 
   const { error: artistErr, data: artists } = await query;
 
@@ -200,6 +215,7 @@ export async function fetchArtistsRange(
       id: artist.id,
       name: artist.name,
       banner: artist.banner,
+      totalSongs: artist.song_count || 0,
     };
   });
 }

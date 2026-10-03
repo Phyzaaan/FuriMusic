@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Artist } from "@/app/utils/data/type";
 import Link from "next/link";
 
-function ArtistCard({ name, banner, id }: Artist) {
+function ArtistCard({ name, banner, id, totalSongs }: Artist) {
   return (
     <Link href={`/artist/${id}`}>
       <div className="group hover:border-card-border flex w-48 flex-col items-center justify-center gap-2 rounded-lg shrink-0 snap-start border border-transparent p-2">
@@ -17,7 +17,7 @@ function ArtistCard({ name, banner, id }: Artist) {
         </div>
         <div className="w-full px-1">
           <h3 className="truncate text-xl font-medium text-center">{name}</h3>
-          <p className="text-secondary text-[15px] text-center">Artist</p>
+          <p className="text-secondary text-[15px] text-center">{totalSongs} {totalSongs === 1 ? "song" : "songs"}</p>
         </div>
       </div>
     </Link>
