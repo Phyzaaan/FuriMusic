@@ -29,7 +29,7 @@ export default function PlaylistFilters({ current, target }: { current: Sort; ta
     };
 
     return (
-        <div ref={menuRef} className={`relative flex flex-col items-end p-2 ${isPending ? "opacity-70" : ""} z-20`}>
+        <div ref={menuRef} className={`relative flex flex-col items-end p-2 ${isPending ? "opacity-70" : ""} z-10`}>
             <button
                 type="button"
                 onClick={() => setIsOpen((open) => !open)}

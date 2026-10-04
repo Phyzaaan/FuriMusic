@@ -14,7 +14,7 @@ export default function PlaylistHeader({ sort }: { sort: Sort; }) {
     <>
       <div className="flex w-full items-center justify-between gap-3 px-2 py-1">
         <h1 className="text-3xl font-semibold">Playlists Page</h1>
-        <div>
+        <div className="flex items-center gap-2">
           <PlaylistFilters current={sort} target="playlists" />
           {isAdmin && (
             <SecondaryBtn onClick={() => setShowEditor(true)}>
