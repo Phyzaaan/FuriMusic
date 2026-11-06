@@ -9,9 +9,19 @@ export function handleNextSong(
   if (queue.length === 0) return;
   const currIndex = queue.findIndex((song) => song.id === currTrack?.id);
   const nextIndex = (currIndex + 1) % queue.length;
-  loadSong(queue[nextIndex], true);
   
-  setCurrTrack(queue[nextIndex]);
+  const nextSong = queue[nextIndex];
+
+  console.log("[FURI NEXT TRACK]", {
+  song: nextSong.name,
+  hasBlob: !!nextSong.blobUrl,
+  source: nextSong.blobUrl ? "BLOB" : "SUPABASE",
+  visibility: document.visibilityState,
+});
+
+  loadSong(nextSong, true);
+  
+  setCurrTrack(nextSong);
 }
 
 export function handlePrevSong(
@@ -22,9 +32,12 @@ export function handlePrevSong(
   if (queue.length === 0) return;
   const currIndex = queue.findIndex((song) => song.id === currTrack?.id);
   const prevIndex = currIndex === 0 ? queue.length - 1 : currIndex - 1;
-  loadSong(queue[prevIndex], true);
+
+  const prevSong = queue[prevIndex];
+
+  loadSong(prevSong, true);
   
-  setCurrTrack(queue[prevIndex]);
+  setCurrTrack(prevSong);
 }
 
 export function handleShuffle(

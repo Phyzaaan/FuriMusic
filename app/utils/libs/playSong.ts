@@ -1,8 +1,9 @@
-let audioInstance: HTMLAudioElement | null = null;
 
 import formatArtists from "./formatArtists";
 
 import { Song } from "../data/type";
+
+let audioInstance: HTMLAudioElement | null = null;
 
 if (typeof window !== "undefined") {
   audioInstance = new Audio();
@@ -19,10 +20,6 @@ export function loadSong(currTrack: Song, play: boolean = false, load = false) {
   const songUrl = currTrack.blobUrl || currTrack.url;
 
   if (audioInstance.src !== songUrl) {
-    audioInstance.src = songUrl;
-    if (load) audioInstance.load();
-    if (play) playSong();
-
     if ("mediaSession" in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: currTrack.name,
@@ -37,17 +34,42 @@ export function loadSong(currTrack: Song, play: boolean = false, load = false) {
         ],
       });
     }
+
+    audioInstance.src = songUrl;
+    if (load) audioInstance.load();
+    if (play) playSong();
   }
 }
 
-export function playSong() {
-  if (!audioInstance) return;
-  if (audioInstance.paused) {
-    audioInstance.play();
+export async function playSong() {
+  if (!audioInstance || !audioInstance.paused) return;
+  try {
+    await audioInstance.play();
+
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.playbackState = "playing";
+    }
+  } catch (error) {
+    console.error("[FURI PLAYBACK ERROR]", {
+      error: error,
+      readyState: audioInstance?.readyState,
+      networkState: audioInstance?.networkState,
+      currentSrc: audioInstance?.currentSrc,
+      mediaError: audioInstance?.error,
+      visibility: document.visibilityState,
+    });
+
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.playbackState = "paused";
+
+    }
   }
 }
 
 export function pauseSong() {
   if (!audioInstance || audioInstance.paused) return;
   audioInstance.pause();
+  if ("mediaSession" in navigator) {
+    navigator.mediaSession.playbackState = "paused";
+  }
 }

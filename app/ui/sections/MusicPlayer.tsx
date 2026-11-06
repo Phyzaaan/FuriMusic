@@ -28,7 +28,36 @@ export default function MusicPlayer() {
   }, [currTrack, fav]);
 
   const audioInstance = useMemo(() => {
-    return getAudioInstance();
+    const audio = getAudioInstance();
+    const events = [
+      "loadstart",
+      "loadedmetadata",
+      "loadeddata",
+      "canplay",
+      "playing",
+      "waiting",
+      "stalled",
+      "suspend",
+      "error",
+      "ended",
+      "pause",
+    ];
+
+    events.forEach((event) => {
+      audio?.addEventListener(event, () => {
+        console.log(`[AUDIO: ${event}]`, {
+          src: audio.currentSrc,
+          paused: audio.paused,
+          ended: audio.ended,
+          currentTime: audio.currentTime,
+          readyState: audio.readyState,
+          networkState: audio.networkState,
+          error: audio.error,
+          visibility: document.visibilityState,
+        });
+      });
+    });
+    return audio;
   }, []);
 
   const [currTime, setCurrTime] = useState(0.0);
@@ -94,9 +123,7 @@ export default function MusicPlayer() {
   useEffect(() => {
     const isScreenOff = typeof document !== 'undefined' && document.hidden;
 
-    const { repeat: isRepeat } = playbackRef.current;
-
-    if (!currTrack || queue.length === 0 || (!isRepeat && !isScreenOff)) return;
+    if (!currTrack || queue.length === 0 || !isScreenOff) return;
 
     const currIndex = queue.findIndex((song) => song.id === currTrack.id);
 
@@ -288,7 +315,7 @@ export default function MusicPlayer() {
         {/* Controls */}
         <div className="mb-2 flex w-full items-center justify-between px-2">
 
-          {/* Play / Repeat Button */}
+          {/* Repeat Button */}
           <PrimaryBtn
             onClick={() => setRepeat(!repeat)}
             icon={`/icons/${repeat ? "repeat" : "shuffle"}.svg`}
