@@ -2,6 +2,7 @@
 import formatArtists from "./formatArtists";
 
 import { Song } from "../data/type";
+import { furiLog } from "./debug";
 
 let audioInstance: HTMLAudioElement | null = null;
 
@@ -18,6 +19,11 @@ export function loadSong(currTrack: Song, play: boolean = false, load = false) {
   }
 
   const songUrl = currTrack.blobUrl || currTrack.url;
+
+  furiLog("load-song", {
+    track: currTrack.id,
+    source: currTrack.blobUrl ? "blob" : "supabase",
+  });
 
   if (audioInstance.src !== songUrl) {
     if ("mediaSession" in navigator) {
@@ -50,13 +56,8 @@ export async function playSong() {
       navigator.mediaSession.playbackState = "playing";
     }
   } catch (error) {
-    console.error("[FURI PLAYBACK ERROR]", {
-      error: error,
-      readyState: audioInstance?.readyState,
-      networkState: audioInstance?.networkState,
-      currentSrc: audioInstance?.currentSrc,
-      mediaError: audioInstance?.error,
-      visibility: document.visibilityState,
+    furiLog("play-rejected", {
+      error: error instanceof Error ? error.message : String(error),
     });
 
     if ("mediaSession" in navigator) {

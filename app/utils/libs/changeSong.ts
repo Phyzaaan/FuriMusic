@@ -1,5 +1,6 @@
 import { loadSong } from "./playSong";
 import { Song } from "../data/type";
+import { furiLog } from "./debug";
 
 export function handleNextSong(
   currTrack: Song | null,
@@ -9,18 +10,16 @@ export function handleNextSong(
   if (queue.length === 0) return;
   const currIndex = queue.findIndex((song) => song.id === currTrack?.id);
   const nextIndex = (currIndex + 1) % queue.length;
-  
+
   const nextSong = queue[nextIndex];
 
-  console.log("[FURI NEXT TRACK]", {
-  song: nextSong.name,
-  hasBlob: !!nextSong.blobUrl,
-  source: nextSong.blobUrl ? "BLOB" : "SUPABASE",
-  visibility: document.visibilityState,
-});
+  furiLog("track-selected", {
+    name: nextSong.name,
+    source: nextSong.blobUrl ? "blob" : "supabase",
+  });
 
   loadSong(nextSong, true);
-  
+
   setCurrTrack(nextSong);
 }
 
@@ -36,7 +35,7 @@ export function handlePrevSong(
   const prevSong = queue[prevIndex];
 
   loadSong(prevSong, true);
-  
+
   setCurrTrack(prevSong);
 }
 

@@ -19,6 +19,7 @@ import Lyrics from "./Lyrics";
 import SongEditor from "./SongEditor";
 import AddToPlaylistModal from "../components/AddToPlaylistModal";
 import { prewarmTrack } from "@/app/utils/libs/playerUtils";
+import { furiLog } from "@/app/utils/libs/debug";
 
 export default function MusicPlayer() {
   const { currTrack, setCurrTrack, queue, repeat, setRepeat, isPlaying, setFav, fav, isAdmin } = useMusic();
@@ -45,7 +46,7 @@ export default function MusicPlayer() {
 
     events.forEach((event) => {
       audio?.addEventListener(event, () => {
-        console.log(`[AUDIO: ${event}]`, {
+        furiLog(`audio-${event}`, {
           src: audio.currentSrc,
           paused: audio.paused,
           ended: audio.ended,
@@ -54,7 +55,7 @@ export default function MusicPlayer() {
           networkState: audio.networkState,
           error: audio.error,
           visibility: document.visibilityState,
-        });
+        })
       });
     });
     return audio;
