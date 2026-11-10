@@ -12,58 +12,84 @@ if (typeof window !== "undefined") {
 
 export const getAudioInstance = () => audioInstance;
 
-export function loadSong(currTrack: Song, play: boolean = false, load = false) {
-  if (!audioInstance) {
-    console.error("Audio instance is not available.");
-    return;
-  }
+export async function loadSong(
+  currTrack: Song,
+  play = false
+) {
+  if (!audioInstance) return false;
 
+  const audio = audioInstance;
   const songUrl = currTrack.blobUrl || currTrack.url;
 
-  furiLog("load-song", {
-    track: currTrack.id,
-    source: currTrack.blobUrl ? "blob" : "supabase",
-  });
-
-  if (audioInstance.src !== songUrl) {
-    if ("mediaSession" in navigator) {
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: currTrack.name,
-        artist: formatArtists(currTrack.artists.map(artist => artist.name)) ?? "Unknown Artist",
-        album: "Furi Album",
-        artwork: [
-          {
-            src: currTrack.banner,
-            sizes: "512x512",
-            type: "image/png",
-          },
-        ],
-      });
-    }
-
-    audioInstance.src = songUrl;
-    if (load) audioInstance.load();
-    if (play) playSong();
+  // Update lock-screen metadata
+  if ("mediaSession" in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: currTrack.name,
+      artist:
+        formatArtists(
+          currTrack.artists.map(artist => artist.name)
+        ) ?? "Unknown Artist",
+      album: "Furi Album",
+      artwork: [
+        {
+          src: currTrack.banner,
+          sizes: "512x512",
+          type: "image/png",
+        },
+      ],
+    });
   }
+
+  if (audio.src !== songUrl) {
+    audio.pause();
+    audio.src = songUrl;
+  } else if (audio.error) {
+    // Retry an already-failed source.
+    audio.load();
+  }
+
+  if (play) {
+    return await playSong();
+  }
+
+  return true;
 }
 
-export async function playSong() {
-  if (!audioInstance || !audioInstance.paused) return;
+export async function playSong(): Promise<boolean> {
+  if (!audioInstance) return false;
+
   try {
     await audioInstance.play();
 
     if ("mediaSession" in navigator) {
       navigator.mediaSession.playbackState = "playing";
     }
+
+    return true;
+
   } catch (error) {
+    const mediaError = audioInstance.error;
+
     furiLog("play-rejected", {
-      error: error instanceof Error ? error.message : String(error),
+      errorName:
+        error instanceof Error ? error.name : "Unknown",
+      errorMessage:
+        error instanceof Error ? error.message : String(error),
+
+      mediaErrorCode: mediaError?.code ?? null,
+      mediaErrorMessage: mediaError?.message ?? null,
+
+      networkState: audioInstance.networkState,
+      readyState: audioInstance.readyState,
     });
 
     if ("mediaSession" in navigator) {
       navigator.mediaSession.playbackState = "paused";
-
     }
+    
+    pauseSong(); // pausing the song just to play safe
+
+    return false;
   }
 }
 

@@ -120,25 +120,48 @@ export default function MusicPlayer() {
     playbackRef.current = { currTrack, queue, repeat };
   }, [currTrack, queue, repeat]);
 
-  // Pre fetch next song
+
+  const prefetching = useRef(new Set<number>());
+
   useEffect(() => {
-    const isScreenOff = typeof document !== 'undefined' && document.hidden;
+    if (!currTrack || queue.length === 0) return;
 
-    if (!currTrack || queue.length === 0 || !isScreenOff) return;
+    const currIndex = queue.findIndex(
+      song => song.id === currTrack.id
+    );
 
-    const currIndex = queue.findIndex((song) => song.id === currTrack.id);
+    if (currIndex === -1) return;
 
-    const nextIndex = (currIndex + 1) % queue.length;
-    const nextSong = queue[nextIndex];
+    const nextSong = queue[(currIndex + 1) % queue.length];
 
-    if (nextSong && !nextSong.blobUrl) {
-      prewarmTrack(nextSong).then((localBlobUrl) => {
-        if (localBlobUrl) {
-          nextSong.blobUrl = localBlobUrl;
-        }
-      });
-    }
-  }, [currTrack, queue]);
+    if (
+      !nextSong ||
+      nextSong.blobUrl ||
+      prefetching.current.has(nextSong.id)
+    ) return;
+
+    prefetching.current.add(nextSong.id);
+
+    furiLog("prefetch-start", {
+      track: nextSong.id,
+    });
+
+    prewarmTrack(nextSong).then(blobUrl => {
+      if (blobUrl) {
+        nextSong.blobUrl = blobUrl;
+
+        furiLog("prefetch-complete", {
+          track: nextSong.id,
+        });
+      } else {
+        prefetching.current.delete(nextSong.id);
+
+        furiLog("prefetch-failed", {
+          track: nextSong.id,
+        });
+      }
+    });
+  }, [currTrack?.id, queue, currTrack]);
 
   useEffect(() => {
     if (!audioInstance) return;
